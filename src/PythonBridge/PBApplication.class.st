@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'promiseHandler',
 		'communicationHandler',
-		'processHandler'
+		'processHandler',
+		'commandHandler'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -289,6 +290,11 @@ PBApplication class >> stop [
 	uniqueInstance := nil
 ]
 
+{ #category : #instructions }
+PBApplication class >> uniqueInstance [
+	^ uniqueInstance
+]
+
 { #category : #accessing }
 PBApplication >> communicationHandler [
 	^ communicationHandler
@@ -300,6 +306,7 @@ PBApplication >> handlers [
 		with: promiseHandler
 		with: communicationHandler
 		with: processHandler
+		with: commandHandler
 ]
 
 { #category : #accessing }
@@ -312,7 +319,8 @@ PBApplication >> initialize [
 PBApplication >> initializeHandlers [
 	processHandler := PBProcessHandler application: self.
 	promiseHandler := PBPromiseHandler application: self.
-	communicationHandler := PBCommunicationHandler application: self
+	communicationHandler := PBCommunicationHandler application: self.
+	commandHandler := PBCommandHandler application: self
 ]
 
 { #category : #testing }
@@ -334,6 +342,11 @@ PBApplication >> processHandler [
 { #category : #accessing }
 PBApplication >> promiseHandler [
 	^ promiseHandler
+]
+
+{ #category : #instructions }
+PBApplication >> send: aCommand [
+	^ commandHandler sendCommand: aCommand
 ]
 
 { #category : #accessing }

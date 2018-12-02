@@ -43,6 +43,12 @@ PBProcessHandler >> communicationHandler [
 	^ self application communicationHandler
 ]
 
+{ #category : #testing }
+PBProcessHandler >> isRunning [
+	process ifNil: [ ^ false ].
+	^ process isRunning
+]
+
 { #category : #'instance creation' }
 PBProcessHandler >> newProcess [
 	^ OSSUnixSubprocess new
@@ -59,4 +65,11 @@ PBProcessHandler >> newProcess [
 PBProcessHandler >> start [
 	process := self newProcess.
 	process run
+]
+
+{ #category : #accessing }
+PBProcessHandler >> stop [
+	process ifNil: [ ^ self ].
+	process isRunning ifTrue: [ process terminate ].
+	process closeAndCleanStreams
 ]

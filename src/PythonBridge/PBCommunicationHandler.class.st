@@ -40,3 +40,12 @@ PBCommunicationHandler >> pythonPort [
 PBCommunicationHandler >> pythonPort: anObject [
 	pythonPort := anObject
 ]
+
+{ #category : #'as yet unclassified' }
+PBCommunicationHandler >> sendPath: path data: data [
+	| ans |
+	ans := ZnEasy
+		post: 'http://localhost:' , self pythonPort asString , path
+		data: (ZnEntity text: data).
+	ans status = 200 ifFalse: [ Error signal: 'Command rejected by python' ]
+]
