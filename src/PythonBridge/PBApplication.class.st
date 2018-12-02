@@ -3,7 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'promiseHandler',
-		'sendMessageHandler',
+		'communicationHandler',
 		'processHandler'
 	],
 	#classInstVars : [
@@ -289,25 +289,36 @@ PBApplication class >> stop [
 	uniqueInstance := nil
 ]
 
+{ #category : #accessing }
+PBApplication >> communicationHandler [
+	^ communicationHandler
+]
+
 { #category : #handlers }
 PBApplication >> handlers [
 	^ Array
 		with: promiseHandler
-		with: sendMessageHandler
+		with: communicationHandler
 		with: processHandler
 ]
 
 { #category : #accessing }
+PBApplication >> initialize [
+	super initialize.
+	self initializeHandlers.
+]
+
+{ #category : #accessing }
 PBApplication >> initializeHandlers [
-	processHandler := PBProcessHandler new.
-	promiseHandler := PBPromiseHandler new.
-	sendMessageHandler := PBSendMessageHandler new
+	processHandler := PBProcessHandler application: self.
+	promiseHandler := PBPromiseHandler application: self.
+	communicationHandler := PBCommunicationHandler application: self
 ]
 
 { #category : #testing }
 PBApplication >> isPythonReady [
 	"Ensures python webserver is ready for receiving commands"
-	^ true
+	^ self communicationHandler isPythonReady
 ]
 
 { #category : #testing }
@@ -316,9 +327,18 @@ PBApplication >> isRunning [
 ]
 
 { #category : #accessing }
+PBApplication >> processHandler [
+	^ processHandler
+]
+
+{ #category : #accessing }
+PBApplication >> promiseHandler [
+	^ promiseHandler
+]
+
+{ #category : #accessing }
 PBApplication >> start [
-	self initializeHandlers.
-	self handlers do: #start.	
+	self handlers do: #start.
 	self waitInitialization.
 ]
 
@@ -334,5 +354,5 @@ PBApplication >> waitInitialization [
 		self isPythonReady 
 				ifTrue: [ ^ self ]
 				ifFalse: [ (Delay forMilliseconds: 500) wait ] ].
-	Error signal: 'Keras instance initialization failed!'
+	Error signal: 'Python application initialization failed!'
 ]
