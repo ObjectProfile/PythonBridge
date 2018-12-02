@@ -3,6 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'promiseHandler',
+		'sendMessageHandler',
 		'processHandler'
 	],
 	#classInstVars : [
@@ -229,6 +230,15 @@ if __name__ == "__main__":
 ]
 
 { #category : #instructions }
+PBApplication class >> resetUniqueInstance [
+	uniqueInstance ifNotNil: [ 
+		[ uniqueInstance stop ] 
+			on: Error 
+			do: [ UIManager inform: 'Error on reseting unique instance.' ]. ].
+	uniqueInstance := nil
+]
+
+{ #category : #instructions }
 PBApplication class >> retrieveExpression: obj [
 	self assert: self isRunning.
 	^ self uniqueInstance retrieveExpression: obj
@@ -279,6 +289,21 @@ PBApplication class >> stop [
 	uniqueInstance := nil
 ]
 
+{ #category : #handlers }
+PBApplication >> handlers [
+	^ Array
+		with: promiseHandler
+		with: sendMessageHandler
+		with: processHandler
+]
+
+{ #category : #accessing }
+PBApplication >> initializeHandlers [
+	processHandler := PBProcessHandler new.
+	promiseHandler := PBPromiseHandler new.
+	sendMessageHandler := PBSendMessageHandler new
+]
+
 { #category : #testing }
 PBApplication >> isPythonReady [
 	"Ensures python webserver is ready for receiving commands"
@@ -287,21 +312,19 @@ PBApplication >> isPythonReady [
 
 { #category : #testing }
 PBApplication >> isRunning [
-	^ processHandler isRunning and: [ promiseHandler isRunning ]
+	^ self handlers allSatisfy: #isRunning
 ]
 
 { #category : #accessing }
 PBApplication >> start [
-	processHandler := PBProcessHandler new.
-	processHandler start.
-	promiseHandler := PBPromiseHandler new.
-	promiseHandler start.
-	
+	self initializeHandlers.
+	self handlers do: #start.	
 	self waitInitialization.
 ]
 
 { #category : #accessing }
 PBApplication >> stop [
+	self handlers do: #stop
 ]
 
 { #category : #'as yet unclassified' }

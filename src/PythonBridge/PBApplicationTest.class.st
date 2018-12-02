@@ -6,7 +6,7 @@ Class {
 
 { #category : #running }
 PBApplicationTest >> tearDown [
-	PBApplication isRunning ifTrue: [ PBApplication stop ]
+	PBApplication resetUniqueInstance
 ]
 
 { #category : #tests }

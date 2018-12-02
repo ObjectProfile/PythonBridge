@@ -1,14 +1,5 @@
 Class {
 	#name : #PBProcessHandler,
-	#superclass : #Object,
+	#superclass : #PBHandler,
 	#category : #PythonBridge
 }
-
-{ #category : #testing }
-PBProcessHandler >> isRunning [
-	^ true
-]
-
-{ #category : #accessing }
-PBProcessHandler >> start [
-]

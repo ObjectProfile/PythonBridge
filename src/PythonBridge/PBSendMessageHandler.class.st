@@ -1,5 +1,5 @@
 Class {
-	#name : #PBPromiseHandler,
+	#name : #PBSendMessageHandler,
 	#superclass : #PBHandler,
 	#category : #PythonBridge
 }
