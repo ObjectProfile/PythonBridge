@@ -11,8 +11,9 @@ BaselineOfPythonBridge >> baseline: spec [
 		for: #common
 		do: [			
 			spec
-				package: 'PythonBridge'.
-				
-			spec group: 'default' with: #('PythonBridge').
-			spec group: 'Tests' with: #('PythonBridge' ) ]
+				baseline: 'OSSubprocess' 
+				with: [ spec repository: 'github://pharo-contributions/OSSubprocess:v0.1.4/repository' ].
+			spec
+				package: 'PythonBridge' with: [ spec requires: 'OSSubprocess' ]
+			 ]
 ]
