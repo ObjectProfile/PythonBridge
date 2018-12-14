@@ -3,16 +3,22 @@ Class {
 	#superclass : #PBHandler,
 	#instVars : [
 		'pharoPort',
-		'pythonPort'
+		'pythonPort',
+		'routes'
 	],
-	#category : #PythonBridge
+	#category : #'PythonBridge-Core'
 }
+
+{ #category : #adding }
+PBCommunicationHandler >> addRoute: aPath block: aBlock [
+]
 
 { #category : #initialization }
 PBCommunicationHandler >> initialize [
 	super initialize.
 	pharoPort := 6777.
-	pythonPort := 6778
+	pythonPort := 6778.
+	routes := OrderedCollection new
 ]
 
 { #category : #testing }

@@ -8,7 +8,7 @@ Class {
 		'PipEnvPath',
 		'PythonPath'
 	],
-	#category : #PythonBridge
+	#category : #'PythonBridge-Core'
 }
 
 { #category : #'as yet unclassified' }

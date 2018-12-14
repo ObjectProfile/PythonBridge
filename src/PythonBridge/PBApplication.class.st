@@ -5,12 +5,13 @@ Class {
 		'promiseHandler',
 		'communicationHandler',
 		'processHandler',
-		'commandHandler'
+		'commandHandler',
+		'loggingHandler'
 	],
 	#classInstVars : [
 		'uniqueInstance'
 	],
-	#category : #PythonBridge
+	#category : #'PythonBridge-Core'
 }
 
 { #category : #testing }
@@ -303,8 +304,9 @@ PBApplication >> communicationHandler [
 { #category : #handlers }
 PBApplication >> handlers [
 	^ Array
-		with: promiseHandler
+		with: loggingHandler
 		with: communicationHandler
+		with: promiseHandler
 		with: processHandler
 		with: commandHandler
 ]
@@ -315,12 +317,13 @@ PBApplication >> initialize [
 	self initializeHandlers.
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 PBApplication >> initializeHandlers [
+	loggingHandler := PBLoggingHandler application: self.
 	processHandler := PBProcessHandler application: self.
-	promiseHandler := PBPromiseHandler application: self.
 	communicationHandler := PBCommunicationHandler application: self.
-	commandHandler := PBCommandHandler application: self
+	promiseHandler := PBPromiseHandler application: self.
+	commandHandler := PBExcecutionHandler application: self
 ]
 
 { #category : #testing }
@@ -332,6 +335,16 @@ PBApplication >> isPythonReady [
 { #category : #testing }
 PBApplication >> isRunning [
 	^ self handlers allSatisfy: #isRunning
+]
+
+{ #category : #'logging-Deprecated' }
+PBApplication >> log: aLog [
+	self loggingHandler log: aLog
+]
+
+{ #category : #accessing }
+PBApplication >> loggingHandler [
+	^ loggingHandler
 ]
 
 { #category : #accessing }

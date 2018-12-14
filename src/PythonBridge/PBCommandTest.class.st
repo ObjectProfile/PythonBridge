@@ -1,7 +1,7 @@
 Class {
 	#name : #PBCommandTest,
 	#superclass : #TestCase,
-	#category : #PythonBridge
+	#category : #'PythonBridge-Tests'
 }
 
 { #category : #tests }
@@ -22,9 +22,9 @@ PBCommandTest >> testNotValidBindingsKeyNotString [
 ]
 
 { #category : #tests }
-PBCommandTest >> testNotValidBindingsNotAssociation [
+PBCommandTest >> testNotValidBindingsNotAssoc [
 	| command |
 	command := PBCommand new.
-	command bindings: { 'foo' -> 'bar'. 'zork' }.
+	command bindings: { '33' -> 'bar'. 'foo' }.
 	self deny: command isValid
 ]

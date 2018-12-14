@@ -1,7 +1,7 @@
 Class {
 	#name : #PBApplicationTest,
 	#superclass : #TestCase,
-	#category : #PythonBridge
+	#category : #'PythonBridge-Tests'
 }
 
 { #category : #running }
@@ -21,24 +21,24 @@ PBApplicationTest >> testRejectSimpleCommand [
 	app := PBApplication uniqueInstance.
 	PBApplication stop.
 	self should: [ app send: 
-		(PBCommand new pythonGenerable: 
-			(P3GBinaryOperator new
+		(PBCommand new instructions: 
+			(Array with: (P3GBinaryOperator new
 						left: 1;
 						right: 2;
 						operator: $+;
-						yourself)) ] raise: Error
+						yourself))) ] raise: Error
 ]
 
 { #category : #tests }
 PBApplicationTest >> testSendSimpleCommand [
 	PBApplication start.
 	PBApplication send: 
-		(PBCommand new pythonGenerable: 
-			(P3GBinaryOperator new
+		(PBCommand new instructions: 
+			(Array with: (P3GBinaryOperator new
 						left: 1;
 						right: 2;
 						operator: $+;
-						yourself)).
+						yourself))).
 ]
 
 { #category : #tests }
@@ -46,14 +46,6 @@ PBApplicationTest >> testStart [
 	self deny: PBApplication isRunning.
 	PBApplication start.
 	self assert: PBApplication isRunning.
-]
-
-{ #category : #tests }
-PBApplicationTest >> testStop [
-	self deny: PBApplication isRunning.
-	PBApplication start.
-	PBApplication stop.
-	self deny: PBApplication isRunning.
 ]
 
 { #category : #tests }

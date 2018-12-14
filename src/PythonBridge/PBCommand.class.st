@@ -3,10 +3,11 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'id',
-		'pythonGenerable',
-		'bindings'
+		'instructions',
+		'bindings',
+		'transformBlock'
 	],
-	#category : #PythonBridge
+	#category : #'PythonBridge-Core'
 }
 
 { #category : #accessing }
@@ -15,8 +16,13 @@ PBCommand >> bindings [
 ]
 
 { #category : #accessing }
-PBCommand >> bindings: anObject [
-	bindings := anObject
+PBCommand >> bindings: bindingCol [
+	bindings := bindingCol
+]
+
+{ #category : #accessing }
+PBCommand >> bindingsDictionary [
+	^ self bindings asDictionary
 ]
 
 { #category : #accessing }
@@ -33,7 +39,19 @@ PBCommand >> id: anObject [
 PBCommand >> initialize [
 	super initialize.
 	id := UUID new asString36.
-	bindings := #()
+	bindings := #().
+	instructions := OrderedCollection new.
+	transformBlock := #yourself
+]
+
+{ #category : #accessing }
+PBCommand >> instructions [
+	^ instructions
+]
+
+{ #category : #accessing }
+PBCommand >> instructions: anObject [
+	instructions := anObject
 ]
 
 { #category : #testing }
@@ -41,12 +59,12 @@ PBCommand >> isValid [
 	^ [ self id isString and: [ self bindings allSatisfy: [ :assoc | assoc key isString ] ] ] on: Error do: [ false ]
 ]
 
-{ #category : #accessing }
-PBCommand >> pythonGenerable [
-	^ pythonGenerable
-]
-
-{ #category : #accessing }
-PBCommand >> pythonGenerable: anObject [
-	pythonGenerable := anObject
+{ #category : #'as yet unclassified' }
+PBCommand >> pythonCode [
+	| py3CodeStream |
+	py3CodeStream := String new writeStream.
+	(P3GInstructionsList new
+		addAll: self instructions;
+		yourself) writePython3On: py3CodeStream.
+	^ py3CodeStream contents
 ]

@@ -4,13 +4,14 @@ Class {
 	#instVars : [
 		'application'
 	],
-	#category : #PythonBridge
+	#category : #'PythonBridge-Core'
 }
 
 { #category : #'as yet unclassified' }
 PBHandler class >> application: anApplication [
 	^ self new
 		application: anApplication;
+		initializeHandler;
 		yourself
 ]
 
@@ -22,6 +23,10 @@ PBHandler >> application [
 { #category : #accessing }
 PBHandler >> application: anObject [
 	application := anObject
+]
+
+{ #category : #initialization }
+PBHandler >> initializeHandler [
 ]
 
 { #category : #testing }
