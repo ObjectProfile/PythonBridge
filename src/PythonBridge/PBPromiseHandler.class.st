@@ -18,5 +18,6 @@ PBPromiseHandler >> initializeHandler [
 				at: #id 
 				ifPresent: [ :id |
 					self updatePromiseId: id with: (self deserialize: (dict at: #value)) ]
-				ifAbsent: [ self application log: 'Notify for missing promise.' ] ]
+				ifAbsent: [ 
+					self application log: (PBErrorLog message: 'Notify for missing promise.') ] ]
 ]

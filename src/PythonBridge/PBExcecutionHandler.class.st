@@ -2,7 +2,8 @@ Class {
 	#name : #PBExcecutionHandler,
 	#superclass : #PBHandler,
 	#instVars : [
-		'commandQueue'
+		'commandQueue',
+		'currentCommandIndex'
 	],
 	#category : #'PythonBridge-Core'
 }
@@ -28,7 +29,21 @@ PBExcecutionHandler >> encodeCommandAsDictionary: aCommand [
 { #category : #initialization }
 PBExcecutionHandler >> initialize [
 	super initialize.
-	commandQueue := OrderedCollection new
+	commandQueue := OrderedCollection new.
+	currentCommandIndex := 1
+]
+
+{ #category : #initialization }
+PBExcecutionHandler >> initializeHandler [
+	self communicationHandler 
+		addRoute: '/notify' 
+		block: [ :dict | 
+			dict 
+				at: #id 
+				ifPresent: [ :id |
+					self updatePromiseId: id with: (self deserialize: (dict at: #value)) ]
+				ifAbsent: [ 
+					self application log: (PBErrorLog message: 'Notify for missing promise.') ] ]
 ]
 
 { #category : #'private protocol' }
