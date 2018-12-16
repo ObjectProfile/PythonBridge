@@ -16,7 +16,10 @@ PBCommandFactoryTest >> setUp [
 PBCommandFactoryTest >> testBuildEmptyCommand [
 	| command |
 	command := factory buildCommand.
-	self assert: command instructions isEmpty.
+	self assert: command instructions size equals: 1.
+	self assert: command instructions first class equals: P3GCall.
+	self assert: command instructions first target name equals: 'notify'.
+	self assert: command instructions first positionalArguments first equals: nil.
 	self assert: command bindings isEmpty
 ]
 
@@ -27,8 +30,7 @@ PBCommandFactoryTest >> testBuildFullCommand [
 	factory bindingAt: #myVar put: 3.
 	command := factory buildCommand.
 	instructions := command instructions.
-	self assert: instructions first class equals: P3GString.
-	self assert: instructions first string equals: 'foo'.
+	self assert: command instructions first positionalArguments first string equals: 'foo'.
 	self assert: (command bindingsDictionary at: #myVar) equals: 3
 ]
 
@@ -38,6 +40,5 @@ PBCommandFactoryTest >> testBuildSimpleCommand [
 	factory << (P3GString string: 'foo').
 	command := factory buildCommand.
 	instructions := command instructions.
-	self assert: instructions first class equals: P3GString.
-	self assert: instructions first string equals: 'foo' 
+	self assert: command instructions first positionalArguments first string equals: 'foo'.
 ]

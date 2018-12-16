@@ -15,48 +15,28 @@ PBApplicationTest >> testNotRunning [
 ]
 
 { #category : #tests }
-PBApplicationTest >> testRejectSimpleCommand [
+PBApplicationTest >> testStartStopProcess [
 	| app |
+	self deny: PBApplication isRunning.
 	PBApplication start.
 	app := PBApplication uniqueInstance.
-	PBApplication stop.
-	self should: [ app send: 
-		(PBCommand new instructions: 
-			(Array with: (P3GBinaryOperator new
-						left: 1;
-						right: 2;
-						operator: $+;
-						yourself))) ] raise: Error
-]
-
-{ #category : #tests }
-PBApplicationTest >> testSendSimpleCommand [
-	PBApplication start.
+	self assert: app processHandler isRunning.
 	PBApplication send: 
 		(PBCommand new instructions: 
 			(Array with: (P3GBinaryOperator new
 						left: 1;
 						right: 2;
 						operator: $+;
-						yourself))).
-]
-
-{ #category : #tests }
-PBApplicationTest >> testStart [
-	self deny: PBApplication isRunning.
-	PBApplication start.
-	self assert: PBApplication isRunning.
-]
-
-{ #category : #tests }
-PBApplicationTest >> testStopProcess [
-	| processHandler |
-	self deny: PBApplication isRunning.
-	PBApplication start.
-	processHandler := PBApplication uniqueInstance processHandler.
-	self assert: processHandler isRunning.
+						yourself))).	
 	PBApplication stop.
 	self deny: PBApplication isRunning.
+	self should: [ app send: 
+		(PBCommand new instructions: 
+			(Array with: (P3GBinaryOperator new
+						left: 1;
+						right: 2;
+						operator: $+;
+						yourself))) ] raise: Error.
 	(Delay forMilliseconds: 100) wait.
-	self deny: processHandler isRunning
+	self deny: app processHandler isRunning
 ]

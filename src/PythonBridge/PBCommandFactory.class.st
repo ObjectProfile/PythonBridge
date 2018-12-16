@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'bindingsDictionary',
-		'instructionStream'
+		'instructionStream',
+		'command'
 	],
 	#category : #'PythonBridge-Core'
 }
@@ -18,10 +19,10 @@ PBCommandFactory >> bindingAt: varName put: anObject [
 	bindingsDictionary at: varName put: anObject
 ]
 
-{ #category : #initialization }
+{ #category : #'as yet unclassified' }
 PBCommandFactory >> buildCommand [
-	^ PBCommand new
-		instructions: instructionStream contents;
+	^ command
+		instructions: self instructionsWithNotifyAtEnd;
 		bindings: bindingsDictionary associations;
 		yourself
 ]
@@ -29,5 +30,23 @@ PBCommandFactory >> buildCommand [
 { #category : #initialization }
 PBCommandFactory >> initialize [
 	instructionStream := OrderedCollection new writeStream.
-	bindingsDictionary := Dictionary new
+	bindingsDictionary := Dictionary new.
+	command := PBCommand new
+]
+
+{ #category : #'as yet unclassified' }
+PBCommandFactory >> instructionsWithNotifyAtEnd [
+	| instructions |
+	instructions := instructionStream contents.
+	instructions ifEmpty: [ instructions := OrderedCollection with: nil ].
+	instructions 
+		at: instructions size 
+		put: (self setNotifyToInstruction: instructions last).
+	^ instructions
+]
+
+{ #category : #initialization }
+PBCommandFactory >> setNotifyToInstruction: aP3gInstruction [
+	^ 'notify' asP3GIdentifier 
+			callWith: (Array with: aP3gInstruction with: command id)
 ]
