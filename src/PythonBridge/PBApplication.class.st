@@ -323,7 +323,7 @@ PBApplication >> initializeHandlers [
 	processHandler := PBProcessHandler application: self.
 	communicationHandler := PBCommunicationHandler application: self.
 	promiseHandler := PBPromiseHandler application: self.
-	commandHandler := PBExcecutionHandler application: self
+	commandHandler := PBExecutionHandler application: self
 ]
 
 { #category : #testing }

@@ -1,5 +1,5 @@
 Class {
-	#name : #PBExcecutionHandler,
+	#name : #PBExecutionHandler,
 	#superclass : #PBHandler,
 	#instVars : [
 		'commandQueue',
@@ -9,12 +9,12 @@ Class {
 }
 
 { #category : #'private protocol' }
-PBExcecutionHandler >> communicationHandler [
+PBExecutionHandler >> communicationHandler [
 	^ self application communicationHandler
 ]
 
 { #category : #'private protocol' }
-PBExcecutionHandler >> encodeCommandAsDictionary: aCommand [
+PBExecutionHandler >> encodeCommandAsDictionary: aCommand [
 	| p3Bindings data |
 	p3Bindings := aCommand bindings asDictionary.
 	p3Bindings at: #pharoCommandId put: aCommand id.
@@ -27,14 +27,14 @@ PBExcecutionHandler >> encodeCommandAsDictionary: aCommand [
 ]
 
 { #category : #initialization }
-PBExcecutionHandler >> initialize [
+PBExecutionHandler >> initialize [
 	super initialize.
 	commandQueue := OrderedCollection new.
 	currentCommandIndex := 1
 ]
 
 { #category : #initialization }
-PBExcecutionHandler >> initializeHandler [
+PBExecutionHandler >> initializeHandler [
 	self communicationHandler 
 		addRoute: '/notify' 
 		block: [ :dict | 
@@ -47,14 +47,14 @@ PBExcecutionHandler >> initializeHandler [
 ]
 
 { #category : #'private protocol' }
-PBExcecutionHandler >> primitiveSendCommand: command [
+PBExecutionHandler >> primitiveSendCommand: command [
 	self communicationHandler 
 		sendPath: '/eval'
 		data: (NeoJSONWriter toString: (self encodeCommandAsDictionary: command)).
 ]
 
 { #category : #'private protocol' }
-PBExcecutionHandler >> sendCommand: command [
+PBExecutionHandler >> sendCommand: command [
 	self assert: command isValid.
 	commandQueue add: command.
 	^ self primitiveSendCommand: command

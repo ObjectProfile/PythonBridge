@@ -3,10 +3,18 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'currentIndex',
-		'innerCollection'
+		'innerCollection',
+		'executionHandler'
 	],
 	#category : #'PythonBridge-Core'
 }
+
+{ #category : #accessing }
+PBCommandQueue class >> executionHandler: aHandler [
+	^ self new
+			executionHandler: aHandler;
+			yourself
+]
 
 { #category : #accessing }
 PBCommandQueue >> completedCommands [
@@ -25,6 +33,21 @@ PBCommandQueue >> enqueueCommand: aCommand [
 ]
 
 { #category : #accessing }
+PBCommandQueue >> excecutionHandler [
+	^ executionHandler
+]
+
+{ #category : #accessing }
+PBCommandQueue >> executionHandler [
+	^ executionHandler
+]
+
+{ #category : #accessing }
+PBCommandQueue >> executionHandler: anObject [
+	executionHandler := anObject
+]
+
+{ #category : #accessing }
 PBCommandQueue >> finishCommand: aCommand [
 	^ self finishCommandId: aCommand id
 ]
@@ -32,13 +55,16 @@ PBCommandQueue >> finishCommand: aCommand [
 { #category : #accessing }
 PBCommandQueue >> finishCommandId: id [
 	| commandIndex |
-	self currentCommand id = id 
-		ifTrue: [ 
-			currentIndex := currentIndex + 1.
-			^ true ].
-	commandIndex := self detectIndex: [ :command | command id = id ].
+	self currentCommand ifNotNil: [ :command |
+		command id = id 
+			ifTrue: [ 
+				currentIndex := currentIndex + 1.
+				^ true ] ].
+	commandIndex := innerCollection detectIndex: [ :command | command id = id ].
 	commandIndex > currentIndex 
-		ifTrue: [ self log: (PBErrorLog message: 'Out of sync command queue. Pharo is delayed.') ]
+		ifTrue: [ 
+			currentIndex := commandIndex + 1.
+			self log: (PBErrorLog message: 'Out of sync command queue. Pharo is delayed.') ]
 		ifFalse: [ self log: (PBErrorLog message: 'Out of sync command queue. Python is delayed.') ].
 	^ false
 ]
