@@ -14,13 +14,18 @@ Class {
 	#category : #'PythonBridge-Core'
 }
 
+{ #category : #'python hooks file' }
+PBApplication class >> ensurePythonHooksFile [
+	self pythonHooksFileReference exists ifFalse: [ self writePythonHooksFile ]
+]
+
 { #category : #testing }
 PBApplication class >> isRunning [
 	^ uniqueInstance notNil and: [ uniqueInstance isRunning ]
 ]
 
-{ #category : #'as yet unclassified' }
-PBApplication class >> pharoHooksPythonFile [
+{ #category : #'python hooks file' }
+PBApplication class >> pharoHooksPythonFile [ 
 	^ 'from flask import Flask, request
 import http.client
 import argparse
@@ -62,7 +67,7 @@ class EvalCommand:
 			self.perform_proceed_action(notify_error(err,self))
 
 	def perform_proceed_action(self, actionDict):
-		actionSymbol = actionDict["action"]
+		actionSymbol = actionDict[''action'']
 		if actionSymbol == "IGNORE":
 			pass
 		if actionSymbol == "DROP_QUEUE":
@@ -71,9 +76,17 @@ class EvalCommand:
 			commandDict = actionDict["command"]
 			globalCommandList.push_command_at_first(EvalCommand(commandDict["commandId"], commandDict["statements"], commandDict["bindings"]))
 		 
-
 	def command_id(self):
 		return self.commandId
+
+class EvalCommandWithPromise(EvalCommand):
+	
+	def execute_using_env(self, env):
+		try:
+			env.update(self.bindings)
+			exec(self.statements, globals(), env)
+		except Exception as err:
+			self.perform_proceed_action(notify_error(err,self))
 
 class Logger():
 	def log(self, msg):
@@ -161,31 +174,31 @@ def notify(obj, notificationId):
 	conn.getresponse()
 	pharo_hooks_globals.logger.log("PYTHON: Finish notify")
 
-def notifyStep(obj, notificationId):
-	pharo_hooks_globals.logger.log("PYTHON: Notify step " + str(notificationId))
-	data = {}
-	data["id"] = notificationId
-	data["value"] = convert_to_JSON(obj)
-	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
-	conn.request("POST", "/notifyStep", json.dumps(data), {
-		"Content-type": "application/json",
-		"Accept": "text/plain"})
-	conn.getresponse()
-	pharo_hooks_globals.logger.log("PYTHON: Finish notify step")
+# def notifyStep(obj, notificationId):
+# 	pharo_hooks_globals.logger.log("PYTHON: Notify step " + str(notificationId))
+# 	data = {}
+# 	data["id"] = notificationId
+# 	data["value"] = convert_to_JSON(obj)
+# 	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
+# 	conn.request("POST", "/notifyStep", json.dumps(data), {
+# 		"Content-type": "application/json",
+# 		"Accept": "text/plain"})
+# 	conn.getresponse()
+# 	pharo_hooks_globals.logger.log("PYTHON: Finish notify step")
 
-def notify_error(ex, command):
-	pharo_hooks_globals.logger.log("Error on command: " + str(command.command_id()))
-	pharo_hooks_globals.logger.log(str(ex))
-	data = {}
-	data["errMsg"] = str(ex)
-	data["id"] = command.command_id()
-	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
-	conn.request("POST", "/notifyError", json.dumps(data), {
-		"Content-type": "application/json",
-		"Accept": "text/plain"})
-	response = str(conn.getresponse().read().decode())
-	pharo_hooks_globals.logger.log(response)
-	return json.loads(response)
+# def notify_error(ex, command):
+# 	pharo_hooks_globals.logger.log("Error on command: " + str(command.command_id()))
+# 	pharo_hooks_globals.logger.log(str(ex))
+# 	data = {}
+# 	data["errMsg"] = str(ex)
+# 	data["id"] = command.command_id()
+# 	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
+# 	conn.request("POST", "/notifyError", json.dumps(data), {
+# 		"Content-type": "application/json",
+# 		"Accept": "text/plain"})
+# 	response = str(conn.getresponse().read().decode())
+# 	pharo_hooks_globals.logger.log(response)
+# 	return json.loads(response)
 
 if __name__ == "__main__":
 	##### FLASK API
@@ -229,6 +242,19 @@ if __name__ == "__main__":
 		pharo_hooks_globals.logger.log("PYTHON: " + command.statements)
 		command.execute_using_env(env)
 		pharo_hooks_globals.logger.log("PYTHON: Finished command execution")'
+]
+
+{ #category : #'python hooks file' }
+PBApplication class >> pythonHooksFileReference [
+	^ 'pharo_hooks.py' asFileReference
+]
+
+{ #category : #'python hooks file' }
+PBApplication class >> readAndStorePythonHooksFile [
+	"This method is only used for development.
+	You should call this method whenever you modify the python hooks file to commit it with the rest of the package."
+	self class compile: 'pharoHooksPythonFile 
+	^ ' , PBApplication pythonHooksFileReference contents printString
 ]
 
 { #category : #instructions }
@@ -294,6 +320,12 @@ PBApplication class >> stop [
 { #category : #instructions }
 PBApplication class >> uniqueInstance [
 	^ uniqueInstance
+]
+
+{ #category : #'python hooks file' }
+PBApplication class >> writePythonHooksFile [
+	self pythonHooksFileReference writeStreamDo: [ :stream |
+		stream << self pharoHooksPythonFile ]
 ]
 
 { #category : #accessing }

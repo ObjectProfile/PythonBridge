@@ -3,7 +3,8 @@ Class {
 	#superclass : #PBHandler,
 	#instVars : [
 		'commandQueue',
-		'currentCommandIndex'
+		'serializer',
+		'promiseRegistry'
 	],
 	#category : #'PythonBridge-Core'
 }
@@ -11,6 +12,11 @@ Class {
 { #category : #'private protocol' }
 PBExecutionHandler >> communicationHandler [
 	^ self application communicationHandler
+]
+
+{ #category : #'private protocol' }
+PBExecutionHandler >> deserialize: anObject [
+	^ self serializer deserialize: anObject
 ]
 
 { #category : #'private protocol' }
@@ -22,15 +28,15 @@ PBExecutionHandler >> encodeCommandAsDictionary: aCommand [
 	data 
 		at: #commandId put: aCommand id;
 		at: #statements put: aCommand pythonCode;
-		at: #bindings put: p3Bindings.
+		at: #bindings put: (p3Bindings collect: [ :obj | self serialize: obj ]).
 	^ data
 ]
 
 { #category : #initialization }
 PBExecutionHandler >> initialize [
 	super initialize.
-	commandQueue := OrderedCollection new.
-	currentCommandIndex := 1
+	commandQueue := PBCommandQueue new.
+	serializer := PBSerializer
 ]
 
 { #category : #initialization }
@@ -56,6 +62,27 @@ PBExecutionHandler >> primitiveSendCommand: command [
 { #category : #'private protocol' }
 PBExecutionHandler >> sendCommand: command [
 	self assert: command isValid.
-	commandQueue add: command.
+	commandQueue enqueueCommand: command.
 	^ self primitiveSendCommand: command
+]
+
+{ #category : #'private protocol' }
+PBExecutionHandler >> serialize: anObject [
+	^ self serializer serialize: anObject
+]
+
+{ #category : #accessing }
+PBExecutionHandler >> serializer [
+	^ serializer
+]
+
+{ #category : #accessing }
+PBExecutionHandler >> serializer: anObject [
+	serializer := anObject
+]
+
+{ #category : #'private protocol' }
+PBExecutionHandler >> updatePromiseId: id with: anObject [
+	self commandQueue finishCommandId: id.
+	promiseRegistry removeAndSignalPromiseId: id with: anObject
 ]
