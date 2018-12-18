@@ -354,7 +354,6 @@ PBApplication >> initializeHandlers [
 	loggingHandler := PBLoggingHandler application: self.
 	processHandler := PBProcessHandler application: self.
 	communicationHandler := PBCommunicationHandler application: self.
-	promiseHandler := PBPromiseHandler application: self.
 	commandHandler := PBExecutionHandler application: self
 ]
 

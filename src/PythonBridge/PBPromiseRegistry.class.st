@@ -2,20 +2,22 @@ Class {
 	#name : #PBPromiseRegistry,
 	#superclass : #Object,
 	#instVars : [
-		'promiseTable'
+		'promiseTable',
+		'semaphore'
 	],
 	#category : #'PythonBridge-Core'
 }
 
 { #category : #adding }
 PBPromiseRegistry >> addPromise: aPromise [
-	promiseTable at: aPromise id put: aPromise
+	semaphore critical: [ promiseTable at: aPromise id put: aPromise ]
 ]
 
 { #category : #initialization }
 PBPromiseRegistry >> initialize [
 	super initialize.
-	promiseTable := Dictionary new
+	promiseTable := Dictionary new.
+	semaphore := Semaphore forMutualExclusion
 ]
 
 { #category : #'private - testing' }
@@ -31,12 +33,13 @@ PBPromiseRegistry >> removeAndSignalPromiseId: id with: anObject [
 
 { #category : #adding }
 PBPromiseRegistry >> removePromiseId: id [
-	promiseTable removeKey: id
+	semaphore critical: [ promiseTable removeKey: id ]
 ]
 
 { #category : #adding }
 PBPromiseRegistry >> signalPromiseId: id with: anObject [
 	| promise |
-	promise := promiseTable at: id.
-	promise signalWithValue: anObject
+	semaphore critical: [ 
+		promise := promiseTable at: id.
+		promise signalWithValue: anObject ]
 ]
