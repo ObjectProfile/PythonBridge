@@ -11,7 +11,7 @@ Class {
 PBCF class >> buildCommand [
 	| command |
 	command := self current buildCommand.
-	current := nil.
+	self reset.
 	^ command
 ]
 
@@ -28,4 +28,9 @@ PBCF class >> doesNotUnderstand: aMessage [
 { #category : #'instance creation' }
 PBCF class >> newCommandFactory [
 	^ PBCommandFactory new
+]
+
+{ #category : #accessing }
+PBCF class >> reset [
+	current := nil
 ]

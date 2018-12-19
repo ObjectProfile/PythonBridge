@@ -2,11 +2,10 @@ Class {
 	#name : #PBApplication,
 	#superclass : #Object,
 	#instVars : [
-		'promiseHandler',
 		'communicationHandler',
 		'processHandler',
-		'commandHandler',
-		'loggingHandler'
+		'loggingHandler',
+		'executionHandler'
 	],
 	#classInstVars : [
 		'uniqueInstance'
@@ -299,7 +298,7 @@ PBApplication class >> retrieveVariable: varName [
 { #category : #instructions }
 PBApplication class >> send: obj [
 	self assert: self isRunning.
-	self uniqueInstance send: obj
+	^ self uniqueInstance send: obj
 ]
 
 { #category : #instructions }
@@ -338,9 +337,8 @@ PBApplication >> handlers [
 	^ Array
 		with: loggingHandler
 		with: communicationHandler
-		with: promiseHandler
 		with: processHandler
-		with: commandHandler
+		with: executionHandler
 ]
 
 { #category : #accessing }
@@ -354,7 +352,7 @@ PBApplication >> initializeHandlers [
 	loggingHandler := PBLoggingHandler application: self.
 	processHandler := PBProcessHandler application: self.
 	communicationHandler := PBCommunicationHandler application: self.
-	commandHandler := PBExecutionHandler application: self
+	executionHandler := PBExecutionHandler application: self
 ]
 
 { #category : #testing }
@@ -390,7 +388,7 @@ PBApplication >> promiseHandler [
 
 { #category : #instructions }
 PBApplication >> send: aCommand [
-	^ commandHandler sendCommand: aCommand
+	^ executionHandler sendCommand: aCommand
 ]
 
 { #category : #accessing }
@@ -401,7 +399,7 @@ PBApplication >> start [
 
 { #category : #accessing }
 PBApplication >> stop [
-	self handlers do: #stop
+	self handlers select: #notNil thenDo: #stop
 ]
 
 { #category : #'as yet unclassified' }

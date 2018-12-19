@@ -35,7 +35,8 @@ PBProcessHandler class >> resolvePipenvPath [
 PBProcessHandler >> arguments [
 	^ { 'run'. 'python'. 'pharo_hooks.py'. 
 		'--port'. self communicationHandler pythonPort asString . 
-		'--pharo'. self communicationHandler pharoPort asString}
+		'--pharo'. self communicationHandler pharoPort asString .
+		'--log'}
 ]
 
 { #category : #'as yet unclassified' }

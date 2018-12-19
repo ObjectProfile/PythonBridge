@@ -26,6 +26,13 @@ PBCommand >> bindingsDictionary [
 ]
 
 { #category : #accessing }
+PBCommand >> decorateTransform: aBlock [
+	| previousBlock |
+	previousBlock := transformBlock.
+	^ transformBlock := [ :obj | aBlock value: (previousBlock value: obj) ]
+]
+
+{ #category : #accessing }
 PBCommand >> id [
 	^ id
 ]
@@ -67,4 +74,14 @@ PBCommand >> pythonCode [
 		addAll: self instructions;
 		yourself) writePython3On: py3CodeStream.
 	^ py3CodeStream contents
+]
+
+{ #category : #accessing }
+PBCommand >> transformBlock [
+	^ transformBlock
+]
+
+{ #category : #accessing }
+PBCommand >> transformBlock: anObject [
+	transformBlock := anObject
 ]

@@ -36,7 +36,8 @@ PBExecutionHandler >> encodeCommandAsDictionary: aCommand [
 PBExecutionHandler >> initialize [
 	super initialize.
 	commandQueue := PBCommandQueue new.
-	serializer := PBSerializer
+	serializer := PBSerializer.
+	promiseRegistry := PBPromiseRegistry new
 ]
 
 { #category : #initialization }
@@ -60,10 +61,24 @@ PBExecutionHandler >> primitiveSendCommand: command [
 ]
 
 { #category : #'private protocol' }
+PBExecutionHandler >> registerPromiseForCommand: aCommand [
+	| promise |
+	promise := PBPromise new
+					id: aCommand id;
+					transformBlock: aCommand transformBlock;
+					yourself.
+	promiseRegistry addPromise: promise.
+	^ promise
+]
+
+{ #category : #'private protocol' }
 PBExecutionHandler >> sendCommand: command [
+	| promise |
 	self assert: command isValid.
 	commandQueue enqueueCommand: command.
-	^ self primitiveSendCommand: command
+	promise := self registerPromiseForCommand: command.
+	self primitiveSendCommand: command.
+	^ promise
 ]
 
 { #category : #'private protocol' }
@@ -83,6 +98,6 @@ PBExecutionHandler >> serializer: anObject [
 
 { #category : #'private protocol' }
 PBExecutionHandler >> updatePromiseId: id with: anObject [
-	self commandQueue finishCommandId: id.
+	commandQueue finishCommandId: id.
 	promiseRegistry removeAndSignalPromiseId: id with: anObject
 ]

@@ -11,7 +11,7 @@ Class {
 PBExcecutionHandlerTest >> setUp [
 	| app |
 	app := PBStubApplication new.
-	execHandler := PBExecutionHandler basicNew 
+	execHandler := PBExecutionHandler new 
 							application: app;
 							yourself.
 ]
