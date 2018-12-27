@@ -15,7 +15,8 @@ Class {
 
 { #category : #'python hooks file' }
 PBApplication class >> ensurePythonHooksFile [
-	self pythonHooksFileReference exists ifFalse: [ self writePythonHooksFile ]
+	self pythonHooksFileReference exists ifFalse: [ self writePythonHooksFile ].
+	self pythonHooksGlobalsFileReference exists ifFalse: [ self writePythonHooksGlobalsFile ]
 ]
 
 { #category : #testing }
@@ -251,6 +252,11 @@ PBApplication class >> pythonHooksFileReference [
 ]
 
 { #category : #'python hooks file' }
+PBApplication class >> pythonHooksGlobalsFileReference [
+	^ 'pharo_hooks_globals.py' asFileReference
+]
+
+{ #category : #'python hooks file' }
 PBApplication class >> readAndStorePythonHooksFile [
 	"This method is only used for development.
 	You should call this method whenever you modify the python hooks file to commit it with the rest of the package."
@@ -327,6 +333,11 @@ PBApplication class >> uniqueInstance [
 PBApplication class >> writePythonHooksFile [
 	self pythonHooksFileReference writeStreamDo: [ :stream |
 		stream << self pharoHooksPythonFile ]
+]
+
+{ #category : #'python hooks file' }
+PBApplication class >> writePythonHooksGlobalsFile [
+	self pythonHooksGlobalsFileReference writeStreamDo: [ :stream |  ]
 ]
 
 { #category : #accessing }
