@@ -165,7 +165,7 @@ def notify(obj, notificationId):
 	pharo_hooks_globals.logger.log("PYTHON: Notify " + str(notificationId))
 	data = {}
 	data["id"] = notificationId
-	data["value"] = convert_to_JSON(obj)
+	data["value"] = str(convert_to_JSON(obj))
 	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
 	conn.request("POST", "/notify", json.dumps(data), {
 		"Content-type": "application/json",
@@ -185,19 +185,19 @@ def notify(obj, notificationId):
 # 	conn.getresponse()
 # 	pharo_hooks_globals.logger.log("PYTHON: Finish notify step")
 
-# def notify_error(ex, command):
-# 	pharo_hooks_globals.logger.log("Error on command: " + str(command.command_id()))
-# 	pharo_hooks_globals.logger.log(str(ex))
-# 	data = {}
-# 	data["errMsg"] = str(ex)
-# 	data["id"] = command.command_id()
-# 	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
-# 	conn.request("POST", "/notifyError", json.dumps(data), {
-# 		"Content-type": "application/json",
-# 		"Accept": "text/plain"})
-# 	response = str(conn.getresponse().read().decode())
-# 	pharo_hooks_globals.logger.log(response)
-# 	return json.loads(response)
+ def notify_error(ex, command):
+	pharo_hooks_globals.logger.log("Error on command: " + str(command.command_id()))
+	pharo_hooks_globals.logger.log(str(ex))
+	data = {}
+	data["errMsg"] = str(ex)
+	data["id"] = command.command_id()
+	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
+	conn.request("POST", "/notifyError", json.dumps(data), {
+		"Content-type": "application/json",
+		"Accept": "text/plain"})
+	response = str(conn.getresponse().read().decode())
+	pharo_hooks_globals.logger.log(response)
+	return json.loads(response)
 
 if __name__ == "__main__":
 	##### FLASK API
@@ -226,8 +226,10 @@ if __name__ == "__main__":
 
 	pharo_hooks_globals.pharoPort = args["pharo"]
 	if args["log"]:
+		print("YES LOG")
 		pharo_hooks_globals.logger = Logger()
 	else:
+		print("NO LOG")
 		pharo_hooks_globals.logger = NoLogger()
 	pharo_hooks_globals.pyPort = args["port"]
 	globalCommandList = PythonCommandList()
@@ -366,7 +368,7 @@ PBApplication >> isRunning [
 	^ self handlers allSatisfy: #isRunning
 ]
 
-{ #category : #'logging-Deprecated' }
+{ #category : #logging }
 PBApplication >> log: aLog [
 	self loggingHandler log: aLog
 ]
@@ -391,13 +393,13 @@ PBApplication >> send: aCommand [
 	^ executionHandler sendCommand: aCommand
 ]
 
-{ #category : #accessing }
+{ #category : #'as yet unclassified' }
 PBApplication >> start [
 	self handlers do: #start.
 	self waitInitialization.
 ]
 
-{ #category : #accessing }
+{ #category : #'as yet unclassified' }
 PBApplication >> stop [
 	self handlers select: #notNil thenDo: #stop
 ]
