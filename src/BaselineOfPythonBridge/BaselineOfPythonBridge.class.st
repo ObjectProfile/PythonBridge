@@ -12,7 +12,7 @@ BaselineOfPythonBridge >> baseline: spec [
 		do: [			
 			spec
 				baseline: 'OSSubprocess' 
-				with: [ spec repository: 'github://pharo-contributions/OSSubprocess:v0.1.4/repository' ].
+				with: [ spec repository: 'github://pharo-contributions/OSSubprocess:v1.0.0/repository' ].
 			spec
 				baseline: 'Python3Generator' 
 				with: [ spec repository: 'github://juliendelplanque/Python3Generator:v1.0.0/repository' ].
