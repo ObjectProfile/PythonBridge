@@ -196,7 +196,7 @@ def notify(obj, notificationId):
 # 	conn.getresponse()
 # 	pharo_hooks_globals.logger.log("PYTHON: Finish notify step")
 
- def notify_error(ex, command):
+def notify_error(ex, command):
 	pharo_hooks_globals.logger.log("Error on command: " + str(command.command_id()))
 	pharo_hooks_globals.logger.log(str(ex))
 	data = {}
