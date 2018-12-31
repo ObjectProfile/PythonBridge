@@ -26,3 +26,7 @@ PBApplication do: [
 	PBCF send waitForValue
 	 ]
 ```
+
+# Limitations
+
+- You cannot have two images running at the same time with an open connection to Python. In the future, we will be able to manually set the port.
