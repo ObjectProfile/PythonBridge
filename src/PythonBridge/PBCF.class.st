@@ -7,6 +7,16 @@ Class {
 	#category : #'PythonBridge-Core'
 }
 
+{ #category : #initialization }
+PBCF class >> application [
+	^ self applicationClass uniqueInstance
+]
+
+{ #category : #initialization }
+PBCF class >> applicationClass [
+	^ PBApplication
+]
+
 { #category : #'as yet unclassified' }
 PBCF class >> buildCommand [
 	| command |
@@ -27,10 +37,15 @@ PBCF class >> doesNotUnderstand: aMessage [
 
 { #category : #'instance creation' }
 PBCF class >> newCommandFactory [
-	^ PBCommandFactory new
+	^ self application newCommandFactory
 ]
 
 { #category : #accessing }
 PBCF class >> reset [
 	current := nil
+]
+
+{ #category : #'old api' }
+PBCF class >> send [
+	^ self applicationClass send: self buildCommand
 ]

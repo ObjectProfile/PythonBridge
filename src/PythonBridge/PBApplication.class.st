@@ -274,36 +274,6 @@ PBApplication class >> resetUniqueInstance [
 ]
 
 { #category : #instructions }
-PBApplication class >> retrieveExpression: obj [
-	self assert: self isRunning.
-	^ self uniqueInstance retrieveExpression: obj
-]
-
-{ #category : #instructions }
-PBApplication class >> retrieveExpression: obj bindings: bindings [
-	self assert: self isRunning.
-	^ self uniqueInstance retrieveExpression: obj bindings: bindings
-]
-
-{ #category : #instructions }
-PBApplication class >> retrieveExpression: obj bindings: bindings transformBlock: aBlock [
-	self assert: self isRunning.
-	^ self uniqueInstance retrieveExpression: obj bindings: bindings transformBlock: aBlock
-]
-
-{ #category : #instructions }
-PBApplication class >> retrieveExpression: obj transformBlock: aBlock [
-	self assert: self isRunning.
-	^ self uniqueInstance retrieveExpression: obj transformBlock: aBlock
-]
-
-{ #category : #instructions }
-PBApplication class >> retrieveVariable: varName [
-	self assert: self isRunning.
-	^ self uniqueInstance retrieveVariable: varName
-]
-
-{ #category : #instructions }
 PBApplication class >> send: obj [
 	self assert: self isRunning.
 	^ self uniqueInstance send: obj
@@ -338,6 +308,11 @@ PBApplication class >> writePythonHooksFile [
 { #category : #'python hooks file' }
 PBApplication class >> writePythonHooksGlobalsFile [
 	self pythonHooksGlobalsFileReference writeStreamDo: [ :stream |  ]
+]
+
+{ #category : #accessing }
+PBApplication >> commandFactory [
+	^ PBCF
 ]
 
 { #category : #accessing }
@@ -389,14 +364,18 @@ PBApplication >> loggingHandler [
 	^ loggingHandler
 ]
 
-{ #category : #accessing }
-PBApplication >> processHandler [
-	^ processHandler
+{ #category : #'instance creation' }
+PBApplication >> newCommandFactory [
+	^ PBCommandFactory new
 ]
 
 { #category : #accessing }
-PBApplication >> promiseHandler [
-	^ promiseHandler
+PBApplication >> postInitialization [
+]
+
+{ #category : #accessing }
+PBApplication >> processHandler [
+	^ processHandler
 ]
 
 { #category : #instructions }
@@ -404,10 +383,11 @@ PBApplication >> send: aCommand [
 	^ executionHandler sendCommand: aCommand
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 PBApplication >> start [
 	self handlers do: #start.
 	self waitInitialization.
+	self postInitialization
 ]
 
 { #category : #'as yet unclassified' }
