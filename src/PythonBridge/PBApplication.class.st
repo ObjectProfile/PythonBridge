@@ -311,6 +311,8 @@ PBApplication class >> uniqueInstance [
 
 { #category : #'python hooks file' }
 PBApplication class >> writePythonHooksFile [
+	"Write the necessary python code to properly run the python side"
+	self pythonHooksFileReference deleteIfAbsent: [  ].
 	self pythonHooksFileReference writeStreamDo: [ :stream |
 		stream << self pharoHooksPythonFile ]
 ]
@@ -328,6 +330,12 @@ PBApplication >> commandFactory [
 { #category : #accessing }
 PBApplication >> communicationHandler [
 	^ communicationHandler
+]
+
+{ #category : #accessing }
+PBApplication >> errorMessage [
+	"Fetch the error message from the stderr stream, from the processhander"
+	^ processHandler process stderrStream contents
 ]
 
 { #category : #handlers }
@@ -413,4 +421,9 @@ PBApplication >> waitInitialization [
 				ifTrue: [ ^ self ]
 				ifFalse: [ (Delay forMilliseconds: 500) wait ] ].
 	Error signal: 'Python application initialization failed!'
+	"
+	Print the result of executing the following line:
+	
+	self errorMessage
+	"
 ]
