@@ -34,6 +34,8 @@ PBApplication do: [
 	 ]
 ```
 
+The expression given above evaluate the expression `1 + 2` within python, and return the value to Pharo.
+
 # Limitations
 
 - You cannot have two images running at the same time with an open connection to Python. In the future, we will be able to manually set the port.
