@@ -14,6 +14,9 @@ BaselineOfPythonBridge >> baseline: spec [
 				baseline: 'OSSubprocess' 
 				with: [ spec repository: 'github://pharo-contributions/OSSubprocess:v0.1.4/repository' ].
 			spec
+				baseline: 'Python3Generator' 
+				with: [ spec repository: 'github://juliendelplanque/Python3Generator/repository' ].
+			spec
 				package: 'PythonBridge' with: [ spec requires: 'OSSubprocess' ]
 			 ]
 ]
