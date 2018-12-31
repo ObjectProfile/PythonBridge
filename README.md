@@ -1,7 +1,7 @@
 # PythonBridge
  Bridge between smalltalk and python
 
-# Instalation
+# Installation
 
 First, you need to install `PythonBridge` within Pharo (known to work for Pharo 7):
 ```Smalltalk
@@ -11,6 +11,13 @@ Metacello new
     load.
 ``` 
 
+Second, you need to execute the following in a Pharo playground:
+`PBApplication ensurePythonHooksFile`
+This instruction will write the necessary file in the _folder containing the Pharo image_.
+
+Third and final step, you need to run the following command within a terminal:
+`pipenv install`
+Not that this command may take a few minutes.
 
 
 # Simple test
