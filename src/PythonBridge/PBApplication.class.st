@@ -13,6 +13,16 @@ Class {
 	#category : #'PythonBridge-Core'
 }
 
+{ #category : #'start-stop' }
+PBApplication class >> do: aBlockClosure [ 
+	| retVal |
+	self isRunning ifTrue: [ ^ aBlockClosure value ].
+	[
+		self start.
+		retVal := aBlockClosure value ] ensure: [ self stop ].
+	^ retVal
+]
+
 { #category : #'python hooks file' }
 PBApplication class >> ensurePythonHooksFile [
 	self pythonHooksFileReference exists ifFalse: [ self writePythonHooksFile ].
