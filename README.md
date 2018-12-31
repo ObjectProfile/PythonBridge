@@ -11,3 +11,18 @@ Metacello new
     load.
 ``` 
 
+
+
+# Simple test
+
+Evaluating the following code in a playground should return `3`:
+```Smalltalk
+PBApplication do: [ 
+	PBCF << (P3GBinaryOperator new
+						left: 1;
+						right: 2;
+						operator: $+;
+						yourself).
+	PBCF send waitForValue
+	 ]
+```
