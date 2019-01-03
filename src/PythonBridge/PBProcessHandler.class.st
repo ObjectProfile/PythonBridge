@@ -63,11 +63,6 @@ PBProcessHandler >> newProcess [
 ]
 
 { #category : #accessing }
-PBProcessHandler >> process [
-	^ process 
-]
-
-{ #category : #accessing }
 PBProcessHandler >> start [
 	PBApplication ensurePythonHooksFile.
 	process := self newProcess.
