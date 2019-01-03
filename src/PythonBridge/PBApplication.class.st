@@ -13,10 +13,25 @@ Class {
 	#category : #'PythonBridge-Core'
 }
 
+{ #category : #'start-stop' }
+PBApplication class >> do: aBlockClosure [ 
+	| retVal |
+	self isRunning ifTrue: [ ^ aBlockClosure value ].
+	[
+		self start.
+		retVal := aBlockClosure value ] ensure: [ self stop ].
+	^ retVal
+]
+
 { #category : #'python hooks file' }
 PBApplication class >> ensurePythonHooksFile [
+	"
+	PBApplication ensurePythonHooksFile
+	"
+
 	self pythonHooksFileReference exists ifFalse: [ self writePythonHooksFile ].
-	self pythonHooksGlobalsFileReference exists ifFalse: [ self writePythonHooksGlobalsFile ]
+	self pythonHooksGlobalsFileReference exists ifFalse: [ self writePythonHooksGlobalsFile ].
+	self pythonPipenvFileReference exists ifFalse: [ self writePythonPipenvFile ].
 ]
 
 { #category : #testing }
@@ -186,7 +201,7 @@ def notify(obj, notificationId):
 # 	conn.getresponse()
 # 	pharo_hooks_globals.logger.log("PYTHON: Finish notify step")
 
- def notify_error(ex, command):
+def notify_error(ex, command):
 	pharo_hooks_globals.logger.log("Error on command: " + str(command.command_id()))
 	pharo_hooks_globals.logger.log(str(ex))
 	data = {}
@@ -247,6 +262,30 @@ if __name__ == "__main__":
 ]
 
 { #category : #'python hooks file' }
+PBApplication class >> pipenvFile [ 
+	^ '[[source]]
+
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+name = "pypi"
+
+
+[packages]
+
+numpy = "*"
+flask = "*"
+
+
+[dev-packages]
+
+
+
+[requires]
+
+python_version = "3.6"'
+]
+
+{ #category : #'python hooks file' }
 PBApplication class >> pythonHooksFileReference [
 	^ 'pharo_hooks.py' asFileReference
 ]
@@ -254,6 +293,11 @@ PBApplication class >> pythonHooksFileReference [
 { #category : #'python hooks file' }
 PBApplication class >> pythonHooksGlobalsFileReference [
 	^ 'pharo_hooks_globals.py' asFileReference
+]
+
+{ #category : #'python hooks file' }
+PBApplication class >> pythonPipenvFileReference [
+	^ 'Pipfile' asFileReference
 ]
 
 { #category : #'python hooks file' }
@@ -301,6 +345,8 @@ PBApplication class >> uniqueInstance [
 
 { #category : #'python hooks file' }
 PBApplication class >> writePythonHooksFile [
+	"Write the necessary python code to properly run the python side"
+	self pythonHooksFileReference deleteIfAbsent: [  ].
 	self pythonHooksFileReference writeStreamDo: [ :stream |
 		stream << self pharoHooksPythonFile ]
 ]
@@ -308,6 +354,14 @@ PBApplication class >> writePythonHooksFile [
 { #category : #'python hooks file' }
 PBApplication class >> writePythonHooksGlobalsFile [
 	self pythonHooksGlobalsFileReference writeStreamDo: [ :stream |  ]
+]
+
+{ #category : #'python hooks file' }
+PBApplication class >> writePythonPipenvFile [
+	"Write the necessary python code to properly run the python side"
+	self pythonPipenvFileReference deleteIfAbsent: [  ].
+	self pythonPipenvFileReference writeStreamDo: [ :stream |
+		stream << self pipenvFile ]
 ]
 
 { #category : #accessing }
@@ -318,6 +372,12 @@ PBApplication >> commandFactory [
 { #category : #accessing }
 PBApplication >> communicationHandler [
 	^ communicationHandler
+]
+
+{ #category : #accessing }
+PBApplication >> errorMessage [
+	"Fetch the error message from the stderr stream, from the processhander"
+	^ processHandler process stderrStream contents
 ]
 
 { #category : #handlers }
@@ -403,4 +463,9 @@ PBApplication >> waitInitialization [
 				ifTrue: [ ^ self ]
 				ifFalse: [ (Delay forMilliseconds: 500) wait ] ].
 	Error signal: 'Python application initialization failed!'
+	"
+	Print the result of executing the following line:
+	
+	self errorMessage
+	"
 ]

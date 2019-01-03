@@ -65,7 +65,7 @@ PBObject >> pythonVariable [
 	^ pythonVariable
 ]
 
-{ #category : #writing }
+{ #category : #'as yet unclassified' }
 PBObject >> writePython3On: aStream [
 	pythonVariable writePython3On: aStream
 ]
