@@ -2,8 +2,12 @@ language: smalltalk
 
 python:
   - '3.6'
+env:
+  global:
+    - PIPENV_VENV_IN_PROJECT=1
 install:
   - 'pip install pipenv'
+  - 'pipenv install'
   
 os:
   - osx
