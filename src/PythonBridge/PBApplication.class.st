@@ -52,6 +52,16 @@ PBApplication class >> ensurePythonBridgeSymlink [
 	
 ]
 
+{ #category : #'pipenv setup' }
+PBApplication class >> installPipenvEnvironment [
+	OSSUnixSubprocess new
+				command: '/bin/bash';
+				arguments: (Array 
+									with: (self repositoryFileReference / 'install_env.sh') fullName);
+				terminateOnShutdown;
+				runAndWaitOnExitDo: [ :command | ^ self ].
+]
+
 { #category : #testing }
 PBApplication class >> isRunning [
 	^ uniqueInstance notNil and: [ uniqueInstance isRunning ]
