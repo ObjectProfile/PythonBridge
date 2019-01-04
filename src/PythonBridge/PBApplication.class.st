@@ -16,6 +16,8 @@ Class {
 { #category : #'python hooks file' }
 PBApplication class >> createSymlinkFolder [
 	| symlinkRef |
+	Transcript show: ('Repo: ' , self repositoryFileReference fullName); cr.
+	Transcript show: ('WD: ' , '.' asFileReference fullName); cr.
 	symlinkRef := self repositoryName asFileReference.
 	symlinkRef exists ifFalse: [ 
 		self createSymlinkFor: self repositoryFileReference on: symlinkRef ]
