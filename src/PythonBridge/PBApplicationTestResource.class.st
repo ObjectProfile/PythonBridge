@@ -11,7 +11,7 @@ PBApplicationTestResource >> application [
 
 { #category : #initialization }
 PBApplicationTestResource >> setUp [
-	super initialize.
+	super setUp.
 	self application stop.
 	self application start
 ]
