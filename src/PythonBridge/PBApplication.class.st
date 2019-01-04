@@ -71,7 +71,10 @@ PBApplication class >> isRunning [
 PBApplication class >> repositoryFileReference [
 	^ (IceRepository registry 
 			detect: [ :each | each includesPackageNamed: self repositoryName ] 
-			ifNone: [ self error: 'Please add a clone of this project to Iceberg to access to the resources' ]) location
+			ifNone: [ 
+				self inform: 'Please add a clone of this project to Iceberg to access to the resources'.
+				"For travis!"
+				^ '.' asFileReference ]) location
 ]
 
 { #category : #'python hooks file' }
