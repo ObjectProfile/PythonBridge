@@ -15,7 +15,10 @@ Class {
 
 { #category : #'python hooks file' }
 PBApplication class >> createSymlinkFolder [
-	self createSymlinkFor: self repositoryFileReference on: self repositoryName asFileReference
+	| symlinkRef |
+	symlinkRef := self repositoryName asFileReference.
+	symlinkRef exists ifFalse: [ 
+		self createSymlinkFor: self repositoryFileReference on: symlinkRef ]
 ]
 
 { #category : #'python hooks file' }
@@ -38,6 +41,15 @@ PBApplication class >> do: aBlockClosure [
 		self start.
 		retVal := aBlockClosure value ] ensure: [ self stop ].
 	^ retVal
+]
+
+{ #category : #'python hooks file' }
+PBApplication class >> ensurePythonBridgeSymlink [
+	| symlinkRef |
+	symlinkRef := (self repositoryFileReference / 'PythonBridge').
+	symlinkRef exists ifFalse: [ 
+		self createSymlinkFor: PBApplication repositoryFileReference on: symlinkRef ].
+	
 ]
 
 { #category : #testing }

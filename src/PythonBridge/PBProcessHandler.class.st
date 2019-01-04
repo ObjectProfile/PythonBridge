@@ -70,6 +70,8 @@ PBProcessHandler >> process [
 
 { #category : #accessing }
 PBProcessHandler >> start [
+	self application class createSymlinkFolder.
+	self application class ensurePythonBridgeSymlink.
 	process := self newProcess.
 	process run
 ]
