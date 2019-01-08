@@ -47,5 +47,5 @@ PBCF class >> reset [
 
 { #category : #'old api' }
 PBCF class >> send [
-	^ self applicationClass send: self buildCommand
+	^ self application send: self buildCommand
 ]

@@ -28,3 +28,15 @@ PBLog >> message [
 PBLog >> message: anObject [
 	message := anObject
 ]
+
+{ #category : #printing }
+PBLog >> printOn: str [
+	message
+		ifNil: [ super printOn: str ]
+		ifNotNil: [
+			str 
+				<< self class name; 
+				<< ': ';
+				<< message;
+				cr ]
+]

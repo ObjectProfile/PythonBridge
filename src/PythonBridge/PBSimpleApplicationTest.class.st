@@ -1,6 +1,9 @@
 Class {
 	#name : #PBSimpleApplicationTest,
 	#superclass : #TestCase,
+	#instVars : [
+		'commandFactory'
+	],
 	#category : #'PythonBridge-Tests'
 }
 
@@ -9,27 +12,65 @@ PBSimpleApplicationTest class >> resources [
 	^ super resources , (Array with: PBApplicationTestResource)
 ]
 
-{ #category : #tests }
-PBSimpleApplicationTest >> setUp [
-	super setUp.
-	PBApplication isRunning ifFalse: [ PBApplication start ]. 
-	PBCF reset
+{ #category : #initialization }
+PBSimpleApplicationTest >> app [
+	^ self application
+]
+
+{ #category : #initialization }
+PBSimpleApplicationTest >> application [
+	^ PBApplicationTestResource current application
+]
+
+{ #category : #initialization }
+PBSimpleApplicationTest >> cf [
+	^ self commandFactory
+]
+
+{ #category : #initialization }
+PBSimpleApplicationTest >> commandFactory [
+	^ commandFactory ifNil: [ commandFactory := self application newCommandFactory ]
 ]
 
 { #category : #tests }
-PBSimpleApplicationTest >> tearDown [
-	super tearDown.
-	PBCF reset
+PBSimpleApplicationTest >> testDoubleRetrieveValue [
+	| promise |
+	self cf << (P3GBinaryOperator new
+						left: 1;
+						right: 2;
+						operator: $+;
+						yourself).
+	promise := self cf send.
+	self assert: promise waitForValue equals: 3.
+	self cf << (P3GBinaryOperator new
+						left: 3;
+						right: 4;
+						operator: $*;
+						yourself).
+	promise := self cf send.
+	self assert: promise waitForValue equals: 12
 ]
 
 { #category : #tests }
 PBSimpleApplicationTest >> testSimpleRetrieveSameValue [
 	| promise |
-	PBCF << (P3GBinaryOperator new
+	self cf << (P3GBinaryOperator new
 						left: 1;
 						right: 2;
 						operator: $+;
 						yourself).
-	promise := PBApplication send: PBCF buildCommand.
+	promise := self cf send.
 	self assert: promise waitForValue equals: 3
+]
+
+{ #category : #tests }
+PBSimpleApplicationTest >> testSimpleRetrieveSameValue2 [
+	| promise |
+	self cf << (P3GBinaryOperator new
+						left: 3;
+						right: 4;
+						operator: $*;
+						yourself).
+	promise := self cf send.
+	self assert: promise waitForValue equals: 12
 ]

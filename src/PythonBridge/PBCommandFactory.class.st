@@ -2,6 +2,7 @@ Class {
 	#name : #PBCommandFactory,
 	#superclass : #Object,
 	#instVars : [
+		'application',
 		'bindingsDictionary',
 		'instructionStream',
 		'command'
@@ -14,6 +15,16 @@ PBCommandFactory >> << aPythonStatement [
 	instructionStream << aPythonStatement
 ]
 
+{ #category : #accessing }
+PBCommandFactory >> application [
+	^ application
+]
+
+{ #category : #accessing }
+PBCommandFactory >> application: anObject [
+	application := anObject
+]
+
 { #category : #streaming }
 PBCommandFactory >> bindingAt: varName put: anObject [
 	bindingsDictionary at: varName put: anObject
@@ -21,17 +32,19 @@ PBCommandFactory >> bindingAt: varName put: anObject [
 
 { #category : #'as yet unclassified' }
 PBCommandFactory >> buildCommand [
-	^ command
-		instructions: self instructionsWithNotifyAtEnd;
-		bindings: bindingsDictionary associations;
-		yourself
+	| finishedCommand |
+	finishedCommand := command
+								instructions: self instructionsWithNotifyAtEnd;
+								bindings: bindingsDictionary associations;
+								yourself.
+	self initialize.
+	^ finishedCommand
 ]
 
 { #category : #initialization }
 PBCommandFactory >> initialize [
-	instructionStream := OrderedCollection new writeStream.
-	bindingsDictionary := Dictionary new.
-	command := PBCommand new
+	super initialize.
+	self reset
 ]
 
 { #category : #'as yet unclassified' }
@@ -43,6 +56,18 @@ PBCommandFactory >> instructionsWithNotifyAtEnd [
 		at: instructions size 
 		put: (self setNotifyToInstruction: instructions last).
 	^ instructions
+]
+
+{ #category : #initialization }
+PBCommandFactory >> reset [
+	instructionStream := OrderedCollection new writeStream.
+	bindingsDictionary := Dictionary new.
+	command := PBCommand new
+]
+
+{ #category : #'old api' }
+PBCommandFactory >> send [
+	^ self application send: self buildCommand
 ]
 
 { #category : #initialization }

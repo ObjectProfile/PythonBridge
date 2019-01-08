@@ -51,6 +51,16 @@ PBCommunicationHandler >> pharoPort: anObject [
 ]
 
 { #category : #accessing }
+PBCommunicationHandler >> preventTestForkedPDestroyServer [
+	| env |
+	env := CurrentExecutionEnvironment value.
+	(env isKindOf: TestExecutionEnvironment) ifTrue: [ 
+		env forkedProcesses
+			remove: server process 
+			ifAbsent: [  ] ]
+]
+
+{ #category : #accessing }
 PBCommunicationHandler >> pythonPort [
 	^ pythonPort
 ]
@@ -75,6 +85,7 @@ PBCommunicationHandler >> start [
 	server := ZnServer on: self pharoPort.
 	server debugMode: true.
 	server start.
+	self preventTestForkedPDestroyServer.
 	self
 		assert: server isRunning & server isListening
 		description:

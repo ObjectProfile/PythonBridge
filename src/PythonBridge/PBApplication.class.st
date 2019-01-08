@@ -16,8 +16,6 @@ Class {
 { #category : #'python hooks file' }
 PBApplication class >> createSymlinkFolder [
 	| symlinkRef |
-	Transcript show: ('Repo: ' , self repositoryFileReference fullName); cr.
-	Transcript show: ('WD: ' , '.' asFileReference fullName); cr.
 	symlinkRef := self repositoryName asFileReference.
 	symlinkRef exists ifFalse: [ 
 		self createSymlinkFor: self repositoryFileReference on: symlinkRef ]
@@ -56,6 +54,8 @@ PBApplication class >> ensurePythonBridgeSymlink [
 
 { #category : #'pipenv setup' }
 PBApplication class >> installPipenvEnvironment [
+	self createSymlinkFolder.
+	self ensurePythonBridgeSymlink.
 	OSSUnixSubprocess new
 				command: '/bin/bash';
 				arguments: (Array 
@@ -182,6 +182,8 @@ PBApplication >> loggingHandler [
 { #category : #'instance creation' }
 PBApplication >> newCommandFactory [
 	^ PBCommandFactory new
+		application: self;
+		yourself
 ]
 
 { #category : #accessing }
