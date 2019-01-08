@@ -12,7 +12,7 @@ PBSimpleApplicationTest class >> resources [
 { #category : #tests }
 PBSimpleApplicationTest >> setUp [
 	super setUp.
-	"self timeLimit: 5 seconds."
+	PBApplication isRunning ifFalse: [ PBApplication start ]. 
 	PBCF reset
 ]
 

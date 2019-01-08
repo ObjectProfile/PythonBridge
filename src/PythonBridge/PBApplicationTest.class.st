@@ -5,6 +5,11 @@ Class {
 }
 
 { #category : #running }
+PBApplicationTest >> setUp [
+	PBApplication stop
+]
+
+{ #category : #running }
 PBApplicationTest >> tearDown [
 	PBApplication resetUniqueInstance
 ]
