@@ -1,35 +1,12 @@
 Class {
 	#name : #PBSimpleApplicationTest,
-	#superclass : #TestCase,
-	#instVars : [
-		'commandFactory'
-	],
+	#superclass : #PBTestCase,
 	#category : #'PythonBridge-Tests'
 }
 
 { #category : #accessing }
-PBSimpleApplicationTest class >> resources [
-	^ super resources , (Array with: PBApplicationTestResource)
-]
-
-{ #category : #initialization }
-PBSimpleApplicationTest >> app [
-	^ self application
-]
-
-{ #category : #initialization }
-PBSimpleApplicationTest >> application [
-	^ PBApplicationTestResource current application
-]
-
-{ #category : #initialization }
-PBSimpleApplicationTest >> cf [
-	^ self commandFactory
-]
-
-{ #category : #initialization }
-PBSimpleApplicationTest >> commandFactory [
-	^ commandFactory ifNil: [ commandFactory := self application newCommandFactory ]
+PBSimpleApplicationTest class >> appResource [
+	^ PBApplicationTestResource
 ]
 
 { #category : #tests }
