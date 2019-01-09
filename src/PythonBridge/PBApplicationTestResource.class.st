@@ -25,13 +25,12 @@ PBApplicationTestResource >> applicationClass [
 { #category : #initialization }
 PBApplicationTestResource >> setUp [
 	super setUp.
-	self applicationClass stop.
-	self applicationClass start.
-	application := self applicationClass uniqueInstance.
+	application := self applicationClass new.
+	self application start
 ]
 
 { #category : #initialization }
 PBApplicationTestResource >> tearDown [
-	self applicationClass stop.
+	self application stop.
 	super tearDown.
 ]
