@@ -32,6 +32,6 @@ PBApplicationTestResource >> setUp [
 
 { #category : #initialization }
 PBApplicationTestResource >> tearDown [
-	self application stop.
+	self applicationClass stop.
 	super tearDown.
 ]
