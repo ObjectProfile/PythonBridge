@@ -1,2 +1,4 @@
 /.venv
 /PythonBridge
+/__pycache__
+.DS_Store
