@@ -50,6 +50,16 @@ PBObject >> isCreated [
 	^ pythonVariable notNil
 ]
 
+{ #category : #p3generator }
+PBObject >> isPythonGenerable [
+	^ true
+]
+
+{ #category : #p3generator }
+PBObject >> isPythonValue [
+	^ true
+]
+
 { #category : #'instance creation' }
 PBObject >> newPythonVar [
 	^ ('pb' , UUID new asString36) asP3GIdentifier

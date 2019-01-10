@@ -1,7 +1,7 @@
 Class {
 	#name : #PBTuple,
 	#superclass : #OrderedCollection,
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-P3Generator'
 }
 
 { #category : #writing }
