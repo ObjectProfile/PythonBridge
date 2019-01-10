@@ -52,6 +52,9 @@ PBCommandFactory >> instructionsWithNotifyAtEnd [
 	| instructions |
 	instructions := instructionStream contents.
 	instructions ifEmpty: [ instructions := OrderedCollection with: nil ].
+	instructions last isPythonValue ifFalse: [ 
+		instructions := instructions asOrderedCollection.
+		instructions add: nil ].
 	instructions 
 		at: instructions size 
 		put: (self setNotifyToInstruction: instructions last).

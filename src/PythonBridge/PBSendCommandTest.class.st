@@ -5,8 +5,15 @@ Class {
 }
 
 { #category : #tests }
+PBSendCommandTest >> testSendAssignAsLastMessage [
+	self cf << (#foo asP3GI <- 33).
+	self cfSend.
+	self assert: promise waitForValue equals: nil
+]
+
+{ #category : #tests }
 PBSendCommandTest >> testSendImportAsLastMessage [
-	self cf << nil.
+	self cf << #sys asP3GI import.
 	self cfSend.
 	self assert: promise waitForValue equals: nil
 ]
