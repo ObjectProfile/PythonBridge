@@ -1,13 +1,8 @@
 Class {
 	#name : #PBSimpleApplicationTest,
-	#superclass : #PBTestCase,
+	#superclass : #PBApplicationTest,
 	#category : #'PythonBridge-Tests'
 }
-
-{ #category : #accessing }
-PBSimpleApplicationTest class >> appResource [
-	^ PBApplicationTestResource
-]
 
 { #category : #tests }
 PBSimpleApplicationTest >> testDoubleRetrieveValue [
@@ -26,14 +21,6 @@ PBSimpleApplicationTest >> testDoubleRetrieveValue [
 						yourself).
 	promise := self cf send.
 	self assert: promise waitForValue equals: 12
-]
-
-{ #category : #tests }
-PBSimpleApplicationTest >> testSendAndRetrieveNil [
-	| promise |
-	self cf << nil.
-	promise := self cf send.
-	self assert: promise waitForValue equals: nil
 ]
 
 { #category : #tests }

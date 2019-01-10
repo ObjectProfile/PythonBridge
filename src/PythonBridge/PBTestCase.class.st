@@ -2,7 +2,8 @@ Class {
 	#name : #PBTestCase,
 	#superclass : #TestCase,
 	#instVars : [
-		'commandFactory'
+		'commandFactory',
+		'promise'
 	],
 	#category : #'PythonBridge-Tests'
 }
@@ -30,6 +31,11 @@ PBTestCase >> application [
 { #category : #initialization }
 PBTestCase >> cf [
 	^ self commandFactory
+]
+
+{ #category : #initialization }
+PBTestCase >> cfSend [
+	^ promise := self cf send
 ]
 
 { #category : #initialization }
