@@ -29,6 +29,14 @@ PBSimpleApplicationTest >> testDoubleRetrieveValue [
 ]
 
 { #category : #tests }
+PBSimpleApplicationTest >> testSendAndRetrieveNil [
+	| promise |
+	self cf << nil.
+	promise := self cf send.
+	self assert: promise waitForValue equals: nil
+]
+
+{ #category : #tests }
 PBSimpleApplicationTest >> testSimpleRetrieveSameValue [
 	| promise |
 	self cf << (P3GBinaryOperator new
