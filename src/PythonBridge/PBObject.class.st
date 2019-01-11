@@ -36,7 +36,7 @@ PBObject >> basicCreateObjectArgs: posArgs nameArgs: nameArgs [
 	self isCreated ifTrue: [ ^ self ].
 	varName := self newPythonVar.
 	self application commandFactory << (
-		varName <- (self pythonClass callWith: posArgs with: nameArgs)).
+		varName <- (self pythonClass callWith: posArgs with: nameArgs asDictionary)).
 	pythonVariable := varName
 ]
 
