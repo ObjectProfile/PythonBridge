@@ -12,7 +12,7 @@ Class {
 PBBinding class >> key: aKey wrap: anObject [
 	^ self new
 		key: aKey;
-		wrap: anObject;
+		object: anObject;
 		yourself
 ]
 
