@@ -28,6 +28,12 @@ PBTestCase >> application [
 	^ self class appResource current application
 ]
 
+{ #category : #asserting }
+PBTestCase >> assertClass: cls name: aName [
+	self cf << (cls => #__name__).
+	self assert: self cf send waitForValue equals: aName
+]
+
 { #category : #initialization }
 PBTestCase >> cf [
 	^ self commandFactory
