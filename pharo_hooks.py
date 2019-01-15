@@ -132,6 +132,9 @@ def clean_locals_env():
 def convert_to_JSON(obj):
 	return json.dumps(obj)
 
+def convert_from_JSON(string):
+	return json.loads(sting)
+
 #### NOTIFICATION FUNCTIONS
 def notify(obj, notificationId):
 	pharo_hooks_globals.logger.log("PYTHON: Notify " + str(notificationId))
@@ -179,7 +182,10 @@ if __name__ == "__main__":
 	@app.route("/eval", methods=["POST"])
 	def eval_expression():
 		data = request.get_json(force=True)
-		globalCommandList.push_command(EvalCommand(data["commandId"], data["statements"], data["bindings"]))
+		globalCommandList.push_command(EvalCommand(
+										data["commandId"], 
+										data["statements"], 
+										map(convert_from_JSON,data["bindings"])))
 		return "OK"
 
 	@app.route("/status", methods=["GET"])
