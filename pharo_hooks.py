@@ -51,15 +51,6 @@ class EvalCommand:
 	def command_id(self):
 		return self.commandId
 
-class EvalCommandWithPromise(EvalCommand):
-	
-	def execute_using_env(self, env):
-		try:
-			env.update(self.bindings)
-			exec(self.statements, globals(), env)
-		except Exception as err:
-			self.perform_proceed_action(notify_error(err,self))
-
 class Logger():
 	def log(self, msg):
 		print(str(msg), file=sys.stderr)
@@ -132,8 +123,8 @@ def clean_locals_env():
 def convert_to_JSON(obj):
 	return json.dumps(obj)
 
-def convert_from_JSON(string):
-	return json.loads(sting)
+def convert_from_JSON(text):
+	return json.loads(text)
 
 #### NOTIFICATION FUNCTIONS
 def notify(obj, notificationId):
@@ -184,8 +175,8 @@ if __name__ == "__main__":
 		data = request.get_json(force=True)
 		globalCommandList.push_command(EvalCommand(
 										data["commandId"], 
-										data["statements"], 
-										map(convert_from_JSON,data["bindings"])))
+										data["statements"],
+										{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
 		return "OK"
 
 	@app.route("/status", methods=["GET"])
