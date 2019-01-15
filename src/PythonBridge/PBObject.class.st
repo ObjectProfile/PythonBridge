@@ -70,6 +70,11 @@ PBObject >> pythonClass [
 	self subclassResponsibility
 ]
 
+{ #category : #'as yet unclassified' }
+PBObject >> pythonClassName [
+	^ self pythonClass attributeIdentifier name
+]
+
 { #category : #accessing }
 PBObject >> pythonVariable [
 	^ pythonVariable
