@@ -5,6 +5,15 @@ Class {
 }
 
 { #category : #tests }
+PBSendCommandTest >> testAddBinding [
+	| binding |
+	binding := PBBinding wrap: #((2) 3).
+	self cf addBinding: binding.
+	self cf << binding.
+	self assert: self cfSend waitForValue equals: #((2) 3)
+]
+
+{ #category : #tests }
 PBSendCommandTest >> testSendAssignAsLastMessage [
 	self cf << (#foo asP3GI <- 33).
 	self cfSend.

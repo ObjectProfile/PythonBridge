@@ -9,16 +9,24 @@ Class {
 }
 
 { #category : #'instance creation' }
+PBBinding class >> key: aKey wrap: anObject [
+	^ self new
+		key: aKey;
+		wrap: anObject;
+		yourself
+]
+
+{ #category : #'instance creation' }
 PBBinding class >> wrap: anObject [
 	^ self new
-		wrap: anObject;
+		object: anObject;
 		yourself
 ]
 
 { #category : #initialization }
 PBBinding >> initialize [
 	super initialize.
-	key := self newPythonVar
+	key := self newVarName
 ]
 
 { #category : #testing }
@@ -31,9 +39,19 @@ PBBinding >> isPythonValue [
 	^ true
 ]
 
+{ #category : #accessing }
+PBBinding >> key [
+	^ key
+]
+
+{ #category : #accessing }
+PBBinding >> key: anObject [
+	key := anObject
+]
+
 { #category : #'instance creation' }
-PBBinding >> newPythonVar [
-	^ ('pb' , UUID new asString36) asP3GIdentifier
+PBBinding >> newVarName [
+	^ 'pb' , UUID new asString36
 ]
 
 { #category : #accessing }
@@ -46,7 +64,12 @@ PBBinding >> object: anObject [
 	object := anObject
 ]
 
+{ #category : #'instance creation' }
+PBBinding >> pythonVariable [
+	^ key asP3GI
+]
+
 { #category : #testing }
 PBBinding >> writePython3On: aStream [
-	key writePython3On: aStream
+	self pythonVariable writePython3On: aStream
 ]

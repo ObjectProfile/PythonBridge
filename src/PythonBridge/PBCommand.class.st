@@ -26,13 +26,6 @@ PBCommand >> bindingsDictionary [
 ]
 
 { #category : #accessing }
-PBCommand >> decorateTransform: aBlock [
-	| previousBlock |
-	previousBlock := transformBlock.
-	^ transformBlock := [ :obj | aBlock value: (previousBlock value: obj) ]
-]
-
-{ #category : #accessing }
 PBCommand >> id [
 	^ id
 ]

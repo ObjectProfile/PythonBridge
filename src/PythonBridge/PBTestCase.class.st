@@ -34,6 +34,12 @@ PBTestCase >> assertClass: cls name: aName [
 	self assert: self cf send waitForValue equals: aName
 ]
 
+{ #category : #asserting }
+PBTestCase >> assertInstanceClass: obj name: aName [
+	self cf << ((#type asP3GI callWith: (Array with: obj)) => #__name__).
+	self assert: self cf send waitForValue equals: aName
+]
+
 { #category : #initialization }
 PBTestCase >> cf [
 	^ self commandFactory

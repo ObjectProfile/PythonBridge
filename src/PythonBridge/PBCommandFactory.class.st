@@ -5,6 +5,7 @@ Class {
 		'application',
 		'bindingsDictionary',
 		'instructionStream',
+		'transformBlock',
 		'command'
 	],
 	#category : #'PythonBridge-Core'
@@ -13,6 +14,12 @@ Class {
 { #category : #streaming }
 PBCommandFactory >> << aPythonStatement [
 	instructionStream << aPythonStatement
+]
+
+{ #category : #streaming }
+PBCommandFactory >> addBinding: aBinding [
+	bindingsDictionary at: aBinding pythonVariable name put: aBinding object.
+	^ aBinding
 ]
 
 { #category : #accessing }
@@ -27,7 +34,8 @@ PBCommandFactory >> application: anObject [
 
 { #category : #streaming }
 PBCommandFactory >> bindingAt: varName put: anObject [
-	bindingsDictionary at: varName put: anObject
+	bindingsDictionary at: varName put: anObject.
+	^ PBBinding key: varName wrap: anObject
 ]
 
 { #category : #'as yet unclassified' }
@@ -36,9 +44,17 @@ PBCommandFactory >> buildCommand [
 	finishedCommand := command
 								instructions: self instructionsWithNotifyAtEnd;
 								bindings: bindingsDictionary associations;
+								transformBlock: transformBlock;
 								yourself.
 	self initialize.
 	^ finishedCommand
+]
+
+{ #category : #accessing }
+PBCommandFactory >> decorateTransform: aBlock [
+	| previousBlock |
+	previousBlock := transformBlock.
+	^ transformBlock := [ :obj | aBlock value: (previousBlock value: obj) ]
 ]
 
 { #category : #initialization }
@@ -65,7 +81,8 @@ PBCommandFactory >> instructionsWithNotifyAtEnd [
 PBCommandFactory >> reset [
 	instructionStream := OrderedCollection new writeStream.
 	bindingsDictionary := Dictionary new.
-	command := PBCommand new
+	command := PBCommand new.
+	transformBlock := #yourself
 ]
 
 { #category : #'old api' }
@@ -77,4 +94,14 @@ PBCommandFactory >> send [
 PBCommandFactory >> setNotifyToInstruction: aP3gInstruction [
 	^ 'notify' asP3GIdentifier 
 			callWith: (Array with: aP3gInstruction with: command id)
+]
+
+{ #category : #accessing }
+PBCommandFactory >> transformBlock [
+	^ transformBlock
+]
+
+{ #category : #accessing }
+PBCommandFactory >> transformBlock: anObject [
+	transformBlock := anObject
 ]

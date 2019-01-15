@@ -7,6 +7,16 @@ Class {
 	#category : #'PythonBridge-Core'
 }
 
+{ #category : #'as yet unclassified' }
+PBCF class >> << aPythonStatement [
+	^ self current << aPythonStatement
+]
+
+{ #category : #'as yet unclassified' }
+PBCF class >> addBinding: aBinding [
+	^ self current addBinding: aBinding
+]
+
 { #category : #initialization }
 PBCF class >> application [
 	^ self applicationClass uniqueInstance
@@ -15,6 +25,11 @@ PBCF class >> application [
 { #category : #initialization }
 PBCF class >> applicationClass [
 	^ PBApplication
+]
+
+{ #category : #'as yet unclassified' }
+PBCF class >> bindingAt: varName put: anObject [
+	^ self current bindingAt: varName put: anObject
 ]
 
 { #category : #'as yet unclassified' }
