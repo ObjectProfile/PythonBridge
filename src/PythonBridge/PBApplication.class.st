@@ -39,7 +39,9 @@ PBApplication class >> do: aBlockClosure [
 	self isRunning ifTrue: [ ^ aBlockClosure value ].
 	[
 		self start.
-		retVal := aBlockClosure value ] ensure: [ self stop ].
+		retVal := aBlockClosure value.
+		KCF << nil.
+		KCF send waitForValue. ] ensure: [ self stop ].
 	^ retVal
 ]
 
@@ -99,7 +101,7 @@ PBApplication class >> send: obj [
 	^ self uniqueInstance send: obj
 ]
 
-{ #category : #instructions }
+{ #category : #'start-stop' }
 PBApplication class >> start [
 	self isRunning ifTrue: [ Error signal: 'Keras already running.' ].
 	self stop.
@@ -107,7 +109,7 @@ PBApplication class >> start [
 	uniqueInstance start
 ]
 
-{ #category : #instructions }
+{ #category : #'start-stop' }
 PBApplication class >> stop [
 	uniqueInstance ifNotNil: [ 
 		uniqueInstance stop. ].
