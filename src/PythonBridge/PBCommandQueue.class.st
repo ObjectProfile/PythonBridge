@@ -6,7 +6,7 @@ Class {
 		'innerCollection',
 		'executionHandler'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Execution'
 }
 
 { #category : #accessing }
@@ -67,6 +67,11 @@ PBCommandQueue >> finishCommandId: id [
 			self log: (PBErrorLog message: 'Out of sync command queue. Pharo is delayed.') ]
 		ifFalse: [ self log: (PBErrorLog message: 'Out of sync command queue. Python is delayed.') ].
 	^ false
+]
+
+{ #category : #accessing }
+PBCommandQueue >> getCommand: aCommandId [
+	^ innerCollection detect: [ :command | command id = aCommandId ]
 ]
 
 { #category : #initialization }

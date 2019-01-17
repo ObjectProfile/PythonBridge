@@ -97,8 +97,8 @@ PBCommunicationHandler >> start [
 				routes 
 					detect: [ :route | req uri asString = route key ] 
 					ifFound: [ :route | | ans |
-						ans := (route value value: (self decode: req)) class.
-						ans = ZnResponse 
+						ans := (route value value: (self decode: req)).
+						ans class = ZnResponse 
 							ifTrue: [ ans ]
 							ifFalse: [ ZnResponse noContent ] ]
 					ifNone: [ ZnResponse noContent ]  ]

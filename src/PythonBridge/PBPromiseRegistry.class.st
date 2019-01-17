@@ -5,7 +5,7 @@ Class {
 		'promiseTable',
 		'semaphore'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Execution'
 }
 
 { #category : #adding }

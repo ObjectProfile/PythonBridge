@@ -1,7 +1,7 @@
 Class {
 	#name : #PBErrorLog,
 	#superclass : #PBLog,
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Logs'
 }
 
 { #category : #testing }

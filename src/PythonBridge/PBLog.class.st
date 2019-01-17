@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'message'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Logs'
 }
 
 { #category : #accessing }

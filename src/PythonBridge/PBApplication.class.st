@@ -10,7 +10,7 @@ Class {
 	#classInstVars : [
 		'uniqueInstance'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Global'
 }
 
 { #category : #'python hooks file' }

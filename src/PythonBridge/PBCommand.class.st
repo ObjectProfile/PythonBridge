@@ -7,7 +7,7 @@ Class {
 		'bindings',
 		'transformBlock'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Execution'
 }
 
 { #category : #accessing }

@@ -8,7 +8,7 @@ Class {
 		'transformBlock',
 		'command'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Execution'
 }
 
 { #category : #streaming }

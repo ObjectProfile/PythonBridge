@@ -4,7 +4,7 @@ Class {
 	#classInstVars : [
 		'current'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Global'
 }
 
 { #category : #'as yet unclassified' }

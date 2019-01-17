@@ -6,7 +6,7 @@ Class {
 		'serializer',
 		'promiseRegistry'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Execution'
 }
 
 { #category : #'private protocol' }
@@ -42,15 +42,31 @@ PBExecutionHandler >> initialize [
 
 { #category : #initialization }
 PBExecutionHandler >> initializeHandler [
-	self communicationHandler 
-		addRoute: '/notify' 
-		block: [ :dict | 
-			dict 
-				at: #id 
-				ifPresent: [ :id |
-					self updatePromiseId: id with: (self deserialize: (dict at: #value)) ]
-				ifAbsent: [ 
-					self application log: (PBErrorLog message: 'Notify for missing promise.') ] ]
+	self communicationHandler
+		addRoute: '/notify' block: [ :dict | self notifyHandler: dict ];
+		addRoute: '/notifyError' block: [ :dict | self notifyErrorHandler: dict ]
+]
+
+{ #category : #initialization }
+PBExecutionHandler >> notifyErrorHandler: dict [
+	| error |
+	error := PBPythonError new
+					application: self application;
+					command: (commandQueue getCommand: (dict at: #id));
+					errorMessage: (dict at: #errMsg);
+					yourself.
+	self safeTriggerDebugger: error.
+	^ ZnResponse ok: (ZnEntity text: (NeoJSONWriter toString: error proceedAction encodedAsDictionary))
+]
+
+{ #category : #initialization }
+PBExecutionHandler >> notifyHandler: dict [
+	^ dict
+		at: #id
+		ifPresent:
+			[ :id | self updatePromiseId: id with: (self deserialize: (dict at: #value)) ]
+		ifAbsent: [ self application
+				log: (PBErrorLog message: 'Notify for missing promise.') ]
 ]
 
 { #category : #'private protocol' }
@@ -69,6 +85,13 @@ PBExecutionHandler >> registerPromiseForCommand: aCommand [
 					yourself.
 	promiseRegistry addPromise: promise.
 	^ promise
+]
+
+{ #category : #'as yet unclassified' }
+PBExecutionHandler >> safeTriggerDebugger: error [
+	[ self triggerDebugger: error ] 
+		ifCurtailed: [ 
+			error proceedAction: error defaultProceedAction ]
 ]
 
 { #category : #'private protocol' }
@@ -94,6 +117,20 @@ PBExecutionHandler >> serializer [
 { #category : #accessing }
 PBExecutionHandler >> serializer: anObject [
 	serializer := anObject
+]
+
+{ #category : #'as yet unclassified' }
+PBExecutionHandler >> triggerDebugger: pythonError [
+	"This method is called when an error rised on Python execution."
+	"Inspect error to review the Command that caused the error.
+	For ignoring error:
+		self proceedAction: P3IgnoreAction new
+	For aborting:
+		self proceedAction: P3DropQueueAction new
+	For replacing the command that caused the error:
+		self proceedAction: P3ReplaceCommandAction new newCommand: **Your crafted command**
+	To execute your action you just need to 'Proceed' in the debugger."
+	pythonError signal.
 ]
 
 { #category : #'private protocol' }
