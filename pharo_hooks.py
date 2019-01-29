@@ -139,17 +139,18 @@ def notify(obj, notificationId):
 	conn.getresponse()
 	pharo_hooks_globals.logger.log("PYTHON: Finish notify")
 
-# def notifyStep(obj, notificationId):
-# 	pharo_hooks_globals.logger.log("PYTHON: Notify step " + str(notificationId))
-# 	data = {}
-# 	data["id"] = notificationId
-# 	data["value"] = convert_to_JSON(obj)
-# 	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
-# 	conn.request("POST", "/notifyStep", json.dumps(data), {
-# 		"Content-type": "application/json",
-# 		"Accept": "text/plain"})
-# 	conn.getresponse()
-# 	pharo_hooks_globals.logger.log("PYTHON: Finish notify step")
+def notify_observer(obj, commandId, observerId):
+	pharo_hooks_globals.logger.log("PYTHON: Notify observer " + str(commandId) + " " + str(observerId))
+	data = {}
+	data["commandId"] = commandId
+	data["observerId"] = observerId
+	data["value"] = convert_to_JSON(obj)
+	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
+	conn.request("POST", "/notifyObserver", json.dumps(data), {
+		"Content-type": "application/json",
+		"Accept": "text/plain"})
+	conn.getresponse()
+	pharo_hooks_globals.logger.log("PYTHON: Finish notify observer")
 
 def notify_error(ex, command):
 	pharo_hooks_globals.logger.log("Error on command: " + str(command.command_id()))
