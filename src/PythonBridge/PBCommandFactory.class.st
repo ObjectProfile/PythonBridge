@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'application',
 		'bindingsDictionary',
+		'observers',
 		'instructionStream',
 		'transformBlock',
 		'command'
@@ -16,10 +17,16 @@ PBCommandFactory >> << aPythonStatement [
 	instructionStream << aPythonStatement
 ]
 
-{ #category : #streaming }
+{ #category : #bindings }
 PBCommandFactory >> addBinding: aBinding [
 	bindingsDictionary at: aBinding pythonVariable name put: aBinding object.
 	^ aBinding
+]
+
+{ #category : #observers }
+PBCommandFactory >> addObserver: anObserver [
+	observers add: anObserver.
+	^ anObserver
 ]
 
 { #category : #accessing }
@@ -32,18 +39,24 @@ PBCommandFactory >> application: anObject [
 	application := anObject
 ]
 
-{ #category : #streaming }
+{ #category : #bindings }
 PBCommandFactory >> bindingAt: varName put: anObject [
 	bindingsDictionary at: varName put: anObject.
 	^ PBBinding key: varName wrap: anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #bindings }
+PBCommandFactory >> bindingWrap: anObject [
+	^ self addBinding: (PBBinding wrap: anObject)
+]
+
+{ #category : #send }
 PBCommandFactory >> buildCommand [
 	| finishedCommand |
 	finishedCommand := command
 								instructions: self instructionsWithNotifyAtEnd;
 								bindings: bindingsDictionary associations;
+								observers: observers;
 								transformBlock: transformBlock;
 								yourself.
 	self initialize.
@@ -63,7 +76,7 @@ PBCommandFactory >> initialize [
 	self reset
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 PBCommandFactory >> instructionsWithNotifyAtEnd [
 	| instructions |
 	instructions := instructionStream contents.
@@ -77,20 +90,30 @@ PBCommandFactory >> instructionsWithNotifyAtEnd [
 	^ instructions
 ]
 
+{ #category : #observers }
+PBCommandFactory >> observerFromCallback: aBlock [
+	| observer |
+	observer := (PBObserver callback: aBlock)
+						command: command;
+						yourself.
+	^ self addObserver: observer
+]
+
 { #category : #initialization }
 PBCommandFactory >> reset [
 	instructionStream := OrderedCollection new writeStream.
 	bindingsDictionary := Dictionary new.
+	observers := OrderedCollection new.
 	command := PBCommand new.
 	transformBlock := #yourself
 ]
 
-{ #category : #'old api' }
+{ #category : #send }
 PBCommandFactory >> send [
 	^ self sendCommand
 ]
 
-{ #category : #'old api' }
+{ #category : #send }
 PBCommandFactory >> sendCommand [
 	^ self application send: self buildCommand
 ]

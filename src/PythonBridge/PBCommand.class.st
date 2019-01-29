@@ -5,6 +5,7 @@ Class {
 		'id',
 		'instructions',
 		'bindings',
+		'observers',
 		'promise',
 		'transformBlock'
 	],
@@ -41,6 +42,7 @@ PBCommand >> initialize [
 	super initialize.
 	id := UUID new asString36.
 	bindings := #().
+	observers := #().
 	instructions := OrderedCollection new.
 	transformBlock := #yourself
 ]
@@ -57,7 +59,19 @@ PBCommand >> instructions: anObject [
 
 { #category : #testing }
 PBCommand >> isValid [
-	^ [ self id isString and: [ self bindings allSatisfy: [ :assoc | assoc key isString ] ] ] on: Error do: [ false ]
+	^ [ self id isString and: [ 
+			(self bindings allSatisfy: [ :assoc | assoc key isString ]) and: [ 
+				self observers allSatisfy: [ :obs | obs callback isBlock ] ] ] ] on: Error do: [ false ]
+]
+
+{ #category : #accessing }
+PBCommand >> observers [
+	^ observers
+]
+
+{ #category : #accessing }
+PBCommand >> observers: anObject [
+	observers := anObject
 ]
 
 { #category : #accessing }

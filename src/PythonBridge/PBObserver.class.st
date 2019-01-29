@@ -63,6 +63,11 @@ PBObserver >> pharoNotify: anObject [
 ]
 
 { #category : #'error handling' }
+PBObserver >> pythonNotify [
+	^ self pythonNotify: nil
+]
+
+{ #category : #'error handling' }
 PBObserver >> pythonNotify: anObject [
 	^ #notify_observer asP3GI callWith: (Array with: anObject with: command id with: self id)
 ]

@@ -42,3 +42,11 @@ PBCommandFactoryTest >> testBuildSimpleCommand [
 	instructions := command instructions.
 	self assert: command instructions first positionalArguments first string equals: 'foo'.
 ]
+
+{ #category : #tests }
+PBCommandFactoryTest >> testBuildWithObservers [
+	| command |
+	factory observerFromCallback: [ 32 ].
+	command := factory buildCommand.
+	self assert: command observers first callback value equals: 32.
+]
