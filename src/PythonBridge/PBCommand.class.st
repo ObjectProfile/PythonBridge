@@ -28,6 +28,11 @@ PBCommand >> bindingsDictionary [
 ]
 
 { #category : #accessing }
+PBCommand >> getObserver: observerId [
+	^ observers detect: [ :obs | obs id = observerId ]
+]
+
+{ #category : #accessing }
 PBCommand >> id [
 	^ id
 ]

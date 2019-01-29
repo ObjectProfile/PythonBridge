@@ -32,6 +32,11 @@ PBExecutionHandler >> encodeCommandAsDictionary: aCommand [
 	^ data
 ]
 
+{ #category : #'private protocol' }
+PBExecutionHandler >> getObserverAtCommandId: commandId id: observerId [
+	^ (commandQueue getCommand: commandId) getObserver: observerId
+]
+
 { #category : #initialization }
 PBExecutionHandler >> initialize [
 	super initialize.
@@ -44,10 +49,11 @@ PBExecutionHandler >> initialize [
 PBExecutionHandler >> initializeHandler [
 	self communicationHandler
 		addRoute: '/notify' block: [ :dict | self notifyHandler: dict ];
-		addRoute: '/notifyError' block: [ :dict | self notifyErrorHandler: dict ]
+		addRoute: '/notifyError' block: [ :dict | self notifyErrorHandler: dict ];
+		addRoute: '/notifyObserver' block: [ :dict | self notifyObserverHandler: dict ]
 ]
 
-{ #category : #initialization }
+{ #category : #handlers }
 PBExecutionHandler >> notifyErrorHandler: dict [
 	| error |
 	error := PBPythonError new
@@ -59,7 +65,7 @@ PBExecutionHandler >> notifyErrorHandler: dict [
 	^ ZnResponse ok: (ZnEntity text: (NeoJSONWriter toString: error proceedAction encodedAsDictionary))
 ]
 
-{ #category : #initialization }
+{ #category : #handlers }
 PBExecutionHandler >> notifyHandler: dict [
 	^ dict
 		at: #id
@@ -67,6 +73,13 @@ PBExecutionHandler >> notifyHandler: dict [
 			[ :id | self updatePromiseId: id with: (self deserialize: (dict at: #value)) ]
 		ifAbsent: [ self application
 				log: (PBErrorLog message: 'Notify for missing promise.') ]
+]
+
+{ #category : #handlers }
+PBExecutionHandler >> notifyObserverHandler: dict [
+	self 
+		signalObserver: (self getObserverAtCommandId: (dict at: #commandId) id: (dict at: #observerId)) 
+		withValue: (self deserialize: (dict at: #value))
 ]
 
 { #category : #'private protocol' }
@@ -118,6 +131,11 @@ PBExecutionHandler >> serializer [
 { #category : #accessing }
 PBExecutionHandler >> serializer: anObject [
 	serializer := anObject
+]
+
+{ #category : #'private protocol' }
+PBExecutionHandler >> signalObserver: observer withValue: object [
+	observer pharoNotify: object
 ]
 
 { #category : #'as yet unclassified' }
