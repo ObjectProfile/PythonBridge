@@ -14,6 +14,20 @@ PBSendCommandTest >> testAddBinding [
 ]
 
 { #category : #tests }
+PBSendCommandTest >> testAddObserver [
+	| observer callbackExecuted |
+	callbackExecuted := false.
+	observer := self cf observerFromCallback: [ :obj | 
+		self assert: obj equals: 33.
+		self deny: promise isSignaled.
+		callbackExecuted := true ].
+	self cf << (observer pythonNotify: 33).
+	self cf << 2.
+	self assert: self cfSend waitForValue equals: 2.
+	self assert: callbackExecuted
+]
+
+{ #category : #tests }
 PBSendCommandTest >> testSendAssignAsLastMessage [
 	self cf << (#foo asP3GI <- 33).
 	self cfSend.

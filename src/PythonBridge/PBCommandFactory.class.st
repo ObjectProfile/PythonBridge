@@ -5,16 +5,16 @@ Class {
 		'application',
 		'bindingsDictionary',
 		'observers',
-		'instructionStream',
 		'transformBlock',
-		'command'
+		'command',
+		'instructions'
 	],
 	#category : #'PythonBridge-Execution'
 }
 
 { #category : #streaming }
 PBCommandFactory >> << aPythonStatement [
-	instructionStream << aPythonStatement
+	instructions add: aPythonStatement
 ]
 
 { #category : #bindings }
@@ -78,16 +78,16 @@ PBCommandFactory >> initialize [
 
 { #category : #accessing }
 PBCommandFactory >> instructionsWithNotifyAtEnd [
-	| instructions |
-	instructions := instructionStream contents.
-	instructions ifEmpty: [ instructions := OrderedCollection with: nil ].
-	instructions last isPythonValue ifFalse: [ 
-		instructions := instructions asOrderedCollection.
-		instructions add: nil ].
-	instructions 
-		at: instructions size 
-		put: (self setNotifyToInstruction: instructions last).
-	^ instructions
+	| instructionsCopy |
+	instructionsCopy := instructions copy.
+	instructionsCopy ifEmpty: [ instructionsCopy := OrderedCollection with: nil ].
+	instructionsCopy last isPythonValue ifFalse: [ 
+		instructionsCopy := instructionsCopy asOrderedCollection.
+		instructionsCopy add: nil ].
+	instructionsCopy 
+		at: instructionsCopy size 
+		put: (self setNotifyToInstruction: instructionsCopy last).
+	^ instructionsCopy
 ]
 
 { #category : #observers }
@@ -101,7 +101,7 @@ PBCommandFactory >> observerFromCallback: aBlock [
 
 { #category : #initialization }
 PBCommandFactory >> reset [
-	instructionStream := OrderedCollection new writeStream.
+	instructions := OrderedCollection new.
 	bindingsDictionary := Dictionary new.
 	observers := OrderedCollection new.
 	command := PBCommand new.
