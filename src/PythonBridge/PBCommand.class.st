@@ -5,6 +5,7 @@ Class {
 		'id',
 		'instructions',
 		'bindings',
+		'promise',
 		'transformBlock'
 	],
 	#category : #'PythonBridge-Execution'
@@ -57,6 +58,16 @@ PBCommand >> instructions: anObject [
 { #category : #testing }
 PBCommand >> isValid [
 	^ [ self id isString and: [ self bindings allSatisfy: [ :assoc | assoc key isString ] ] ] on: Error do: [ false ]
+]
+
+{ #category : #accessing }
+PBCommand >> promise [
+	^ promise
+]
+
+{ #category : #accessing }
+PBCommand >> promise: anObject [
+	promise := anObject
 ]
 
 { #category : #'as yet unclassified' }

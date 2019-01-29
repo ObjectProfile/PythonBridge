@@ -83,6 +83,7 @@ PBExecutionHandler >> registerPromiseForCommand: aCommand [
 					id: aCommand id;
 					transformBlock: aCommand transformBlock;
 					yourself.
+	aCommand promise: promise.
 	promiseRegistry addPromise: promise.
 	^ promise
 ]
@@ -124,11 +125,11 @@ PBExecutionHandler >> triggerDebugger: pythonError [
 	"This method is called when an error rised on Python execution."
 	"Inspect error to review the Command that caused the error.
 	For ignoring error:
-		self proceedAction: P3IgnoreAction new
+		pythonError proceedAction: PBIgnore new
 	For aborting:
-		self proceedAction: P3DropQueueAction new
+		pythonError proceedAction: PBDropQueue new
 	For replacing the command that caused the error:
-		self proceedAction: P3ReplaceCommandAction new newCommand: **Your crafted command**
+		pythonError proceedAction: P3ReplaceCommandAction new newCommand: **Your crafted command**
 	To execute your action you just need to 'Proceed' in the debugger."
 	pythonError signal.
 ]

@@ -5,7 +5,7 @@ Class {
 		'object',
 		'key'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Execution'
 }
 
 { #category : #'instance creation' }
@@ -26,7 +26,7 @@ PBBinding class >> wrap: anObject [
 { #category : #initialization }
 PBBinding >> initialize [
 	super initialize.
-	key := self newVarName
+	key := PBUtils newP3VariableName
 ]
 
 { #category : #testing }
@@ -47,11 +47,6 @@ PBBinding >> key [
 { #category : #accessing }
 PBBinding >> key: anObject [
 	key := anObject
-]
-
-{ #category : #'instance creation' }
-PBBinding >> newVarName [
-	^ 'pb' , UUID new asString36
 ]
 
 { #category : #accessing }

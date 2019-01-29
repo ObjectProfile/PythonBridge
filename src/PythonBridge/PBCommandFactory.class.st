@@ -87,6 +87,11 @@ PBCommandFactory >> reset [
 
 { #category : #'old api' }
 PBCommandFactory >> send [
+	^ self sendCommand
+]
+
+{ #category : #'old api' }
+PBCommandFactory >> sendCommand [
 	^ self application send: self buildCommand
 ]
 
