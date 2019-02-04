@@ -4,7 +4,7 @@ import argparse
 import threading
 import json
 import sys
-import pharo_hooks_globals
+from . import pharo_hooks_globals
 
 class ThreadedFlask():
 	def __init__(self, flaskApp, port):
