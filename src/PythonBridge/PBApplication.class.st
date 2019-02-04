@@ -40,8 +40,8 @@ PBApplication class >> do: aBlockClosure [
 	[
 		self start.
 		retVal := aBlockClosure value.
-		KCF << nil.
-		KCF send waitForValue. ] ensure: [ self stop ].
+		self uniqueInstance commandFactory << nil.
+		self uniqueInstance commandFactory send waitForValue. ] ensure: [ self stop ].
 	^ retVal
 ]
 
@@ -106,6 +106,7 @@ PBApplication class >> start [
 	self isRunning ifTrue: [ Error signal: 'Keras already running.' ].
 	self stop.
 	uniqueInstance := self new.
+	uniqueInstance commandFactory reset.
 	uniqueInstance start
 ]
 
@@ -190,6 +191,7 @@ PBApplication >> newCommandFactory [
 
 { #category : #accessing }
 PBApplication >> postInitialization [
+	
 ]
 
 { #category : #accessing }

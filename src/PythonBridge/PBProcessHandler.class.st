@@ -33,7 +33,7 @@ PBProcessHandler class >> resolvePipenvPath [
 
 { #category : #accessing }
 PBProcessHandler >> arguments [
-	^ { 'run'. 'python'. 'PythonBridge/pharo_hooks.py'. 
+	^ { 'run'. 'python'. 'start_bridge.py'. 
 		'--port'. self communicationHandler pythonPort asString . 
 		'--pharo'. self communicationHandler pharoPort asString .
 		'--log'}
@@ -52,10 +52,12 @@ PBProcessHandler >> isRunning [
 
 { #category : #'instance creation' }
 PBProcessHandler >> newProcess [
+	| workingDirectory |
+	workingDirectory := self application class repositoryFileReference fullName.
 	^ OSSUnixSubprocess new
 				command: self class pipEnvPath;
 				arguments: self arguments;
-				workingDirectory: self application class repositoryFileReference fullName;
+				workingDirectory: workingDirectory;
 				redirectStdin;
 				redirectStdout;
 				redirectStderr;
