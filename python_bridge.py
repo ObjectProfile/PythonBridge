@@ -4,7 +4,7 @@ import argparse
 import threading
 import json
 import sys
-from . import pharo_hooks_globals
+from PythonBridge import bridge_globals, bridge_hooks
 
 class ThreadedFlask():
 	def __init__(self, flaskApp, port):
@@ -128,45 +128,45 @@ def convert_from_JSON(text):
 
 #### NOTIFICATION FUNCTIONS
 def notify(obj, notificationId):
-	pharo_hooks_globals.logger.log("PYTHON: Notify " + str(notificationId))
+	bridge_globals.logger.log("PYTHON: Notify " + str(notificationId))
 	data = {}
 	data["id"] = notificationId
 	data["value"] = convert_to_JSON(obj)
-	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
+	conn = http.client.HTTPConnection("localhost", str(bridge_globals.pharoPort))
 	conn.request("POST", "/notify", json.dumps(data), {
 		"Content-type": "application/json",
 		"Accept": "text/plain"})
 	conn.getresponse()
-	pharo_hooks_globals.logger.log("PYTHON: Finish notify")
+	bridge_globals.logger.log("PYTHON: Finish notify")
 
 def notify_observer(obj, commandId, observerId):
-	pharo_hooks_globals.logger.log("PYTHON: Notify observer " + str(commandId) + " " + str(observerId))
+	bridge_globals.logger.log("PYTHON: Notify observer " + str(commandId) + " " + str(observerId))
 	data = {}
 	data["commandId"] = commandId
 	data["observerId"] = observerId
 	data["value"] = convert_to_JSON(obj)
-	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
+	conn = http.client.HTTPConnection("localhost", str(bridge_globals.pharoPort))
 	conn.request("POST", "/notifyObserver", json.dumps(data), {
 		"Content-type": "application/json",
 		"Accept": "text/plain"})
 	conn.getresponse()
-	pharo_hooks_globals.logger.log("PYTHON: Finish notify observer")
+	bridge_globals.logger.log("PYTHON: Finish notify observer")
 
 def notify_error(ex, command):
-	pharo_hooks_globals.logger.log("Error on command: " + str(command.command_id()))
-	pharo_hooks_globals.logger.log(str(ex))
+	bridge_globals.logger.log("Error on command: " + str(command.command_id()))
+	bridge_globals.logger.log(str(ex))
 	data = {}
 	data["errMsg"] = str(ex)
 	data["id"] = command.command_id()
-	conn = http.client.HTTPConnection("localhost", str(pharo_hooks_globals.pharoPort))
+	conn = http.client.HTTPConnection("localhost", str(bridge_globals.pharoPort))
 	conn.request("POST", "/notifyError", json.dumps(data), {
 		"Content-type": "application/json",
 		"Accept": "text/plain"})
 	response = str(conn.getresponse().read().decode())
-	pharo_hooks_globals.logger.log(response)
+	bridge_globals.logger.log(response)
 	return json.loads(response)
 
-if __name__ == "__main__":
+def run_bridge():
 	##### FLASK API
 	app = Flask(__name__)
 	app.use_reloader=False
@@ -194,22 +194,25 @@ if __name__ == "__main__":
     	help="enable logging")
 	args = vars(ap.parse_args())
 
-	pharo_hooks_globals.pharoPort = args["pharo"]
+	bridge_globals.pharoPort = args["pharo"]
 	if args["log"]:
 		print("YES LOG")
-		pharo_hooks_globals.logger = Logger()
+		bridge_globals.logger = Logger()
 	else:
 		print("NO LOG")
-		pharo_hooks_globals.logger = NoLogger()
-	pharo_hooks_globals.pyPort = args["port"]
+		bridge_globals.logger = NoLogger()
+	bridge_globals.pyPort = args["port"]
 	globalCommandList = PythonCommandList()
 	env = clean_locals_env()
 
-	ThreadedFlask(app,int(pharo_hooks_globals.pyPort))
+	ThreadedFlask(app,int(bridge_globals.pyPort))
 
 	while True:
 		command = globalCommandList.consume_command()
-		pharo_hooks_globals.logger.log("PYTHON: Executing command " + command.command_id())
-		pharo_hooks_globals.logger.log("PYTHON: " + command.statements)
+		bridge_globals.logger.log("PYTHON: Executing command " + command.command_id())
+		bridge_globals.logger.log("PYTHON: " + command.statements)
 		command.execute_using_env(env)
-		pharo_hooks_globals.logger.log("PYTHON: Finished command execution")
+		bridge_globals.logger.log("PYTHON: Finished command execution")
+
+if __name__ == "__main__":
+	run_bridge()
