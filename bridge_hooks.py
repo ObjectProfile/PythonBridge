@@ -12,6 +12,9 @@ def convert_to_JSON(obj):
 def convert_from_JSON(text):
 	return json.loads(text)
 
+def observer(commandId, observerId):
+	return lambda obj: notify_observer(obj, commandId, observerId)
+
 #### NOTIFICATION FUNCTIONS
 def notify(obj, notificationId):
 	bridge_globals.logger.log("PYTHON: Notify " + str(notificationId))
