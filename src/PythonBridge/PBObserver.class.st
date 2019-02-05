@@ -1,6 +1,8 @@
 Class {
 	#name : #PBObserver,
 	#superclass : #Object,
+	#traits : 'P3GCallable',
+	#classTraits : 'P3GCallable classTrait',
 	#instVars : [
 		'id',
 		'callback',
@@ -69,5 +71,12 @@ PBObserver >> pythonNotify [
 
 { #category : #'error handling' }
 PBObserver >> pythonNotify: anObject [
-	^ #notify_observer asP3GI callWith: (Array with: anObject with: command id with: self id)
+	^ self callWith: (Array with: anObject)
+]
+
+{ #category : #testing }
+PBObserver >> writePython3On: aStream [
+	(#observer asP3GI callWith: (Array 
+											with: self command id
+											with: self id)) writePython3On: aStream
 ]

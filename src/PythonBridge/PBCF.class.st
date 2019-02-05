@@ -17,6 +17,11 @@ PBCF class >> addBinding: aBinding [
 	^ self current addBinding: aBinding
 ]
 
+{ #category : #'as yet unclassified' }
+PBCF class >> addObserver: anObserver [
+	^ self current addObserver: anObserver
+]
+
 { #category : #initialization }
 PBCF class >> application [
 	^ self applicationClass uniqueInstance
@@ -55,6 +60,11 @@ PBCF class >> newCommandFactory [
 	^ self application newCommandFactory
 ]
 
+{ #category : #'as yet unclassified' }
+PBCF class >> observerFromCallback: aBlock [
+	^ self current observerFromCallback: aBlock
+]
+
 { #category : #accessing }
 PBCF class >> reset [
 	current := nil
@@ -63,4 +73,9 @@ PBCF class >> reset [
 { #category : #'old api' }
 PBCF class >> send [
 	^ self application send: self buildCommand
+]
+
+{ #category : #'as yet unclassified' }
+PBCF class >> transformBlock: aBlock [
+	^ self current transformBlock: aBlock
 ]

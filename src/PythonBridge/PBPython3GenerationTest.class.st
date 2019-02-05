@@ -33,5 +33,5 @@ PBPython3GenerationTest >> testObserverNotify [
 	obs command: PBCommand new.
 	self 
 		assert: (self getPythonCode: (obs pythonNotify: 'foobar')) 
-		equals: 'notify_observer(''foobar'',''' , obs command id , ''',''' , obs id , ''')'
+		equals: 'observer(''' , obs command id , ''',''' , obs id , ''')(''foobar'')'
 ]
