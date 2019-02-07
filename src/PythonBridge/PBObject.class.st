@@ -41,6 +41,17 @@ PBObject >> basicCreateObjectArgs: posArgs nameArgs: nameArgs [
 ]
 
 { #category : #'as yet unclassified' }
+PBObject >> basicCreateObjectExpr: anExpression [
+	| varName |
+	self isCreated ifTrue: [ ^ self ].
+	varName := self newPythonVar.
+	self application commandFactory << (
+		varName <- anExpression).
+	pythonVariable := varName
+	
+]
+
+{ #category : #'as yet unclassified' }
 PBObject >> createObject [
 	self subclassResponsibility
 ]
