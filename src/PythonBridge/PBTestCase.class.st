@@ -35,6 +35,12 @@ PBTestCase >> assertClass: cls name: aName [
 ]
 
 { #category : #asserting }
+PBTestCase >> assertExpression: expr equals: aBlockOrValue [
+	self cf << expr.
+	self assert: self cf send waitForValue equals: aBlockOrValue value
+]
+
+{ #category : #asserting }
 PBTestCase >> assertInstanceClass: obj name: aName [
 	self cf << ((#type asP3GI callWith: (Array with: obj)) => #__name__).
 	self assert: self cf send waitForValue equals: aName
