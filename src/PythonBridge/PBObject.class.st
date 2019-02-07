@@ -57,6 +57,11 @@ PBObject >> createObject [
 ]
 
 { #category : #'as yet unclassified' }
+PBObject >> ensureCreateObject [
+	self isCreated ifFalse: [ self createObject ]
+]
+
+{ #category : #'as yet unclassified' }
 PBObject >> isCreated [
 	^ pythonVariable notNil
 ]
