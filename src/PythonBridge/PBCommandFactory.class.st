@@ -29,6 +29,11 @@ PBCommandFactory >> addObserver: anObserver [
 	^ anObserver
 ]
 
+{ #category : #streaming }
+PBCommandFactory >> append: aPythonStatement [
+	instructions add: aPythonStatement
+]
+
 { #category : #accessing }
 PBCommandFactory >> application [
 	^ application

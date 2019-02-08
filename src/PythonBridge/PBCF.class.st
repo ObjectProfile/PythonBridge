@@ -22,6 +22,11 @@ PBCF class >> addObserver: anObserver [
 	^ self current addObserver: anObserver
 ]
 
+{ #category : #'as yet unclassified' }
+PBCF class >> append: aPythonStatement [
+	^ self current append: aPythonStatement
+]
+
 { #category : #initialization }
 PBCF class >> application [
 	^ self applicationClass uniqueInstance
