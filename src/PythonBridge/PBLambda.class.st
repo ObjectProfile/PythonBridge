@@ -1,6 +1,8 @@
 Class {
 	#name : #PBLambda,
 	#superclass : #P3GGenerable,
+	#traits : 'P3GCallable + P3GBinaryOperationSupport',
+	#classTraits : 'P3GCallable classTrait + P3GBinaryOperationSupport classTrait',
 	#instVars : [
 		'arguments',
 		'expression'
@@ -48,10 +50,11 @@ PBLambda >> expression: anObject [
 
 { #category : #accessing }
 PBLambda >> writePython3On: aStream [
-	aStream << 'lambda '.
+	aStream << '(lambda '.
 	arguments 
 		do: [ :arg | arg writePython3On: aStream ]
 		separatedBy: [ aStream << ', ' ].
 	aStream << ': '.
-	expression writePython3On: aStream
+	expression writePython3On: aStream.
+	aStream << ')'.
 ]

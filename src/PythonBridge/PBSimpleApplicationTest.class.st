@@ -24,6 +24,14 @@ PBSimpleApplicationTest >> testDoubleRetrieveValue [
 ]
 
 { #category : #tests }
+PBSimpleApplicationTest >> testSimpleLambda [
+	self cf << ((PBLambda 
+						argument: #a asP3GI
+						expression: #a asP3GI + 1) callWith: #( 2 )).
+	self assert: self cf send waitForValue equals: 3
+]
+
+{ #category : #tests }
 PBSimpleApplicationTest >> testSimpleRetrieveSameValue [
 	| promise |
 	self cf << (P3GBinaryOperator new
