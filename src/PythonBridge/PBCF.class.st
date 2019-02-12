@@ -43,6 +43,11 @@ PBCF class >> bindingAt: varName put: anObject [
 ]
 
 { #category : #'as yet unclassified' }
+PBCF class >> bindingWrap: anObject [
+	^ self current bindingWrap: anObject
+]
+
+{ #category : #'as yet unclassified' }
 PBCF class >> buildCommand [
 	| command |
 	command := self current buildCommand.
