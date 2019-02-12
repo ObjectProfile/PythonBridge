@@ -98,5 +98,6 @@ PBObject >> pythonVariable [
 
 { #category : #'as yet unclassified' }
 PBObject >> writePython3On: aStream [
+	self assert: self isCreated.
 	pythonVariable writePython3On: aStream
 ]
