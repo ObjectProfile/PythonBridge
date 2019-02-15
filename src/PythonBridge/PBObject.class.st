@@ -9,6 +9,11 @@ Class {
 	#category : #'PythonBridge-Core'
 }
 
+{ #category : #'instance creation' }
+PBObject class >> newPythonVar [
+	^ ('pb' , UUID new asString36) asP3GIdentifier
+]
+
 { #category : #initialization }
 PBObject >> application [
 	^ self applicationClass uniqueInstance
@@ -78,7 +83,7 @@ PBObject >> isPythonValue [
 
 { #category : #'instance creation' }
 PBObject >> newPythonVar [
-	^ ('pb' , UUID new asString36) asP3GIdentifier
+	^ self class newPythonVar
 ]
 
 { #category : #'as yet unclassified' }
