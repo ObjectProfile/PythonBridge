@@ -58,6 +58,7 @@ PBProcessHandler >> newProcess [
 				command: self class pipEnvPath;
 				arguments: self arguments;
 				workingDirectory: workingDirectory;
+				addAllEnvVariablesFromParentWithoutOverride;
 				environmentAt: 'LC_ALL' put: 'en_US.UTF-8';
 				environmentAt: 'LANG' put: 'en_US.UTF-8';
 				redirectStdin;
