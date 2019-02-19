@@ -56,14 +56,17 @@ PBApplication class >> ensurePythonBridgeSymlink [
 
 { #category : #'pipenv setup' }
 PBApplication class >> installPipenvEnvironment [
+	| proc |
 	self createSymlinkFolder.
 	self ensurePythonBridgeSymlink.
-	OSSUnixSubprocess new
+	proc := OSSUnixSubprocess new
 				command: '/bin/bash';
 				arguments: (Array 
 									with: (self repositoryFileReference / 'install_env.sh') fullName);
 				terminateOnShutdown;
-				runAndWaitOnExitDo: [ :command | ^ self ].
+				runAndWait.
+	proc exitStatus = 0 ifFalse: [ 
+		self signalPipenvCreateEnvFailed ]
 ]
 
 { #category : #testing }
@@ -99,6 +102,19 @@ PBApplication class >> resetUniqueInstance [
 PBApplication class >> send: obj [
 	self assert: self isRunning.
 	^ self uniqueInstance send: obj
+]
+
+{ #category : #'pipenv setup' }
+PBApplication class >> signalPipenvCreateEnvFailed [
+	"
+	Python bridge attempt of creating Pipenv environment failed. To attempt to generate the Pipenv
+	environment manually go the project git folder. It may be the PythonBridge, KerasBridge or your
+	Bridge, because each of them has a different Pipfile and Pipenv environment.
+	
+	To remove the current Pipenv environment run in the folder the command: `pipenv --rm`
+	To manually create the Pipenv environment run in the folder the command: `bash install_env.sh`
+	"
+	Error signal: 'Attempt for creating Pipenv environment failed.'
 ]
 
 { #category : #'start-stop' }
