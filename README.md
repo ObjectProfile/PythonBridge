@@ -3,11 +3,11 @@
 
 # Requirements
 
-This project depends on Python3.6 and Pipenv.
+This project depends on Python3.6 (or Python3.7) and Pipenv.
 
 To install Python3.6 follow the instructions on the Python webpage https://www.python.org/downloads/release/python-368/. To verify if you have Python3.6 just run in a terminal `python3.6 --version`, it should print something like `Python 3.6.4`.
 
-To install Pipenv just use the following Pip instruction `pip install pipenv`, though depending on your python installation you may need to call it with `sudo`. To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`. We strongly suggest you to upgrade your pipenv version if it is older that 2018.11.26, because it has important bugfixes and performance improvements. To upgrade it just run `sudo pip install pipenv --upgrade`.
+To install Pipenv just use the following Pip instruction `pip install pipenv`, though depending on your python installation you may need to call it with `sudo`. If the command `pip` is not found, use `pip3` instead. To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`. We strongly suggest you to upgrade your pipenv version if it is older that 2018.11.26, because it has important bugfixes and performance improvements. To upgrade it just run `sudo pip install pipenv --upgrade`.
 
 # Instalation
 
