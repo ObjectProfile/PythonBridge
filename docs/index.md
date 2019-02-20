@@ -10,7 +10,7 @@ permalink: /
 # Talk to Python from Smalltalk, the smalltalk way
 {: .fs-8 }
 
-PythonBridge gives Pharo developers the capability of interacting and reusing any Python library directly from Pharo. The communication between both instances is transparent and most of the compelxity is handled directly by the framework. We want you to develop Smalltalk, not Python.
+PythonBridge gives Pharo developers the capability of interacting and reusing any Python library directly from Pharo. The communication between both instances is transparent and most of the compelxity is handled directly by the framework. We want you to use Python, but develop Smalltalk.
 {: .fs-5 .fw-300 }
 
 [Get started now](#getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/ObjectProfile/PythonBridge){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
