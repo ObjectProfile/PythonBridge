@@ -19,7 +19,7 @@ PythonBridge gives Pharo developers the capability of interacting and reusing an
 
 ## Getting started
 
-### Dependencies
+### Requirements
 
 This project depends on Pharo6.1 (or newer), Python3.6 (or newer) and Pipenv.
 
@@ -29,7 +29,7 @@ To install Python3.6 follow the instructions on the [Python download webpage](ht
 
 To install Pipenv just use the following Pip instruction `pip3 install pipenv`. To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`.
 
-For troubleshooting on the dependencies installation go to our [Installation page](pages/installation) or our [FAQ page](pages/faq).
+For troubleshooting on the dependencies installation go to our [Installation page](pages/installation#troubleshooting).
 
 ### Quick start: Download and install PythonBridge on a clean Pharo
 
