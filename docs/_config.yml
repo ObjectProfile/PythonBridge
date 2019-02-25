@@ -26,8 +26,8 @@ github_username:  ObjectProfile
 # Build settings
 markdown: kramdown
 # theme: minima
-theme: jekyll-theme-architect
-# remote_theme: pmarsceill/just-the-docs
+# theme: jekyll-theme-architect
+remote_theme: pmarsceill/just-the-docs
 
 plugins:
   - jekyll-feed
@@ -46,7 +46,7 @@ baseurl: /PythonBridge
 #   - vendor/gems/
 #   - vendor/ruby/
 
-# search_enabled: true
+search_enabled: true
 aux_links:
   "PythonBridge on GitHub":
     - "//github.com/ObjectProfile/PythonBridge"
