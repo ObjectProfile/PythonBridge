@@ -32,6 +32,8 @@ theme: jekyll-theme-architect
 plugins:
   - jekyll-feed
 
+baseurl: /PythonBridge
+
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
 # to override the default setting.
@@ -44,7 +46,7 @@ plugins:
 #   - vendor/gems/
 #   - vendor/ruby/
 
-search_enabled: true
+# search_enabled: true
 aux_links:
   "PythonBridge on GitHub":
     - "//github.com/ObjectProfile/PythonBridge"
