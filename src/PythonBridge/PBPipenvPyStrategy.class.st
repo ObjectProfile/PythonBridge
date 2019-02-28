@@ -1,28 +1,24 @@
 Class {
-	#name : #PBProcessHandler,
-	#superclass : #PBHandler,
-	#instVars : [
-		'process'
-	],
+	#name : #PBPipenvPyStrategy,
+	#superclass : #PBPyProcessStrategy,
 	#classVars : [
-		'PipEnvPath',
-		'PythonPath'
+		'PipEnvPath'
 	],
 	#category : #'PythonBridge-Core'
 }
 
-{ #category : #'as yet unclassified' }
-PBProcessHandler class >> pipEnvPath [
+{ #category : #accessing }
+PBPipenvPyStrategy class >> pipEnvPath [
 	^ PipEnvPath ifNil: [ PipEnvPath := self resolvePipenvPath ]
 ]
 
-{ #category : #'as yet unclassified' }
-PBProcessHandler class >> pipEnvPath: path [
-	PipEnvPath := path
+{ #category : #accessing }
+PBPipenvPyStrategy class >> pipEnvPath: anObject [
+	PipEnvPath := anObject
 ]
 
 { #category : #'as yet unclassified' }
-PBProcessHandler class >> resolvePipenvPath [
+PBPipenvPyStrategy class >> resolvePipenvPath [
 	^ (OSSUnixSubprocess new
 				command: '/usr/bin/which';
 				arguments: (Array with: 'pipenv');
@@ -33,7 +29,7 @@ PBProcessHandler class >> resolvePipenvPath [
 ]
 
 { #category : #'as yet unclassified' }
-PBProcessHandler class >> signalPipenvNotFound [
+PBPipenvPyStrategy class >> signalPipenvNotFound [
 	"
 	PythonBridge use the unix command `which` to find the route of the `pipenv` command. From Pharo
 	we could not find the route, therefore you have to set it mannualy.
@@ -47,33 +43,19 @@ PBProcessHandler class >> signalPipenvNotFound [
 	Error signal: 'Error: Pipenv command could not be found.'
 ]
 
-{ #category : #accessing }
-PBProcessHandler >> arguments [
+{ #category : #'process spawning' }
+PBPipenvPyStrategy >> arguments [
 	^ { 'run'. 'python'. 'start_bridge.py'. 
-		'--port'. self communicationHandler pythonPort asString . 
-		'--pharo'. self communicationHandler pharoPort asString ".
-		'--log'"}
+		'--port'. self pythonPort asString . 
+		'--pharo'. self pharoPort asString }
 ]
 
-{ #category : #'as yet unclassified' }
-PBProcessHandler >> communicationHandler [
-	^ self application communicationHandler
-]
-
-{ #category : #testing }
-PBProcessHandler >> isRunning [
-	process ifNil: [ ^ false ].
-	^ process isRunning
-]
-
-{ #category : #'instance creation' }
-PBProcessHandler >> newProcess [
-	| workingDirectory |
-	workingDirectory := self application class repositoryFileReference fullName.
+{ #category : #'process spawning' }
+PBPipenvPyStrategy >> newProcess [
 	^ OSSUnixSubprocess new
 				command: self class pipEnvPath;
 				arguments: self arguments;
-				workingDirectory: workingDirectory;
+				workingDirectory: self workingDirectory fullName;
 				addAllEnvVariablesFromParentWithoutOverride;
 				environmentAt: 'LC_ALL' put: 'en_US.UTF-8';
 				environmentAt: 'LANG' put: 'en_US.UTF-8';
@@ -84,21 +66,14 @@ PBProcessHandler >> newProcess [
 				yourself
 ]
 
-{ #category : #accessing }
-PBProcessHandler >> process [
-	^ process 
-]
-
-{ #category : #accessing }
-PBProcessHandler >> start [
-	self application class createSymlinkFolder.
-	self application class ensurePythonBridgeSymlink.
+{ #category : #'process spawning' }
+PBPipenvPyStrategy >> start [
 	process := self newProcess.
 	process run
 ]
 
-{ #category : #accessing }
-PBProcessHandler >> stop [
+{ #category : #'process spawning' }
+PBPipenvPyStrategy >> stop [
 	process ifNil: [ ^ self ].
 	process isRunning ifTrue: [ process terminate ].
 	process closeAndCleanStreams

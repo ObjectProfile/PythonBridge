@@ -7,8 +7,32 @@ Class {
 		'routes',
 		'server'
 	],
+	#classVars : [
+		'PharoPortGenerator',
+		'PythonPortGenerator'
+	],
 	#category : #'PythonBridge-Core'
 }
+
+{ #category : #accessing }
+PBCommunicationHandler class >> pharoPortGenerator [
+	^ PharoPortGenerator
+]
+
+{ #category : #accessing }
+PBCommunicationHandler class >> pharoPortGenerator: anObject [
+	PharoPortGenerator := anObject
+]
+
+{ #category : #accessing }
+PBCommunicationHandler class >> pythonPortGenerator [
+	^ PythonPortGenerator
+]
+
+{ #category : #accessing }
+PBCommunicationHandler class >> pythonPortGenerator: anObject [
+	PythonPortGenerator := anObject
+]
 
 { #category : #adding }
 PBCommunicationHandler >> addRoute: aPath block: aBlock [

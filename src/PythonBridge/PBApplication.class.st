@@ -172,8 +172,8 @@ PBApplication >> initialize [
 { #category : #initialization }
 PBApplication >> initializeHandlers [
 	loggingHandler := PBLoggingHandler application: self.
-	processHandler := PBProcessHandler application: self.
 	communicationHandler := PBCommunicationHandler application: self.
+	processHandler := PBPythonHandler application: self.
 	executionHandler := PBExecutionHandler application: self
 ]
 
