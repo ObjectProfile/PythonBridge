@@ -47,8 +47,8 @@ PBCommunicationHandler >> decode: req [
 { #category : #initialization }
 PBCommunicationHandler >> initialize [
 	super initialize.
-	pharoPort := 7100 + 99 atRandom.
-	pythonPort := 7200 + 99 atRandom.
+	pharoPort := self class pharoPortGenerator value.
+	pythonPort := self class pythonPortGenerator value.
 	routes := OrderedCollection new
 ]
 

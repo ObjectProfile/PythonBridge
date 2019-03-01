@@ -35,6 +35,12 @@ PBPyProcessStrategy class >> prepare [
 ]
 
 { #category : #accessing }
+PBPyProcessStrategy class >> setAsDefault [
+	self == PBPyProcessStrategy ifTrue: [ Error signal: 'To be called by subclasses' ].
+	self default: self
+]
+
+{ #category : #accessing }
 PBPyProcessStrategy class >> workingDirectory: wd pharoPort: pharoPort pythonPort: pyPort [
 	^ self new
 		workingDirectory: wd;
