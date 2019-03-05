@@ -115,3 +115,42 @@ Then you must set this path in PythonBridge by running the following script in a
 ```smalltalk
 PBProcessHandler pipEnvPath: '/PATH/TO/PIPENV/BINARY'
 ```
+
+### Executing PythonBridge in Windows
+PythonBridge uses OSSubprocess to start the python process from Pharo. OSSubprocess does not work on Windows, therefore, we can not start python from Pharo in Windows.
+
+Nevertheless, PythonBridge should work on Windows systems if the user start python manually. To do this follow these instructions:
+1. Install [Python](https://www.python.org/downloads/release/python-368/) and [Pipenv](https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv).
+1. Download PythonBridge by executing the following script on a playground: 
+```
+Metacello new
+    baseline: 'PythonBridge';
+    repository: 'github://ObjectProfile/PythonBridge/src';
+    load.
+```
+1. Set the python handler strategy to manual by executing the following in a playground:
+```
+PBManualPyStrategy setAsDefault
+```
+1. In a terminal go to the folder of the repository of the project you want to run (PythonBridge, KerasBridge, ...). To know the exact location of the iceberg repository folder print the result of the following script in a playground:
+```
+PBApplication repositoryFileReference. "For the repository of PythonBridge"
+Keras repositoryFileReference. "For the repository of KerasBridge"
+```
+1. Once in the folder of the repository, create the Pipenv environment:
+```bash
+pipenv install
+```
+1. Start the python process by executing `pipenv run python start_bridge.py --port 7100 --pharo 7200` in a terminal.
+1. Test that the application is running normally by executing this example:
+```
+PBApplication do: [ 
+ PBCF << (P3GBinaryOperator new
+                     left: 1;
+                     right: 2;
+                     operator: $+;
+                     yourself).
+ PBCF send waitForValue
+  ]
+```
+To try this code snippet using KerasBridge replace `PBApplication` -> `Keras` and `PBCF` -> `KCF`.
