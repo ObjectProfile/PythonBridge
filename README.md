@@ -1,5 +1,7 @@
 # PythonBridge
- Bridge between smalltalk and python
+ Bridge that allows executing arbitrary pieces of Python code directly from Pharo.
+ 
+ The official webpage and documentation is https://objectprofile.github.io/PythonBridge/.
 
 # Requirements
 
