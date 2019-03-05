@@ -60,4 +60,4 @@ PBApplication do: [
 
 ## Bridges based on PythonBridge
 
-- [KerasBridge](https://github.com/ObjectProfile/KerasBridge)
+- [KerasBridge](https://objectprofile.github.io/KerasBridge)
