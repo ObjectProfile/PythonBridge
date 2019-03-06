@@ -74,8 +74,9 @@ PBPythonHandler >> processStrategy: anObject [
 
 { #category : #accessing }
 PBPythonHandler >> start [
-	self application class createSymlinkFolder.
-	self application class ensurePythonBridgeSymlink.
+	OSPlatform current isWindows ifFalse: [ 
+		self application class createSymlinkFolder.
+		self application class ensurePythonBridgeSymlink. ].
 	^ self processStrategy start
 ]
 
