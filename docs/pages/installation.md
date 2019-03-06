@@ -141,6 +141,11 @@ Keras repositoryFileReference. "For the repository of KerasBridge"
 ```bash
 pipenv install
 ```
+1. Create symbolic link to PythonBridge repository:
+```
+mklink /D PythonBridge \Path\To\PythonBridge\Repository
+```
+This should be done on all projects to reference the original PythonBridge repository folder.
 1. Start the python process by executing `pipenv run python start_bridge.py --port 7100 --pharo 7200` in a terminal.
 1. Test that the application is running normally by executing this example:
 ```
