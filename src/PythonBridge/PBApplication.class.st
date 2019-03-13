@@ -7,6 +7,9 @@ Class {
 		'loggingHandler',
 		'executionHandler'
 	],
+	#classVars : [
+		'DebugMode'
+	],
 	#classInstVars : [
 		'uniqueInstance'
 	],
@@ -31,6 +34,16 @@ PBApplication class >> createSymlinkFor: originalFile on: targetFile [
 									with: targetFile asFileReference fullName);
 				terminateOnShutdown;
 				runAndWaitOnExitDo: [ :command | ^ self ].
+]
+
+{ #category : #debug }
+PBApplication class >> debugMode [
+	^ DebugMode ifNil: [ false ]
+]
+
+{ #category : #debug }
+PBApplication class >> debugMode: bool [
+	^ DebugMode := bool
 ]
 
 { #category : #'start-stop' }

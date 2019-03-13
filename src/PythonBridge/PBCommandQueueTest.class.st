@@ -19,6 +19,19 @@ PBCommandQueueTest >> setUp [
 ]
 
 { #category : #tests }
+PBCommandQueueTest >> testCleaningCommand [
+	| cc1 cc2 |
+	cc1 := PBCommand new.
+	cc2 := PBCommand new.
+	queue enqueueCommand: cc1.
+	queue enqueueCommand: cc2.
+	self assert: (queue finishCommand: cc1).
+	self assert: queue list size equals: 1.
+	self assert: (queue finishCommand: cc2).
+	self assert: queue isFinished
+]
+
+{ #category : #tests }
 PBCommandQueueTest >> testEmptyQueue [
 	self assert: queue list isEmpty.
 	self assert: queue isFinished.

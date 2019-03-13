@@ -17,6 +17,13 @@ PBCommandQueue class >> executionHandler: aHandler [
 ]
 
 { #category : #accessing }
+PBCommandQueue >> cleanIndex: anIndex [
+	self debugMode ifTrue: [ ^ self ].
+	currentIndex := currentIndex - 1.
+	innerCollection removeAt: anIndex
+]
+
+{ #category : #accessing }
 PBCommandQueue >> completedCommands [
 	^ innerCollection first: currentIndex
 ]
@@ -25,6 +32,11 @@ PBCommandQueue >> completedCommands [
 PBCommandQueue >> currentCommand [
 	self isFinished ifTrue: [ ^ nil ].
 	^ innerCollection at: currentIndex
+]
+
+{ #category : #accessing }
+PBCommandQueue >> debugMode [
+	^ PBApplication debugMode
 ]
 
 { #category : #accessing }
@@ -58,6 +70,7 @@ PBCommandQueue >> finishCommandId: id [
 	self currentCommand ifNotNil: [ :command |
 		command id = id 
 			ifTrue: [ 
+				self cleanIndex: currentIndex.
 				currentIndex := currentIndex + 1.
 				^ true ] ].
 	commandIndex := innerCollection detectIndex: [ :command | command id = id ].
@@ -65,7 +78,9 @@ PBCommandQueue >> finishCommandId: id [
 		ifTrue: [ 
 			currentIndex := commandIndex + 1.
 			self log: (PBErrorLog message: 'Out of sync command queue. Pharo is delayed.') ]
-		ifFalse: [ self log: (PBErrorLog message: 'Out of sync command queue. Python is delayed.') ].
+		ifFalse: [ 
+			self log: (PBErrorLog message: 'Out of sync command queue. Python is delayed.') ].
+	self cleanIndex: commandIndex.
 	^ false
 ]
 
