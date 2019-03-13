@@ -42,7 +42,8 @@ PBObject >> basicCreateObjectArgs: posArgs nameArgs: nameArgs [
 	varName := self newPythonVar.
 	self application commandFactory << (
 		varName <- (self pythonClass callWith: posArgs with: nameArgs asDictionary)).
-	pythonVariable := varName
+	pythonVariable := varName.
+	self registerObject
 ]
 
 { #category : #'as yet unclassified' }
@@ -52,7 +53,8 @@ PBObject >> basicCreateObjectExpr: anExpression [
 	varName := self newPythonVar.
 	self application commandFactory << (
 		varName <- anExpression).
-	pythonVariable := varName
+	pythonVariable := varName.
+	self registerObject
 	
 ]
 
@@ -99,6 +101,11 @@ PBObject >> pythonClassName [
 { #category : #accessing }
 PBObject >> pythonVariable [
 	^ pythonVariable
+]
+
+{ #category : #'as yet unclassified' }
+PBObject >> registerObject [
+	self application registerObject: self
 ]
 
 { #category : #'as yet unclassified' }

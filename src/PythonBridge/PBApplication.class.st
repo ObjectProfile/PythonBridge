@@ -167,6 +167,11 @@ PBApplication >> errorMessage [
 	^ processHandler process stderrStream contents
 ]
 
+{ #category : #accessing }
+PBApplication >> executionHandler [
+	^ executionHandler
+]
+
 { #category : #handlers }
 PBApplication >> handlers [
 	^ Array
@@ -213,9 +218,7 @@ PBApplication >> loggingHandler [
 
 { #category : #'instance creation' }
 PBApplication >> newCommandFactory [
-	^ PBCommandFactory new
-		application: self;
-		yourself
+	^ self executionHandler newCommandFactory
 ]
 
 { #category : #accessing }
@@ -226,6 +229,11 @@ PBApplication >> postInitialization [
 { #category : #accessing }
 PBApplication >> processHandler [
 	^ processHandler
+]
+
+{ #category : #'as yet unclassified' }
+PBApplication >> registerObject: aPythonObject [
+	self executionHandler registerObject: aPythonObject
 ]
 
 { #category : #instructions }

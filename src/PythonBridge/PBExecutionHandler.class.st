@@ -3,6 +3,7 @@ Class {
 	#superclass : #PBHandler,
 	#instVars : [
 		'commandQueue',
+		'weakRegistry',
 		'serializer',
 		'promiseRegistry'
 	],
@@ -42,7 +43,8 @@ PBExecutionHandler >> initialize [
 	super initialize.
 	commandQueue := PBCommandQueue new.
 	serializer := PBSerializer.
-	promiseRegistry := PBPromiseRegistry new
+	promiseRegistry := PBPromiseRegistry new.
+	weakRegistry := WeakRegistry new
 ]
 
 { #category : #initialization }
@@ -51,6 +53,13 @@ PBExecutionHandler >> initializeHandler [
 		addRoute: '/notify' block: [ :dict | self notifyHandler: dict ];
 		addRoute: '/notifyError' block: [ :dict | self notifyErrorHandler: dict ];
 		addRoute: '/notifyObserver' block: [ :dict | self notifyObserverHandler: dict ]
+]
+
+{ #category : #'as yet unclassified' }
+PBExecutionHandler >> newCommandFactory [
+	^ PBCommandFactory new
+		application: self application;
+		yourself
 ]
 
 { #category : #handlers }
@@ -87,6 +96,15 @@ PBExecutionHandler >> primitiveSendCommand: command [
 	self communicationHandler 
 		sendPath: '/eval'
 		data: (NeoJSONWriter toString: (self encodeCommandAsDictionary: command)).
+]
+
+{ #category : #'as yet unclassified' }
+PBExecutionHandler >> registerObject: aPythonObject [
+	weakRegistry 
+		add: aPythonObject 
+		executor: (PBRegistryFinalizer 
+							pythonVariable: aPythonObject pythonVariable 
+							executionHandler: self)
 ]
 
 { #category : #'private protocol' }
@@ -136,6 +154,12 @@ PBExecutionHandler >> serializer: anObject [
 { #category : #'private protocol' }
 PBExecutionHandler >> signalObserver: observer withValue: object [
 	observer pharoNotify: object
+]
+
+{ #category : #accessing }
+PBExecutionHandler >> stop [
+	super stop.
+	weakRegistry removeAll
 ]
 
 { #category : #'as yet unclassified' }
