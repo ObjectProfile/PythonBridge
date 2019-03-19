@@ -25,7 +25,7 @@ PBSimpleApplicationTest >> testDoubleRetrieveValue [
 
 { #category : #tests }
 PBSimpleApplicationTest >> testSimpleLambda [
-	self cf << ((PBLambda 
+	self cf << ((P3GLambda 
 						argument: #a asP3GI
 						expression: #a asP3GI + 1) callWith: #( 2 )).
 	self assert: self cf send waitForValue equals: 3
