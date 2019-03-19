@@ -11,7 +11,7 @@ To install Python3.6 follow the instructions on the Python webpage https://www.p
 
 To install Pipenv just use the following Pip instruction `pip install pipenv`, though depending on your python installation you may need to call it with `sudo`. If the command `pip` is not found, use `pip3` instead. To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`. We strongly suggest you to upgrade your pipenv version if it is older that 2018.11.26, because it has important bugfixes and performance improvements. To upgrade it just run `sudo pip install pipenv --upgrade`.
 
-# Instalation
+# Installation
 
 To install PythonBridge on Pharo just run the following script in a Pharo Playground:
 ```Smalltalk
@@ -25,6 +25,18 @@ The first part of the script is responsible of downloading the PythonBridge code
 The second part of the script is responsible of creating a pipenv environment for isolating the python libraries used by the bridge.
 
 Depending on the internet connection, the script could take a couple of minutes to run.
+
+## Troubleshooting
+
+### Pipenv command is not found
+It might occurs because Pharo can not find you `pipenv` binary.
+To solve this problem, it is possible to set manually pipenv path.
+Just run `which pipenv` in a terminal and copy the output of this command.
+Paste the previously copied of the command in the string of the script below:
+
+```
+PBPipenvPyStrategy pipEnvPath: '/PATH/TO/PIPENV/BINARY'
+```
 
 # Simple test
 
