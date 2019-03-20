@@ -15,7 +15,7 @@ BaselineOfPythonBridge >> baseline: spec [
 				with: [ spec repository: 'github://pharo-contributions/OSSubprocess:v1.0.0/repository' ].
 			spec
 				baseline: 'Python3Generator' 
-				with: [ spec repository: 'github://juliendelplanque/Python3Generator:76c847c60c5345c90a0bb7d01d7dee30e8223211/repository' ].
+				with: [ spec repository: 'github://juliendelplanque/Python3Generator:v1.2.0/repository' ].
 
 			spec baseline: 'NeoJSON' with: [
                 spec
