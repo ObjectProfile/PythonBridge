@@ -1,7 +1,7 @@
 Class {
 	#name : #PBDeserializer,
-	#superclass : #Object,
-	#category : #'PythonBridge-Core'
+	#superclass : #PBMapper,
+	#category : #'PythonBridge-Serialization'
 }
 
 { #category : #'private protocol' }
@@ -11,6 +11,17 @@ PBDeserializer class >> deserialize: anObject [
 ]
 
 { #category : #'private protocol' }
-PBDeserializer >> deserialize: anObject [
-	^ NeoJSONReader fromString: anObject
+PBDeserializer >> buildProxyFor: rawObject [
+	^ PBProxyObject 
+			pythonClass: (rawObject at: #__pyclass__)
+			application: self application
+]
+
+{ #category : #'private protocol' }
+PBDeserializer >> deserialize: str [
+	| rawObj clsName |
+	rawObj := NeoJSONReader fromString: str.
+	rawObj isDictionary ifFalse: [ ^ rawObj ].
+	clsName := rawObj at: #__pyclass__ ifAbsent: [ ^ rawObj ].
+	^ self buildProxyFor: rawObj
 ]

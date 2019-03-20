@@ -5,7 +5,8 @@ Class {
 		'commandQueue',
 		'weakRegistry',
 		'serializer',
-		'promiseRegistry'
+		'promiseRegistry',
+		'mapperFactory'
 	],
 	#category : #'PythonBridge-Execution'
 }
@@ -17,7 +18,7 @@ PBExecutionHandler >> communicationHandler [
 
 { #category : #'private protocol' }
 PBExecutionHandler >> deserialize: anObject [
-	^ self serializer deserialize: anObject
+	^ mapperFactory deserializer deserialize: anObject
 ]
 
 { #category : #'private protocol' }
@@ -42,7 +43,7 @@ PBExecutionHandler >> getObserverAtCommandId: commandId id: observerId [
 PBExecutionHandler >> initialize [
 	super initialize.
 	commandQueue := PBCommandQueue new.
-	serializer := PBSerializer.
+	mapperFactory := PBMapperFactory forApplication: application.
 	promiseRegistry := PBPromiseRegistry new.
 	weakRegistry := WeakRegistry new
 ]
@@ -138,12 +139,7 @@ PBExecutionHandler >> sendCommand: command [
 
 { #category : #'private protocol' }
 PBExecutionHandler >> serialize: anObject [
-	^ self serializer serialize: anObject
-]
-
-{ #category : #accessing }
-PBExecutionHandler >> serializer [
-	^ serializer
+	^ mapperFactory serializer serialize: anObject
 ]
 
 { #category : #accessing }

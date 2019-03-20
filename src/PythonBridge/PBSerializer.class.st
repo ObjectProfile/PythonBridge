@@ -1,12 +1,17 @@
 Class {
 	#name : #PBSerializer,
-	#superclass : #Object,
-	#category : #'PythonBridge-Core'
+	#superclass : #PBMapper,
+	#category : #'PythonBridge-Serialization'
 }
 
 { #category : #private }
 PBSerializer class >> deserialize: anObject [
 	^ PBDeserializer deserialize: anObject
+]
+
+{ #category : #private }
+PBSerializer class >> deserialize: anObject forApplication: application [
+	^ PBDeserializer deserialize: anObject forApplication: application
 ]
 
 { #category : #private }
