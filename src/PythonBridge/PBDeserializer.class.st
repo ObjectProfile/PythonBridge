@@ -14,6 +14,7 @@ PBDeserializer class >> deserialize: anObject [
 PBDeserializer >> buildProxyFor: rawObject [
 	^ PBProxyObject 
 			pythonClass: (rawObject at: #__pyclass__)
+			pythonVar: (rawObject at: #__pyid__) asP3GI
 			application: self application
 ]
 

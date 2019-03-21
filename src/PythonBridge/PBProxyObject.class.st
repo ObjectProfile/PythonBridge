@@ -9,8 +9,9 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-PBProxyObject class >> pythonClass: pythonClass application: application [
+PBProxyObject class >> pythonClass: pythonClass pythonVar: pyVar application: application [
 	^ self new
+		pythonVariable: pyVar;
 		pythonClass: pythonClass;
 		application: application;
 		yourself
@@ -31,6 +32,11 @@ PBProxyObject >> applicationClass [
 	^ self application class
 ]
 
+{ #category : #'as yet unclassified' }
+PBProxyObject >> createObject [
+	self shouldNotImplement
+]
+
 { #category : #accessing }
 PBProxyObject >> pythonClass [
 	^ pythonClass
@@ -39,4 +45,9 @@ PBProxyObject >> pythonClass [
 { #category : #accessing }
 PBProxyObject >> pythonClass: anObject [
 	pythonClass := anObject
+]
+
+{ #category : #accessing }
+PBProxyObject >> pythonVariable: pyVar [
+	pythonVariable := pyVar
 ]
