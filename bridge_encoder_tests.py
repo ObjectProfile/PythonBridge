@@ -2,6 +2,7 @@ import bridge_encoder
 import json
 import unittest
 import io
+from object_registry import registry
 
 class TestJSONEncoder(unittest.TestCase):
 
@@ -21,4 +22,5 @@ class TestJSONEncoder(unittest.TestCase):
         self.assert_encode_raw(5.5,'5.5')
 
     def test_encode_obj(self):
-        self.assert_encode(self.encoder,{'__pyclass__': "BridgeEncoder", "__pyid__": 334})
+        registry().register_with_id(self.encoder,'337')
+        self.assert_encode(self.encoder,{'__pyclass__': "BridgeEncoder", "__pyid__": '337'})

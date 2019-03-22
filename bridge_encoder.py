@@ -1,5 +1,6 @@
 import json
 import io
+from object_registry import registry
 
 class BridgeEncoder(json.JSONEncoder):
     def __init__(self, *args, **kwargs):
@@ -15,5 +16,5 @@ class BridgeEncoder(json.JSONEncoder):
             return mapper[type(obj)](obj)
         return {
             '__pyclass__': type(obj).__name__,
-            '__pyid__': 334
+            '__pyid__': registry().register(obj)
             }
