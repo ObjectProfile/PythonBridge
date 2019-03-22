@@ -2,7 +2,8 @@ import bridge_globals
 from uuid import uuid1
 
 def ensure_global_registry():
-    bridge_globals.ObjectRegistry = Registry()
+    if not hasattr(bridge_globals, 'ObjectRegistry'):
+        bridge_globals.ObjectRegistry = Registry()
 
 def registry():
     return bridge_globals.ObjectRegistry
@@ -51,3 +52,5 @@ class Registry():
 class RegistryError(Exception):
     """Base class for exceptions in this module."""
     pass
+
+ensure_global_registry()

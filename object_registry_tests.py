@@ -39,3 +39,9 @@ class TestRegistry(unittest.TestCase):
         self.registry.register_with_id(obj2,'f2')
         self.assertIs(obj2,self.registry.resolve('f2'))
         self.assertIs(obj1,self.registry.resolve('f1'))
+
+    def test_global_registry(self):
+        registry = object_registry.registry()
+        self.assertIsNotNone(registry)
+        object_registry.ensure_global_registry()
+        self.assertIs(registry, object_registry.registry())
