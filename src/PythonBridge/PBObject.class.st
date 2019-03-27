@@ -68,6 +68,11 @@ PBObject >> ensureCreateObject [
 	self isCreated ifFalse: [ self createObject ]
 ]
 
+{ #category : #accessing }
+PBObject >> id [
+	^ pythonVariable name
+]
+
 { #category : #'as yet unclassified' }
 PBObject >> isCreated [
 	^ pythonVariable notNil

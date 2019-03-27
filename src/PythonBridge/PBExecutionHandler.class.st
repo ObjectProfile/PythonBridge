@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'commandQueue',
 		'weakRegistry',
+		'objectRegistry',
 		'serializer',
 		'promiseRegistry',
 		'mapperFactory'
@@ -45,7 +46,8 @@ PBExecutionHandler >> initialize [
 	commandQueue := PBCommandQueue new.
 	mapperFactory := PBMapperFactory forApplication: application.
 	promiseRegistry := PBPromiseRegistry new.
-	weakRegistry := WeakRegistry new
+	weakRegistry := WeakRegistry new.
+	objectRegistry := PBObjectRegistry new
 ]
 
 { #category : #initialization }
@@ -101,6 +103,7 @@ PBExecutionHandler >> primitiveSendCommand: command [
 
 { #category : #'as yet unclassified' }
 PBExecutionHandler >> registerObject: aPythonObject [
+	objectRegistry registerObject: aPythonObject.
 	weakRegistry 
 		add: aPythonObject 
 		executor: (PBRegistryFinalizer 
