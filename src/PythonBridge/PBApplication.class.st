@@ -164,7 +164,7 @@ PBApplication >> communicationHandler [
 { #category : #accessing }
 PBApplication >> errorMessage [
 	"Fetch the error message from the stderr stream, from the processhander"
-	^ processHandler process stderrStream contents
+	^ processHandler errorMessage
 ]
 
 { #category : #accessing }

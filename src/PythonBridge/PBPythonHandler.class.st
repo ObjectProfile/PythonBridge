@@ -48,6 +48,11 @@ PBPythonHandler >> communicationHandler [
 	^ self application communicationHandler
 ]
 
+{ #category : #testing }
+PBPythonHandler >> errorMessage [
+	^ self processStrategy errorMessage
+]
+
 { #category : #accessing }
 PBPythonHandler >> initializeHandler [
 	super initializeHandler.

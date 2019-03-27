@@ -56,6 +56,11 @@ PBPipenvPyStrategy >> arguments [
 		'--pharo'. self pharoPort asString }
 ]
 
+{ #category : #accessing }
+PBPipenvPyStrategy >> errorMessage [
+	^ process stderrStream contents
+]
+
 { #category : #'process spawning' }
 PBPipenvPyStrategy >> newProcess [
 	^ OSSUnixSubprocess new

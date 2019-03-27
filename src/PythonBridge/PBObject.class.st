@@ -40,9 +40,9 @@ PBObject >> basicCreateObjectArgs: posArgs nameArgs: nameArgs [
 	| varName |
 	self isCreated ifTrue: [ ^ self ].
 	varName := self newPythonVar.
-	self application commandFactory << (
-		varName <- (self pythonClass callWith: posArgs with: nameArgs asDictionary)).
 	pythonVariable := varName.
+	self application commandFactory << (
+		self registerIdPyExpression: (self pythonClass callWith: posArgs with: nameArgs asDictionary)).
 	self registerObject
 ]
 
@@ -51,9 +51,9 @@ PBObject >> basicCreateObjectExpr: anExpression [
 	| varName |
 	self isCreated ifTrue: [ ^ self ].
 	varName := self newPythonVar.
-	self application commandFactory << (
-		varName <- anExpression).
 	pythonVariable := varName.
+	self application commandFactory << (
+		self registerIdPyExpression: anExpression).
 	self registerObject
 	
 ]
@@ -103,9 +103,19 @@ PBObject >> pythonClassName [
 	^ self pythonClass attributeIdentifier name
 ]
 
+{ #category : #'as yet unclassified' }
+PBObject >> pythonRegistryExpression [
+	^ #registry callWith: #()
+]
+
 { #category : #accessing }
 PBObject >> pythonVariable [
 	^ pythonVariable
+]
+
+{ #category : #'as yet unclassified' }
+PBObject >> registerIdPyExpression: objExpr [
+	^ self pythonRegistryExpression => #register_with_id callWith: (Array with: objExpr with: self id)
 ]
 
 { #category : #'as yet unclassified' }
@@ -114,7 +124,12 @@ PBObject >> registerObject [
 ]
 
 { #category : #'as yet unclassified' }
+PBObject >> resolveIdPyExpression [
+	^ self pythonRegistryExpression => #resolve callWith: (Array with: self id)
+]
+
+{ #category : #'as yet unclassified' }
 PBObject >> writePython3On: aStream [
 	self assert: self isCreated.
-	pythonVariable writePython3On: aStream
+	self resolveIdPyExpression writePython3On: aStream
 ]
