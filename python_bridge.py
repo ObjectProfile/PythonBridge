@@ -6,6 +6,7 @@ import json
 import sys
 from PythonBridge import bridge_globals, bridge_hooks
 from PythonBridge.bridge_hooks import *
+from PythonBridge.object_registry import registry
 
 class ThreadedFlask():
 	def __init__(self, flaskApp, port):

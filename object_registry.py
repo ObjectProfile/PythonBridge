@@ -1,12 +1,12 @@
-import bridge_globals
+import PythonBridge.bridge_globals
 from uuid import uuid1
 
 def ensure_global_registry():
-    if not hasattr(bridge_globals, 'ObjectRegistry'):
-        bridge_globals.ObjectRegistry = Registry()
+    if not hasattr(PythonBridge.bridge_globals, 'ObjectRegistry'):
+        PythonBridge.bridge_globals.ObjectRegistry = Registry()
 
 def registry():
-    return bridge_globals.ObjectRegistry
+    return PythonBridge.bridge_globals.ObjectRegistry
 
 class Registry():
 
