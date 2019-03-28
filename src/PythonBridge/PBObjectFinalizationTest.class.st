@@ -12,16 +12,6 @@ PBObjectFinalizationTest >> idInRegistry: anId [
 	^ self registryExpression => #hasId callWith: (Array with: anId)
 ]
 
-{ #category : #asserting }
-PBObjectFinalizationTest >> registryExpression [
-	^ #registry callWith: #()
-]
-
-{ #category : #asserting }
-PBObjectFinalizationTest >> resolveId: anId [
-	^ self registryExpression => #resolve callWith: (Array with: anId)
-]
-
 { #category : #initialization }
 PBObjectFinalizationTest >> setUp [
 	super setUp.

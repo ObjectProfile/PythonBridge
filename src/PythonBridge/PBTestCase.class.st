@@ -60,3 +60,13 @@ PBTestCase >> cfSend [
 PBTestCase >> commandFactory [
 	^ commandFactory ifNil: [ commandFactory := self application newCommandFactory ]
 ]
+
+{ #category : #asserting }
+PBTestCase >> registryExpression [
+	^ #registry callWith: #()
+]
+
+{ #category : #asserting }
+PBTestCase >> resolveId: anId [
+	^ self registryExpression => #resolve callWith: (Array with: anId)
+]
