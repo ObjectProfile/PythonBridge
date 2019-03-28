@@ -17,17 +17,25 @@ PBDeserializer >> application [
 
 { #category : #'private protocol' }
 PBDeserializer >> buildProxyFor: rawObject [
-	^ PBProxyObject 
-			pythonClass: (rawObject at: #__pyclass__)
-			pythonVar: (rawObject at: #__pyid__) asP3GI
-			application: self application
+	| proxy |
+	proxy :=  PBProxyObject 
+					pythonClass: (rawObject at: #__pyclass__)
+					pythonVar: (rawObject at: #__pyid__) asP3GI
+					application: self application.
+	self executionHandler registerObject: proxy.
+	^ proxy
 ]
 
 { #category : #'private protocol' }
 PBDeserializer >> deserialize: str [
-	| rawObj clsName |
+	| rawObj |
 	rawObj := NeoJSONReader fromString: str.
 	rawObj isDictionary ifFalse: [ ^ rawObj ].
-	clsName := rawObj at: #__pyclass__ ifAbsent: [ ^ rawObj ].
-	^ self buildProxyFor: rawObj
+	rawObj at: #__pyid__ ifAbsent: [ ^ rawObj ].
+	^ self objectRegistry resolve: (rawObj at: #__pyid__) ifAbsent: [ self buildProxyFor: rawObj ]
+]
+
+{ #category : #'private protocol' }
+PBDeserializer >> objectRegistry [
+	^ self executionHandler objectRegistry
 ]

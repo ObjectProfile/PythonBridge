@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+PBObjectRegistry >> hasId: anId [
+	^ semaphore critical: [ idTable includesKey: anId ]
+]
+
+{ #category : #'as yet unclassified' }
 PBObjectRegistry >> idTable [
 	^ idTable
 ]
@@ -30,6 +35,14 @@ PBObjectRegistry >> registerObject: anObject [
 { #category : #'as yet unclassified' }
 PBObjectRegistry >> resolve: anId [
 	^ semaphore critical: [ idTable at: anId ]
+]
+
+{ #category : #'as yet unclassified' }
+PBObjectRegistry >> resolve: anId ifAbsent: aBlock [
+	| obj |
+	obj := semaphore critical: [ idTable at: anId ifAbsent: [ nil ] ].
+	^ obj ifNil: aBlock.
+	
 ]
 
 { #category : #'as yet unclassified' }

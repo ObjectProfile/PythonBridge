@@ -95,6 +95,11 @@ PBExecutionHandler >> notifyObserverHandler: dict [
 		withValue: (self deserialize: (dict at: #value))
 ]
 
+{ #category : #initialization }
+PBExecutionHandler >> objectRegistry [
+	^ objectRegistry
+]
+
 { #category : #'private protocol' }
 PBExecutionHandler >> primitiveSendCommand: command [
 	self communicationHandler 
