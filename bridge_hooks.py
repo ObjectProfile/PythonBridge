@@ -6,9 +6,10 @@ import json
 import sys
 import traceback
 from PythonBridge import bridge_globals
+from PythonBridge import bridge_encoder
 
 def convert_to_JSON(obj):
-	return json.dumps(obj)
+	return json.dumps(obj, cls=bridge_encoder.BridgeEncoder)
 
 def convert_from_JSON(text):
 	return json.loads(text)
