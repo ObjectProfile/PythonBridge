@@ -31,7 +31,7 @@ PBRegistryFinalizer >> finalize [
 	| cf |
 	executionHandler isRunning ifFalse: [ ^ self ].
 	cf := executionHandler newCommandFactory.
-	cf << (pythonVariable <- nil).
+	cf << (self removeId: pythonVariable name).
 	cf send.
 ]
 
@@ -43,4 +43,14 @@ PBRegistryFinalizer >> pythonVariable [
 { #category : #accessing }
 PBRegistryFinalizer >> pythonVariable: anObject [
 	pythonVariable := anObject
+]
+
+{ #category : #asserting }
+PBRegistryFinalizer >> registryExpression [
+	^ #registry callWith: #()
+]
+
+{ #category : #asserting }
+PBRegistryFinalizer >> removeId: anId [
+	^ self registryExpression => #clean callWith: (Array with: anId)
 ]
