@@ -2,7 +2,7 @@ Class {
 	#name : #PBMapperFactory,
 	#superclass : #Object,
 	#instVars : [
-		'application',
+		'executionHandler',
 		'serializationMappings',
 		'deserializationMappings'
 	],
@@ -10,32 +10,32 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-PBMapperFactory class >> forApplication: application [
+PBMapperFactory class >> forExecutionHandler: handler [
 	^ self new
-		application: application;
+		executionHandler: handler;
 		yourself
-]
-
-{ #category : #accessing }
-PBMapperFactory >> application [
-	^ application
-]
-
-{ #category : #accessing }
-PBMapperFactory >> application: anObject [
-	application := anObject
 ]
 
 { #category : #initialization }
 PBMapperFactory >> deserializer [
 	^ self deserializerClass
 				mappings: serializationMappings
-				application: application
+				executionHandler: executionHandler
 ]
 
 { #category : #initialization }
 PBMapperFactory >> deserializerClass [
 	^ PBDeserializer
+]
+
+{ #category : #accessing }
+PBMapperFactory >> executionHandler [
+	^ executionHandler
+]
+
+{ #category : #accessing }
+PBMapperFactory >> executionHandler: anObject [
+	executionHandler := anObject
 ]
 
 { #category : #initialization }
@@ -49,7 +49,7 @@ PBMapperFactory >> initialize [
 PBMapperFactory >> serializer [
 	^ self serializerClass 
 				mappings: serializationMappings
-				application: application
+				executionHandler: executionHandler
 ]
 
 { #category : #initialization }

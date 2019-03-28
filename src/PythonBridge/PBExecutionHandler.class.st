@@ -44,7 +44,7 @@ PBExecutionHandler >> getObserverAtCommandId: commandId id: observerId [
 PBExecutionHandler >> initialize [
 	super initialize.
 	commandQueue := PBCommandQueue new.
-	mapperFactory := PBMapperFactory forApplication: application.
+	mapperFactory := PBMapperFactory forExecutionHandler: self.
 	promiseRegistry := PBPromiseRegistry new.
 	weakRegistry := WeakRegistry new.
 	objectRegistry := PBObjectRegistry new

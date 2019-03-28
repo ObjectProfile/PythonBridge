@@ -11,6 +11,11 @@ PBDeserializer class >> deserialize: anObject [
 ]
 
 { #category : #'private protocol' }
+PBDeserializer >> application [
+	^ self executionHandler application
+]
+
+{ #category : #'private protocol' }
 PBDeserializer >> buildProxyFor: rawObject [
 	^ PBProxyObject 
 			pythonClass: (rawObject at: #__pyclass__)
