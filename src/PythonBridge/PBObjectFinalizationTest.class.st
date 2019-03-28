@@ -11,7 +11,7 @@ Class {
 PBObjectFinalizationTest >> setUp [
 	super setUp.
 	debugMode := PBApplication debugMode.
-	PBApplication debugMode: false
+	PBApplication debugMode: false.
 ]
 
 { #category : #initialization }
@@ -23,9 +23,9 @@ PBObjectFinalizationTest >> tearDown [
 { #category : #tests }
 PBObjectFinalizationTest >> testGCSimpleObj [
 	| obj |
-	obj := PBObject new basicCreateObjectExpr: 3.
+	obj := PBObject new basicCreateObjectExpr: 5.5.
 	self cf << obj.
-	self assert: self cfSend waitForValue equals: 3.
+	self assert: self cfSend waitForValue equals: 5.5.
 	obj := nil.
 	Smalltalk garbageCollect.
 	Smalltalk garbageCollect.
@@ -35,7 +35,7 @@ PBObjectFinalizationTest >> testGCSimpleObj [
 { #category : #tests }
 PBObjectFinalizationTest >> testSimpleCreateObjectFromExpr [
 	| obj |
-	obj := PBObject new basicCreateObjectExpr: 3.
+	obj := PBObject new basicCreateObjectExpr: 5.5.
 	self cf << obj.
-	self assert: self cfSend waitForValue equals: 3
+	self assert: self cfSend waitForValue equals: 5.5
 ]

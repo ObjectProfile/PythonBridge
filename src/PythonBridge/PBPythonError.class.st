@@ -5,7 +5,8 @@ Class {
 		'command',
 		'errorMessage',
 		'application',
-		'proceedAction'
+		'proceedAction',
+		'trace'
 	],
 	#category : #'PythonBridge-ErrorHandling'
 }
@@ -71,4 +72,14 @@ PBPythonError >> proceedAction [
 { #category : #accessing }
 PBPythonError >> proceedAction: anObject [
 	proceedAction := anObject
+]
+
+{ #category : #tracing }
+PBPythonError >> trace [
+	^ trace
+]
+
+{ #category : #tracing }
+PBPythonError >> trace: aTrace [
+	trace := aTrace
 ]

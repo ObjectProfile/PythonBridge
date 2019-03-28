@@ -72,6 +72,7 @@ PBExecutionHandler >> notifyErrorHandler: dict [
 					application: self application;
 					command: (commandQueue getCommand: (dict at: #id));
 					errorMessage: (dict at: #errMsg);
+					trace: (dict at: #trace);
 					yourself.
 	self safeTriggerDebugger: error.
 	^ ZnResponse ok: (ZnEntity text: (NeoJSONWriter toString: error proceedAction encodedAsDictionary))
