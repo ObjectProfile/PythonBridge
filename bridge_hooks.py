@@ -4,6 +4,7 @@ import argparse
 import threading
 import json
 import sys
+import traceback
 from PythonBridge import bridge_globals
 
 def convert_to_JSON(obj):
@@ -46,6 +47,7 @@ def notify_error(ex, command):
 	bridge_globals.logger.log(str(ex))
 	data = {}
 	data["errMsg"] = str(ex)
+	data["trace"] = traceback.format_exc(100)
 	data["id"] = command.command_id()
 	conn = http.client.HTTPConnection("localhost", str(bridge_globals.pharoPort))
 	conn.request("POST", "/notifyError", json.dumps(data), {

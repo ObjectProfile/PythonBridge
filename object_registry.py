@@ -19,6 +19,9 @@ class Registry():
         self.idToObjMap = {}
         self.objToIdMap = {}
 
+    def hasId(self, anId):
+        return anId in idToObjMap
+
     def createNewObjId(self):
         return uuid1().hex
     
