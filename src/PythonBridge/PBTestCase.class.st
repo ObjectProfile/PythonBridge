@@ -25,7 +25,12 @@ PBTestCase >> app [
 
 { #category : #initialization }
 PBTestCase >> application [
-	^ self class appResource current application
+	^ self applicationClass uniqueInstance
+]
+
+{ #category : #initialization }
+PBTestCase >> applicationClass [
+	self subclassResponsibility 
 ]
 
 { #category : #asserting }
@@ -58,7 +63,7 @@ PBTestCase >> cfSend [
 
 { #category : #initialization }
 PBTestCase >> commandFactory [
-	^ commandFactory ifNil: [ commandFactory := self application newCommandFactory ]
+	^ self application commandFactory
 ]
 
 { #category : #asserting }
@@ -69,4 +74,10 @@ PBTestCase >> registryExpression [
 { #category : #asserting }
 PBTestCase >> resolveId: anId [
 	^ self registryExpression => #resolve callWith: (Array with: anId)
+]
+
+{ #category : #running }
+PBTestCase >> setUp [
+	super setUp.
+	self cf reset
 ]
