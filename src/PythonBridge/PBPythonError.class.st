@@ -65,6 +65,11 @@ PBPythonError >> isResumable [
 ]
 
 { #category : #accessing }
+PBPythonError >> messageText [
+	^ errorMessage
+]
+
+{ #category : #accessing }
 PBPythonError >> proceedAction [
 	^ proceedAction
 ]

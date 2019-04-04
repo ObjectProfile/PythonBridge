@@ -245,7 +245,8 @@ PBApplication >> send: aCommand [
 PBApplication >> start [
 	self handlers do: #start.
 	self waitInitialization.
-	self postInitialization
+	self postInitialization.
+	self commandFactory send.
 ]
 
 { #category : #'as yet unclassified' }
