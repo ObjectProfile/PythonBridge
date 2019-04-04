@@ -1,6 +1,6 @@
 import json
 import io
-from object_registry import registry
+from PythonBridge.object_registry import registry
 
 class BridgeEncoder(json.JSONEncoder):
     def __init__(self, *args, **kwargs):
