@@ -8,41 +8,35 @@ Class {
 }
 
 { #category : #running }
-PBConnectionTest >> setUp [
-	application := PBApplication new
-]
-
-{ #category : #running }
 PBConnectionTest >> tearDown [
-	application stop
+	PBApplication isRunning ifTrue: [ PBApplication stop ]
 ]
 
 { #category : #tests }
 PBConnectionTest >> testNotRunning [
-	self deny: application isRunning
+	self deny: PBApplication isRunning
 ]
 
 { #category : #tests }
 PBConnectionTest >> testStartStopProcess [
-	self deny: application isRunning.
-	application start.
-	self assert: application processHandler isRunning.
-	application send: 
+	self deny: PBApplication isRunning.
+	PBApplication start.
+	self assert: PBApplication uniqueInstance processHandler isRunning.
+	PBApplication send: 
 		(PBCommand new instructions: 
 			(Array with: (P3GBinaryOperator new
 						left: 1;
 						right: 2;
 						operator: $+;
 						yourself))).	
-	application stop.
+	PBApplication stop.
 	(Delay forMilliseconds: 150) wait.
-	self deny: application isRunning.
-	self should: [ application send: 
+	self deny: PBApplication isRunning.
+	self should: [ PBApplication send: 
 		(PBCommand new instructions: 
 			(Array with: (P3GBinaryOperator new
 						left: 1;
 						right: 2;
 						operator: $+;
 						yourself))) ] raise: Error.
-	self deny: application processHandler isRunning
 ]
