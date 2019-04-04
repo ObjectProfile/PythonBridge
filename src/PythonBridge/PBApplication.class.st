@@ -152,6 +152,11 @@ PBApplication class >> uniqueInstance [
 ]
 
 { #category : #accessing }
+PBApplication class >> uniqueInstance: anObject [
+	uniqueInstance := anObject
+]
+
+{ #category : #accessing }
 PBApplication >> commandFactory [
 	^ PBCF
 ]
@@ -244,6 +249,7 @@ PBApplication >> send: aCommand [
 { #category : #accessing }
 PBApplication >> start [
 	self handlers do: #start.
+	self commandFactory reset.
 	self waitInitialization.
 	self postInitialization.
 	self commandFactory send.

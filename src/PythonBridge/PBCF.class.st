@@ -57,7 +57,12 @@ PBCF class >> buildCommand [
 
 { #category : #accessing }
 PBCF class >> current [
-	^ current ifNil: [ current := self newCommandFactory ]
+	^ current
+]
+
+{ #category : #accessing }
+PBCF class >> current: cf [
+	current := cf
 ]
 
 { #category : #'reflective operations' }
@@ -77,7 +82,7 @@ PBCF class >> observerFromCallback: aBlock [
 
 { #category : #accessing }
 PBCF class >> reset [
-	current := nil
+	current := self newCommandFactory
 ]
 
 { #category : #'old api' }

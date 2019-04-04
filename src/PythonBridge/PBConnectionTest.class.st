@@ -2,41 +2,56 @@ Class {
 	#name : #PBConnectionTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'application'
+		'application',
+		'oldApplication',
+		'oldApp',
+		'oldCF'
 	],
 	#category : #'PythonBridge-Tests'
 }
 
 { #category : #running }
+PBConnectionTest >> setUp [
+	oldApp := PBApplication uniqueInstance.
+	oldCF := PBCF current.
+	PBCF current: nil.
+	application := PBApplication new.
+	PBApplication uniqueInstance: application
+]
+
+{ #category : #running }
 PBConnectionTest >> tearDown [
-	PBApplication isRunning ifTrue: [ PBApplication stop ]
+	application stop.
+	PBApplication uniqueInstance: oldApp.
+	PBCF current: oldCF
 ]
 
 { #category : #tests }
 PBConnectionTest >> testNotRunning [
-	self deny: PBApplication isRunning
+	self deny: application isRunning
 ]
 
 { #category : #tests }
 PBConnectionTest >> testStartStopProcess [
-	self deny: PBApplication isRunning.
-	PBApplication start.
-	self assert: PBApplication uniqueInstance processHandler isRunning.
-	PBApplication send: 
+	self deny: application isRunning.
+	application start.
+	self assert: application processHandler isRunning.
+	application send: 
 		(PBCommand new instructions: 
 			(Array with: (P3GBinaryOperator new
 						left: 1;
 						right: 2;
 						operator: $+;
 						yourself))).	
-	PBApplication stop.
+	application stop.
 	(Delay forMilliseconds: 150) wait.
-	self deny: PBApplication isRunning.
-	self should: [ PBApplication send: 
+	self deny: application isRunning.
+	self should: [ application send: 
 		(PBCommand new instructions: 
 			(Array with: (P3GBinaryOperator new
 						left: 1;
 						right: 2;
 						operator: $+;
 						yourself))) ] raise: Error.
+	self deny: application processHandler isRunning
 ]
