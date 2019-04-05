@@ -18,6 +18,11 @@ PBBridgeBootstrap class >> createBridge: bridgeName prefix: prefix packageNamed:
 		create
 ]
 
+{ #category : #accessing }
+PBBridgeBootstrap >> applicationClass [
+	^ Smalltalk at: self applicationName
+]
+
 { #category : #names }
 PBBridgeBootstrap >> applicationName [
 	^ bridgeName asSymbol
@@ -33,16 +38,14 @@ PBBridgeBootstrap >> commandFactoryName [
 	^ prefix , 'CF'
 ]
 
-{ #category : #operations }
+{ #category : #create }
 PBBridgeBootstrap >> create [
-	self createApplication.
-	self createCF.
-	self createObject.
-	self createTestCase.
-	self createTestResource.
+	self createClasses.
+	self createRepository.
+	self createFiles.
 ]
 
-{ #category : #operations }
+{ #category : #'create classes' }
 PBBridgeBootstrap >> createApplication [
 	| cls |
 	cls := PBApplication subclass: self applicationName
@@ -58,7 +61,7 @@ PBBridgeBootstrap >> createApplication [
 	'
 ]
 
-{ #category : #operations }
+{ #category : #'create classes' }
 PBBridgeBootstrap >> createCF [
 	| cls |
 	cls := PBCF subclass: self commandFactoryName
@@ -70,7 +73,27 @@ PBBridgeBootstrap >> createCF [
 	^ ' , self applicationName
 ]
 
-{ #category : #operations }
+{ #category : #create }
+PBBridgeBootstrap >> createClasses [
+	self createApplication.
+	self createCF.
+	self createObject.
+	self createTestCase.
+	self createTestResource.
+]
+
+{ #category : #create }
+PBBridgeBootstrap >> createFiles [
+	| folder |
+	OSPlatform current isWindows ifFalse: [ 
+		self applicationClass ensurePythonBridgeSymlink ].
+	folder := self applicationClass repositoryFileReference.
+	PBApplication repositoryFileReference / 'start_bridge.py' copyTo: folder / 'start_bridge.py'.
+	PBApplication repositoryFileReference / 'Pipfile' copyTo: folder / 'Pipfile'.
+	PBApplication repositoryFileReference / 'install_env.sh' copyTo: folder / 'install_env.sh'.
+]
+
+{ #category : #'create classes' }
 PBBridgeBootstrap >> createObject [
 	| cls |
 	cls := PBObject subclass: self objectName
@@ -82,7 +105,18 @@ PBBridgeBootstrap >> createObject [
 	^ ' , self applicationName
 ]
 
-{ #category : #operations }
+{ #category : #create }
+PBBridgeBootstrap >> createRepository [
+	| repo |
+	repo:= IceRepositoryCreator new 
+				subdirectory: 'src';
+				location: self packageName asFileReference;
+				createNewRepositoryNamed: self packageName.
+	repo register.
+	repo workingCopy addPackageNamed: self packageName
+]
+
+{ #category : #'create classes' }
 PBBridgeBootstrap >> createTestCase [
 	| cls |
 	cls := PBTestCase subclass: self testCaseName
@@ -97,7 +131,7 @@ PBBridgeBootstrap >> createTestCase [
 	^ ' , self testResourceName
 ]
 
-{ #category : #operations }
+{ #category : #'create classes' }
 PBBridgeBootstrap >> createTestResource [
 	| cls |
 	cls := PBApplicationTestResource subclass: self testResourceName
