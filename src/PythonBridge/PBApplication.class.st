@@ -146,6 +146,18 @@ PBApplication class >> stop [
 	uniqueInstance := nil
 ]
 
+{ #category : #testing }
+PBApplication class >> test [ 
+	self assert: (self do: [ 
+		self commandFactory << (P3GBinaryOperator new
+                     left: 1;
+                     right: 2;
+                     operator: $+;
+                     yourself).
+		CVCF send waitForValue
+	  ]) = 3
+]
+
 { #category : #instructions }
 PBApplication class >> uniqueInstance [
 	^ uniqueInstance

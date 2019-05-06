@@ -119,6 +119,11 @@ PBCommandFactory >> send [
 ]
 
 { #category : #send }
+PBCommandFactory >> sendAndWait [
+	^ self sendCommand waitForValue
+]
+
+{ #category : #send }
 PBCommandFactory >> sendCommand [
 	^ self application send: self buildCommand
 ]

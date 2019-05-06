@@ -90,6 +90,11 @@ PBCF class >> send [
 	^ self application send: self buildCommand
 ]
 
+{ #category : #'old api' }
+PBCF class >> sendAndWait [
+	^ self send waitForValue
+]
+
 { #category : #'as yet unclassified' }
 PBCF class >> transformBlock: aBlock [
 	^ self current transformBlock: aBlock
