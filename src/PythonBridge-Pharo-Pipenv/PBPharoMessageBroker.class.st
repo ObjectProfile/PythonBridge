@@ -72,9 +72,10 @@ PBPharoMessageBroker >> pythonUri: anObject [
 PBPharoMessageBroker >> sendMessage: aMessage [
 	| ans |
 	ans := ZnEasy 
-				post: 'http://localhost:' , self pythonPort asString , '/' , aMessage type;
-				data: (ZnEntity text: aMessage encodeBody).
-	ans status = 200 ifFalse: [ Error signal: 'Command rejected by python' ]
+				post: self pythonUri , '/' , aMessage type
+				data: (ZnEntity text: aMessage encode).
+	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ].
+	^ self decode: ans.
 ]
 
 { #category : #accessing }

@@ -5,6 +5,10 @@ Class {
 }
 
 { #category : #accessing }
-PBIsAliveAnswer class >> type [
-	^ 'IS_ALIVE'
+PBIsAliveAnswer class >> messageClass [
+	^ PBIsAliveMessage
+]
+
+{ #category : #encoding }
+PBIsAliveAnswer >> privateEncode: dict [
 ]
