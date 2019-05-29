@@ -1,19 +1,19 @@
 Class {
-	#name : #PBEvalAnswer,
+	#name : #PBEnqueueAnswer,
 	#superclass : #PBAnswer,
 	#category : #'PythonBridge-Platform'
 }
 
 { #category : #accessing }
-PBEvalAnswer class >> fromDict: dict [
+PBEnqueueAnswer class >> fromDict: dict [
 	^ self new
 ]
 
 { #category : #accessing }
-PBEvalAnswer class >> messageClass [
-	^ PBEvalMessage 
+PBEnqueueAnswer class >> messageClass [
+	^ PBEnqueueMessage 
 ]
 
 { #category : #encoding }
-PBEvalAnswer >> privateEncode: dict [
+PBEnqueueAnswer >> privateEncode: dict [
 ]

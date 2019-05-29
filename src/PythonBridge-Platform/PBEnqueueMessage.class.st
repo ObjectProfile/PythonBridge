@@ -1,5 +1,5 @@
 Class {
-	#name : #PBEvalMessage,
+	#name : #PBEnqueueMessage,
 	#superclass : #PBMessage,
 	#instVars : [
 		'commandId',
@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-PBEvalMessage class >> commandId: commandId statements: statements bindings: bindings [
+PBEnqueueMessage class >> commandId: commandId statements: statements bindings: bindings [
 	^ self new
 			commandId: commandId;
 			statements: statements;
@@ -19,59 +19,59 @@ PBEvalMessage class >> commandId: commandId statements: statements bindings: bin
 ]
 
 { #category : #accessing }
-PBEvalMessage class >> type [
-	^ 'EVAL'
+PBEnqueueMessage class >> type [
+	^ 'ENQUEUE'
 ]
 
 { #category : #accessing }
-PBEvalMessage >> addBinding: assoc [
+PBEnqueueMessage >> addBinding: assoc [
 	bindings add: assoc
 ]
 
 { #category : #accessing }
-PBEvalMessage >> addBindings: assocs [
+PBEnqueueMessage >> addBindings: assocs [
 	assocs do: [ :assoc | self addBinding: assoc ]
 ]
 
 { #category : #accessing }
-PBEvalMessage >> bindings [
+PBEnqueueMessage >> bindings [
 	^ bindings
 ]
 
 { #category : #accessing }
-PBEvalMessage >> bindings: anObject [
+PBEnqueueMessage >> bindings: anObject [
 	bindings := anObject
 ]
 
 { #category : #accessing }
-PBEvalMessage >> commandId [
+PBEnqueueMessage >> commandId [
 	^ commandId
 ]
 
 { #category : #accessing }
-PBEvalMessage >> commandId: anObject [
+PBEnqueueMessage >> commandId: anObject [
 	commandId := anObject
 ]
 
 { #category : #initialization }
-PBEvalMessage >> initialize [
+PBEnqueueMessage >> initialize [
 	super initialize.
 	bindings := Dictionary new
 ]
 
 { #category : #encoding }
-PBEvalMessage >> privateEncode: dict [
+PBEnqueueMessage >> privateEncode: dict [
 	dict at: #commandId put: commandId.
 	dict at: #statements put: statements.
 	dict at: #bindings put: bindings
 ]
 
 { #category : #accessing }
-PBEvalMessage >> statements [
+PBEnqueueMessage >> statements [
 	^ statements
 ]
 
 { #category : #accessing }
-PBEvalMessage >> statements: anObject [
+PBEnqueueMessage >> statements: anObject [
 	statements := anObject
 ]
