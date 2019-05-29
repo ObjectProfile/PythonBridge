@@ -6,7 +6,7 @@ Class {
 
 { #category : #accessing }
 PBMessage class >> type [
-	self subclassResponsibility
+	^ 'MSG'
 ]
 
 { #category : #encoding }

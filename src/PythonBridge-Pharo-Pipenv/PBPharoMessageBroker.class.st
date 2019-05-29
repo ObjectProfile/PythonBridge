@@ -23,6 +23,11 @@ PBPharoMessageBroker >> addCallback: aCallback messageClass: msgCls [
 	messageCallbacks at: msgCls put: aCallback
 ]
 
+{ #category : #messaging }
+PBPharoMessageBroker >> decode: text [
+	^ PBAnswer decode: (NeoJSONReader fromString: text)
+]
+
 { #category : #testing }
 PBPharoMessageBroker >> isRunning [
 	^ server notNil
@@ -75,7 +80,7 @@ PBPharoMessageBroker >> sendMessage: aMessage [
 				post: self pythonUri , '/' , aMessage type
 				data: (ZnEntity text: aMessage encode).
 	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ].
-	^ self decode: ans.
+	^ self decode: ans contents.
 ]
 
 { #category : #accessing }
