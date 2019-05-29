@@ -79,8 +79,7 @@ PBPharoMessageBroker >> sendMessage: aMessage [
 	ans := ZnEasy 
 				post: self pythonUri , '/' , aMessage type
 				data: (ZnEntity text: aMessage encode).
-	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ].
-	^ self decode: ans contents.
+	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ]
 ]
 
 { #category : #accessing }

@@ -11,8 +11,8 @@ Class {
 }
 
 { #category : #tests }
-PBPharoMessageBrokerTest >> answer: ans [
-	^ ZnResponse ok: (ZnEntity json: ans encode)
+PBPharoMessageBrokerTest >> answer [
+	^ ZnResponse ok: (ZnEntity text: 'OK')
 ]
 
 { #category : #acessing }
@@ -80,7 +80,7 @@ PBPharoMessageBrokerTest >> tearDown [
 
 { #category : #tests }
 PBPharoMessageBrokerTest >> testEnqueueCommandMessage [
-	| flag answer msg |
+	| flag msg |
 	flag := false.
 	msg := PBEnqueueMessage 
 				commandId: '7365'
@@ -97,15 +97,14 @@ PBPharoMessageBrokerTest >> testEnqueueCommandMessage [
 		self assert: (bindings at: #foo) equals: 42.
 		self assert: (bindings at: #bar) equals: 'zork'.
 		flag := true.
-		self answer: PBEnqueueAnswer new ].
-	answer := broker sendMessage: msg.
-	self assert: answer type equals: PBEnqueueMessage type.
+		self answer ].
+	broker sendMessage: msg.
 	self assert: flag
 ]
 
 { #category : #tests }
 PBPharoMessageBrokerTest >> testIsAliveMessage [
-	| flag answer |
+	| flag |
 	flag := false.
 	self setHandler: [ :assoc |
 		self assert: assoc key equals: PBIsAliveMessage type.
@@ -113,9 +112,8 @@ PBPharoMessageBrokerTest >> testIsAliveMessage [
 		self assert: assoc value associations first key equals: #type.
 		self assert: assoc value associations first value equals: PBIsAliveMessage type.
 		flag := true.
-		self answer: PBIsAliveAnswer new ].
-	answer := broker sendMessage: PBIsAliveMessage new.
-	self assert: answer type equals: PBIsAliveMessage type.
+		self answer ].
+	broker sendMessage: PBIsAliveMessage new.
 	self assert: flag
 ]
 

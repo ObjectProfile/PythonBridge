@@ -1,6 +1,6 @@
 Class {
 	#name : #PBAnswer,
-	#superclass : #Object,
+	#superclass : #PBMessage,
 	#category : #'PythonBridge-Platform'
 }
 
