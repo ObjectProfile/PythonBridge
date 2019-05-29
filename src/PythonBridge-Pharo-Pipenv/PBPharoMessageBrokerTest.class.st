@@ -79,6 +79,31 @@ PBPharoMessageBrokerTest >> tearDown [
 ]
 
 { #category : #tests }
+PBPharoMessageBrokerTest >> testEvalMessage [
+	| flag answer msg |
+	flag := false.
+	msg := PBEvalMessage 
+				commandId: '7365'
+				statements: 'foo().cat()'
+				bindings: { #foo -> 42 . #bar -> 'zork' } asDictionary.
+	self setHandler: [ :assoc | | bindings |
+		self assert: assoc key equals: PBEvalMessage type.
+		self assert: assoc value size equals: 4.
+		self assert: (assoc value at: #type) equals: PBEvalMessage type.
+		self assert: (assoc value at: #commandId) equals: '7365'.
+		self assert: (assoc value at: #statements) equals: 'foo().cat()'.
+		bindings := assoc value at: #bindings.
+		self assert: bindings size equals: 2.
+		self assert: (bindings at: #foo) equals: 42.
+		self assert: (bindings at: #bar) equals: 'zork'.
+		flag := true.
+		self answer: PBEvalAnswer new ].
+	answer := broker sendMessage: msg.
+	self assert: answer type equals: PBEvalMessage type.
+	self assert: flag
+]
+
+{ #category : #tests }
 PBPharoMessageBrokerTest >> testIsAliveMessage [
 	| flag answer |
 	flag := false.
