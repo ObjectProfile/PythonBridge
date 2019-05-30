@@ -28,14 +28,23 @@ PBDeserializer >> buildProxyFor: rawObject [
 
 { #category : #'private protocol' }
 PBDeserializer >> deserialize: str [
-	| rawObj |
-	rawObj := NeoJSONReader fromString: str.
-	rawObj isDictionary ifFalse: [ ^ rawObj ].
-	rawObj at: #__pyid__ ifAbsent: [ ^ rawObj ].
-	^ self objectRegistry resolve: (rawObj at: #__pyid__) ifAbsent: [ self buildProxyFor: rawObj ]
+	^ self privateDeserialize: (NeoJSONReader fromString: str).
 ]
 
 { #category : #'private protocol' }
 PBDeserializer >> objectRegistry [
 	^ self executionHandler objectRegistry
+]
+
+{ #category : #'private protocol' }
+PBDeserializer >> privateDeserialize: rawObj [
+	rawObj isCollection ifFalse: [ ^ rawObj ].
+	rawObj isDictionary and: [ (rawObj includesKey: #__pyid__) 
+		ifTrue: [ ^ self reifyProxyFor: rawObj ] ].
+	^ rawObj collect: [ :elem | self privateDeserialize: elem ]
+]
+
+{ #category : #'private protocol' }
+PBDeserializer >> reifyProxyFor: rawObj [
+	^ self objectRegistry resolve: (rawObj at: #__pyid__) ifAbsent: [ self buildProxyFor: rawObj ]
 ]

@@ -32,7 +32,7 @@ PBProxyObject >> applicationClass [
 	^ self application class
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #hooks }
 PBProxyObject >> createObject [
 	self shouldNotImplement
 ]
