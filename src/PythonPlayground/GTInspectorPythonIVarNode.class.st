@@ -16,6 +16,14 @@ GTInspectorPythonIVarNode class >> hostObject: host name: varName pythonObject: 
 			yourself
 ]
 
+{ #category : #composition }
+GTInspectorPythonIVarNode >> childrenNodesFor: aVariablesBrowser [
+	"Return a collection of subvariable nodes to be displayed in a given raw variables browser.
+	Note: by default we dispatch to browser and let it perform collection"
+	<return: #Collection of: #GTInspectorVariableNode>
+	^ aVariablesBrowser childrenVariableNodesForNode: self
+]
+
 { #category : #accessing }
 GTInspectorPythonIVarNode >> key [
 	^ name asString
