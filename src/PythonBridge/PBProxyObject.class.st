@@ -37,6 +37,14 @@ PBProxyObject >> createObject [
 	self shouldNotImplement
 ]
 
+{ #category : #printing }
+PBProxyObject >> printOn: str [
+	str 
+		<< (pythonClass asString first isVowel ifTrue: ['an '] ifFalse: ['a ']);
+		<< pythonClass asString;
+		<< ' (Proxy)'
+]
+
 { #category : #accessing }
 PBProxyObject >> pythonClass [
 	^ pythonClass
