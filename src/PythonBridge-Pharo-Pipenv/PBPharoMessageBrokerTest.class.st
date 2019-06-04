@@ -15,9 +15,19 @@ PBPharoMessageBrokerTest >> answer [
 	^ ZnResponse ok: (ZnEntity text: 'OK')
 ]
 
+{ #category : #tests }
+PBPharoMessageBrokerTest >> answer: aDictionary [
+	^ ZnResponse ok: (ZnEntity json: (NeoJSONWriter toString: aDictionary))
+]
+
 { #category : #acessing }
 PBPharoMessageBrokerTest >> brokerPort [
 	^ 6538
+]
+
+{ #category : #running }
+PBPharoMessageBrokerTest >> brokerUri [
+	^ 'http://localhost:' , self brokerPort asString
 ]
 
 { #category : #running }
@@ -30,6 +40,11 @@ PBPharoMessageBrokerTest >> buildAndStartStubServer [
 { #category : #tests }
 PBPharoMessageBrokerTest >> errorResponse [
 	^ ZnResponse serverError: 'ERROR'
+]
+
+{ #category : #tests }
+PBPharoMessageBrokerTest >> for: answerClass setCallback: aBlock [
+	^ broker addCallback: aBlock answerClass: answerClass
 ]
 
 { #category : #initialization }
@@ -57,6 +72,20 @@ PBPharoMessageBrokerTest >> primHandle: aRequest [
 	^ answer
 ]
 
+{ #category : #running }
+PBPharoMessageBrokerTest >> pythonUri [
+	^ 'http://localhost:' , self portTest asString
+]
+
+{ #category : #tests }
+PBPharoMessageBrokerTest >> sendMessageToBroker: dict [
+	| ans |
+	ans := ZnEasy 
+				post: self brokerUri , '/' , (dict at: #type)
+				data: (ZnEntity json: (NeoJSONWriter toString: dict)).
+	ans status = 200 ifFalse: [ PBCommunicationError signal: ans status asString ]
+]
+
 { #category : #acessing }
 PBPharoMessageBrokerTest >> setHandler: aBlock [
 	handlerBlock := aBlock
@@ -67,7 +96,7 @@ PBPharoMessageBrokerTest >> setUp [
 	super setUp.
 	broker := PBPharoMessageBroker
 		port: self brokerPort
-		pythonUri: 'http://localhost:' , self portTest asString.
+		pythonUri: self pythonUri.
 	broker start.
 	self buildAndStartStubServer
 ]
@@ -103,6 +132,21 @@ PBPharoMessageBrokerTest >> testEnqueueCommandMessage [
 ]
 
 { #category : #tests }
+PBPharoMessageBrokerTest >> testEvalAnswer [
+	| flag |
+	flag := false.
+	self for: PBEvalAnswer setCallback: [ :dict |
+		self assert: (dict at: #type) equals: PBEvalAnswer type.
+		self assert: (dict at: #value) equals: 'foobar'.
+		flag := true.
+		self answer ].
+	self sendMessageToBroker: { 
+				#type -> PBEvalAnswer type.
+				#value -> 'foobar' } asDictionary.
+	self assert: flag
+]
+
+{ #category : #tests }
 PBPharoMessageBrokerTest >> testIsAliveMessage [
 	| flag |
 	flag := false.
@@ -120,4 +164,17 @@ PBPharoMessageBrokerTest >> testIsAliveMessage [
 { #category : #tests }
 PBPharoMessageBrokerTest >> testIsRunning [
 	self assert: broker isRunning
+]
+
+{ #category : #tests }
+PBPharoMessageBrokerTest >> testWrongRouteAnswer [
+	| flag |
+	flag := false.
+	self for: PBEvalAnswer setCallback: [ :dict |
+		flag := true.
+		self answer ].
+	self 
+		should: [ self sendMessageToBroker: { #type -> PBCallbackAnswer type } asDictionary ] 
+		raise: PBCommunicationError.
+	self deny: flag
 ]

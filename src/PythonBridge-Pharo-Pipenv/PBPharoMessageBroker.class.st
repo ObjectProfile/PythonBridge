@@ -19,13 +19,42 @@ PBPharoMessageBroker class >> port: port pythonUri: pythonUri [
 ]
 
 { #category : #messaging }
-PBPharoMessageBroker >> addCallback: aCallback messageClass: msgCls [
-	messageCallbacks at: msgCls put: aCallback
+PBPharoMessageBroker >> addCallback: aBlock answerClass: answerCls [
+	messageCallbacks at: answerCls put: aBlock
 ]
 
 { #category : #messaging }
-PBPharoMessageBroker >> decode: text [
-	^ PBAnswer decode: (NeoJSONReader fromString: text)
+PBPharoMessageBroker >> decode: request [
+	^ NeoJSONReader fromString: request contents
+]
+
+{ #category : #private }
+PBPharoMessageBroker >> handleMessage: aDict [
+	| msgClass |
+	msgClass := self resolveMessageFromType: (aDict at: #type).
+	(messageCallbacks includesKey: msgClass) 
+		ifFalse: [ ^ self invalidType ].
+	^ (messageCallbacks at: msgClass) value: aDict
+]
+
+{ #category : #initialization }
+PBPharoMessageBroker >> initialize [
+	super initialize.
+	messageCallbacks := Dictionary new
+]
+
+{ #category : #private }
+PBPharoMessageBroker >> invalidMethod [
+	^ (ZnResponse statusLine: ZnStatusLine badRequest)
+		entity: (ZnEntity text: 'Bad method');
+		yourself
+]
+
+{ #category : #private }
+PBPharoMessageBroker >> invalidType [
+	^ (ZnResponse statusLine: ZnStatusLine notFound)
+		entity: (ZnEntity text: 'Invalid type');
+		yourself
 ]
 
 { #category : #testing }
@@ -56,11 +85,11 @@ PBPharoMessageBroker >> preventTestForkedPDestroyServer [
 { #category : #private }
 PBPharoMessageBroker >> prim_handle: req [
 	req method = #POST 
-		ifTrue: [ | message |
-			message := self decodeMessage: req.
-			^ self handleMessage: message ]
+		ifTrue: [ | dict |
+			dict := self decode: req.
+			^ self handleMessage: dict ]
 		ifFalse: [ 
-			^ self invalidMessageResponse ]
+			^ self invalidMethod ]
 ]
 
 { #category : #accessing }
@@ -71,6 +100,11 @@ PBPharoMessageBroker >> pythonUri [
 { #category : #accessing }
 PBPharoMessageBroker >> pythonUri: anObject [
 	pythonUri := anObject
+]
+
+{ #category : #private }
+PBPharoMessageBroker >> resolveMessageFromType: aType [
+	^ PBAnswer resolveMessageClassFromType: aType
 ]
 
 { #category : #messaging }

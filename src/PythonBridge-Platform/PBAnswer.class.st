@@ -23,8 +23,13 @@ PBAnswer class >> messageClass [
 ]
 
 { #category : #accessing }
+PBAnswer class >> resolveMessageClassFromType: aString [
+	^ self withAllSubclasses detect: [ :cls | cls type = aString ] ifNone: [ PBAnswer ].
+]
+
+{ #category : #accessing }
 PBAnswer class >> type [
-	^ self messageClass type
+	^ 'MSG'
 ]
 
 { #category : #encoding }
