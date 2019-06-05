@@ -4,6 +4,7 @@ Class {
 	#instVars : [
 		'broker',
 		'stubServer',
+		'settings',
 		'handlerBlock',
 		'handlerException'
 	],
@@ -21,18 +22,13 @@ PBPharoMessageBrokerTest >> answer: aDictionary [
 ]
 
 { #category : #acessing }
-PBPharoMessageBrokerTest >> brokerPort [
-	^ 6538
-]
-
-{ #category : #running }
 PBPharoMessageBrokerTest >> brokerUri [
-	^ 'http://localhost:' , self brokerPort asString
+	^ 'http://' , settings pharoSocketAddress printAddress
 ]
 
-{ #category : #running }
+{ #category : #utils }
 PBPharoMessageBrokerTest >> buildAndStartStubServer [
-	stubServer := ZnServer on: self portTest.
+	stubServer := ZnServer on: settings pythonSocketAddress port.
 	stubServer start.
 	stubServer onRequestRespond: [ :req | self primHandle: req ]
 ]
@@ -40,6 +36,13 @@ PBPharoMessageBrokerTest >> buildAndStartStubServer [
 { #category : #utils }
 PBPharoMessageBrokerTest >> decodeAnswer: jsonText [
 	^ NeoJSONReader fromString: jsonText
+]
+
+{ #category : #running }
+PBPharoMessageBrokerTest >> defaultSettings [
+	^ PBSettings 
+		pharoSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: 6538)
+		pythonSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: 6539)
 ]
 
 { #category : #utils }
@@ -58,11 +61,6 @@ PBPharoMessageBrokerTest >> initialize [
 	handlerBlock := [ :r |  ]
 ]
 
-{ #category : #acessing }
-PBPharoMessageBrokerTest >> portTest [
-	^ 6539
-]
-
 { #category : #private }
 PBPharoMessageBrokerTest >> primHandle: aRequest [
 	| answer |
@@ -77,9 +75,9 @@ PBPharoMessageBrokerTest >> primHandle: aRequest [
 	^ answer
 ]
 
-{ #category : #running }
+{ #category : #acessing }
 PBPharoMessageBrokerTest >> pythonUri [
-	^ 'http://localhost:' , self portTest asString
+	^ 'http://' , settings pythonSocketAddress printAddress
 ]
 
 { #category : #hooks }
@@ -100,9 +98,8 @@ PBPharoMessageBrokerTest >> setHandler: aBlock [
 { #category : #running }
 PBPharoMessageBrokerTest >> setUp [
 	super setUp.
-	broker := PBPharoMessageBroker
-		port: self brokerPort
-		pythonUri: self pythonUri.
+	settings := self defaultSettings.
+	broker := PBPharoMessageBroker settings: settings.
 	broker start.
 	self buildAndStartStubServer
 ]

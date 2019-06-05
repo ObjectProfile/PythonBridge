@@ -6,16 +6,17 @@ Class {
 		'port',
 		'pythonUri',
 		'server',
-		'debugMode'
+		'debugMode',
+		'settings'
 	],
 	#category : #'PythonBridge-Platform-Pharo'
 }
 
 { #category : #'as yet unclassified' }
-PBPharoMessageBroker class >> port: port pythonUri: pythonUri [
+PBPharoMessageBroker class >> settings: settings [
 	^ self new
-		port: port;
-		pythonUri: pythonUri
+		settings: settings;
+		yourself
 ]
 
 { #category : #messaging }
@@ -72,12 +73,7 @@ PBPharoMessageBroker >> isRunning [
 
 { #category : #accessing }
 PBPharoMessageBroker >> port [
-	^ port
-]
-
-{ #category : #accessing }
-PBPharoMessageBroker >> port: anObject [
-	port := anObject
+	^ settings pharoSocketAddress port
 ]
 
 { #category : #private }
@@ -107,12 +103,7 @@ PBPharoMessageBroker >> prim_handle: req [
 
 { #category : #accessing }
 PBPharoMessageBroker >> pythonUri [
-	^ pythonUri
-]
-
-{ #category : #accessing }
-PBPharoMessageBroker >> pythonUri: anObject [
-	pythonUri := anObject
+	^ 'http://' , settings pythonSocketAddress printAddress
 ]
 
 { #category : #private }
@@ -133,6 +124,16 @@ PBPharoMessageBroker >> sendMessage: aMessage [
 PBPharoMessageBroker >> setDebugMode [
 	debugMode := true.
 	server ifNotNil: [ server debugMode: true ]
+]
+
+{ #category : #accessing }
+PBPharoMessageBroker >> settings [
+	^ settings
+]
+
+{ #category : #accessing }
+PBPharoMessageBroker >> settings: anObject [
+	settings := anObject
 ]
 
 { #category : #'start-stop' }
