@@ -10,12 +10,12 @@ Class {
 	#category : #'PythonBridge-Pharo-Pipenv'
 }
 
-{ #category : #tests }
+{ #category : #utils }
 PBPharoMessageBrokerTest >> answer [
 	^ ZnResponse ok: (ZnEntity text: 'OK')
 ]
 
-{ #category : #tests }
+{ #category : #utils }
 PBPharoMessageBrokerTest >> answer: aDictionary [
 	^ ZnResponse ok: (ZnEntity json: (NeoJSONWriter toString: aDictionary))
 ]
@@ -37,12 +37,17 @@ PBPharoMessageBrokerTest >> buildAndStartStubServer [
 	stubServer onRequestRespond: [ :req | self primHandle: req ]
 ]
 
-{ #category : #tests }
+{ #category : #utils }
+PBPharoMessageBrokerTest >> decodeAnswer: jsonText [
+	^ NeoJSONReader fromString: jsonText
+]
+
+{ #category : #utils }
 PBPharoMessageBrokerTest >> errorResponse [
 	^ ZnResponse serverError: 'ERROR'
 ]
 
-{ #category : #tests }
+{ #category : #hooks }
 PBPharoMessageBrokerTest >> for: answerClass setCallback: aBlock [
 	^ broker addCallback: aBlock answerClass: answerClass
 ]
@@ -77,13 +82,14 @@ PBPharoMessageBrokerTest >> pythonUri [
 	^ 'http://localhost:' , self portTest asString
 ]
 
-{ #category : #tests }
+{ #category : #hooks }
 PBPharoMessageBrokerTest >> sendMessageToBroker: dict [
 	| ans |
 	ans := ZnEasy 
 				post: self brokerUri , '/' , (dict at: #type)
 				data: (ZnEntity json: (NeoJSONWriter toString: dict)).
-	ans status = 200 ifFalse: [ PBCommunicationError signal: ans status asString ]
+	ans status = 200 ifFalse: [ PBCommunicationError signal: ans status asString ].
+	^ self decodeAnswer: ans contents
 ]
 
 { #category : #acessing }
@@ -132,6 +138,21 @@ PBPharoMessageBrokerTest >> testEnqueueCommandMessage [
 ]
 
 { #category : #tests }
+PBPharoMessageBrokerTest >> testErrorOnCallback [
+	| flag |
+	flag := false.
+	self for: PBEvalAnswer setCallback: [ :dict |
+		Error signal.
+		flag := true ].
+	self should: [ 
+			self sendMessageToBroker: { 
+				#type -> PBEvalAnswer type.
+				#value -> 'foobar' } asDictionary ]
+		raise: PBCommunicationError.
+	self deny: flag
+]
+
+{ #category : #tests }
 PBPharoMessageBrokerTest >> testEvalAnswer [
 	| flag |
 	flag := false.
@@ -139,7 +160,7 @@ PBPharoMessageBrokerTest >> testEvalAnswer [
 		self assert: (dict at: #type) equals: PBEvalAnswer type.
 		self assert: (dict at: #value) equals: 'foobar'.
 		flag := true.
-		self answer ].
+		PBEvalAnswer new ].
 	self sendMessageToBroker: { 
 				#type -> PBEvalAnswer type.
 				#value -> 'foobar' } asDictionary.

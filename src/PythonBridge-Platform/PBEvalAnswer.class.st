@@ -8,3 +8,7 @@ Class {
 PBEvalAnswer class >> type [
 	^ 'EVAL'
 ]
+
+{ #category : #encoding }
+PBEvalAnswer >> privateEncode: dict [
+]

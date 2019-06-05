@@ -28,19 +28,27 @@ PBPharoMessageBroker >> decode: request [
 	^ NeoJSONReader fromString: request contents
 ]
 
+{ #category : #messaging }
+PBPharoMessageBroker >> encodeAnswer: aMessage [
+	^ aMessage encode
+]
+
 { #category : #private }
 PBPharoMessageBroker >> handleMessage: aDict [
-	| msgClass |
+	| msgClass answerMsg |
 	msgClass := self resolveMessageFromType: (aDict at: #type).
 	(messageCallbacks includesKey: msgClass) 
 		ifFalse: [ ^ self invalidType ].
-	^ (messageCallbacks at: msgClass) value: aDict
+	answerMsg := (messageCallbacks at: msgClass) value: aDict.
+	(answerMsg isKindOf: PBAnswer) ifFalse: [ PBCommunicationError signal ].
+	^ answerMsg
 ]
 
 { #category : #initialization }
 PBPharoMessageBroker >> initialize [
 	super initialize.
-	messageCallbacks := Dictionary new
+	messageCallbacks := Dictionary new.
+	debugMode := false
 ]
 
 { #category : #private }
@@ -85,9 +93,14 @@ PBPharoMessageBroker >> preventTestForkedPDestroyServer [
 { #category : #private }
 PBPharoMessageBroker >> prim_handle: req [
 	req method = #POST 
-		ifTrue: [ | dict |
+		ifTrue: [ | dict ans |
 			dict := self decode: req.
-			^ self handleMessage: dict ]
+			ans := [ self handleMessage: dict ] 
+							on: Error 
+							do: [ :e | debugMode
+												ifTrue: [ e pass ]
+												ifFalse: [ ZnResponse serverError: e printString  ] ].
+			^ ZnResponse ok: (ZnEntity json: (self encodeAnswer: ans)) ]
 		ifFalse: [ 
 			^ self invalidMethod ]
 ]

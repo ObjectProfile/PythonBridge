@@ -29,21 +29,7 @@ PBAnswer class >> resolveMessageClassFromType: aString [
 
 { #category : #accessing }
 PBAnswer class >> type [
-	^ 'MSG'
-]
-
-{ #category : #encoding }
-PBAnswer >> encode [
-	| dict |
-	dict := Dictionary new.
-	dict at: #type put: self type.
-	self privateEncode: dict.
-	^ NeoJSONWriter toString: dict
-]
-
-{ #category : #encoding }
-PBAnswer >> privateEncode: dict [
-	self subclassResponsibility
+	^ 'ANSWER'
 ]
 
 { #category : #accessing }
