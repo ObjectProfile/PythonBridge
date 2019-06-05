@@ -8,7 +8,7 @@ Class {
 		'server',
 		'debugMode'
 	],
-	#category : #'PythonBridge-Pharo-Pipenv'
+	#category : #'PythonBridge-Platform-Pharo'
 }
 
 { #category : #'as yet unclassified' }

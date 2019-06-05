@@ -1,5 +1,5 @@
 Class {
 	#name : #PBPharoPipenvProcess,
 	#superclass : #PBAbstractProcess,
-	#category : #'PythonBridge-Pharo-Pipenv'
+	#category : #'PythonBridge-Platform-Pharo'
 }

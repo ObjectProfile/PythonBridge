@@ -7,7 +7,7 @@ Class {
 		'handlerBlock',
 		'handlerException'
 	],
-	#category : #'PythonBridge-Pharo-Pipenv'
+	#category : #'PythonBridge-Platform-Pharo'
 }
 
 { #category : #utils }
