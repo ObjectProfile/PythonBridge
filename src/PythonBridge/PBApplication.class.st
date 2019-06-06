@@ -16,6 +16,11 @@ Class {
 	#category : #'PythonBridge-Global'
 }
 
+{ #category : #accessing }
+PBApplication class >> baseApplication [
+	^ PBApplication
+]
+
 { #category : #'python hooks file' }
 PBApplication class >> createSymlinkFolder [
 	| symlinkRef |

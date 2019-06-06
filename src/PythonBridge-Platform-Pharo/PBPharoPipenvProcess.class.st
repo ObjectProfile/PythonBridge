@@ -39,11 +39,8 @@ PBPharoPipenvProcess class >> resolvePipenvPath [
 ]
 
 { #category : #accessing }
-PBPharoPipenvProcess class >> settings: settings repositoryNamed: repoName [
-	^ self new
-		settings: settings;
-		workingDirectory: (self workingDirectoryForRepositoryNamed: repoName);
-		yourself
+PBPharoPipenvProcess class >> settings: settings application: application [
+	^ self settings: settings workingDirectory: (PBPharoPlatform folderForApplication: application)
 ]
 
 { #category : #accessing }
@@ -67,16 +64,6 @@ PBPharoPipenvProcess class >> signalPipenvNotFound [
 	
 	"
 	Error signal: 'Error: Pipenv command could not be found.'
-]
-
-{ #category : #initialization }
-PBPharoPipenvProcess class >> workingDirectoryForRepositoryNamed: repoName [
-	^ (IceRepository registry 
-			detect: [ :each | each includesPackageNamed: repoName ] 
-			ifNone: [ 
-				self inform: 'Please add a clone of this project to Iceberg to access to the resources'.
-				"For travis!"
-				^ '.' asFileReference ]) location
 ]
 
 { #category : #accessing }
@@ -143,7 +130,9 @@ PBPharoPipenvProcess >> pythonMainFile: anObject [
 PBPharoPipenvProcess >> setDefaultEnvironmentVariables [
 	environmentVariables
 		at: 'LC_ALL' put: 'en_US.UTF-8';
-		at: 'LANG' put: 'en_US.UTF-8'
+		at: 'LANG' put: 'en_US.UTF-8';
+		at: 'PIPENV_VENV_IN_PROJECT' put: '1';
+		at: 'PIP_DEFAULT_TIMEOUT' put: '100'
 ]
 
 { #category : #accessing }
