@@ -2,12 +2,7 @@ Class {
 	#name : #PBPharoMessageBroker,
 	#superclass : #PBAbstractMessageBroker,
 	#instVars : [
-		'messageCallbacks',
-		'port',
-		'pythonUri',
-		'server',
-		'debugMode',
-		'settings'
+		'server'
 	],
 	#category : #'PythonBridge-Platform-Pharo'
 }
@@ -20,18 +15,13 @@ PBPharoMessageBroker class >> settings: settings [
 ]
 
 { #category : #messaging }
-PBPharoMessageBroker >> addCallback: aBlock answerClass: answerCls [
-	messageCallbacks at: answerCls put: aBlock
-]
-
-{ #category : #messaging }
 PBPharoMessageBroker >> decode: request [
 	^ NeoJSONReader fromString: request contents
 ]
 
 { #category : #messaging }
-PBPharoMessageBroker >> encodeAnswer: aMessage [
-	^ aMessage encode
+PBPharoMessageBroker >> encode: aMessage [
+	^ NeoJSONWriter toString: aMessage encode
 ]
 
 { #category : #private }
@@ -43,13 +33,6 @@ PBPharoMessageBroker >> handleMessage: aDict [
 	answerMsg := (messageCallbacks at: msgClass) value: aDict.
 	(answerMsg isKindOf: PBAnswer) ifFalse: [ PBCommunicationError signal ].
 	^ answerMsg
-]
-
-{ #category : #initialization }
-PBPharoMessageBroker >> initialize [
-	super initialize.
-	messageCallbacks := Dictionary new.
-	debugMode := false
 ]
 
 { #category : #private }
@@ -69,11 +52,6 @@ PBPharoMessageBroker >> invalidType [
 { #category : #testing }
 PBPharoMessageBroker >> isRunning [
 	^ server notNil
-]
-
-{ #category : #accessing }
-PBPharoMessageBroker >> port [
-	^ settings pharoSocketAddress port
 ]
 
 { #category : #private }
@@ -96,19 +74,9 @@ PBPharoMessageBroker >> prim_handle: req [
 							do: [ :e | debugMode
 												ifTrue: [ e pass ]
 												ifFalse: [ ZnResponse serverError: e printString  ] ].
-			^ ZnResponse ok: (ZnEntity json: (self encodeAnswer: ans)) ]
+			^ ZnResponse ok: (ZnEntity json: (self encode: ans)) ]
 		ifFalse: [ 
 			^ self invalidMethod ]
-]
-
-{ #category : #accessing }
-PBPharoMessageBroker >> pythonUri [
-	^ 'http://' , settings pythonSocketAddress printAddress
-]
-
-{ #category : #private }
-PBPharoMessageBroker >> resolveMessageFromType: aType [
-	^ PBAnswer resolveMessageClassFromType: aType
 ]
 
 { #category : #messaging }
@@ -116,24 +84,14 @@ PBPharoMessageBroker >> sendMessage: aMessage [
 	| ans |
 	ans := ZnEasy 
 				post: self pythonUri , '/' , aMessage type
-				data: (ZnEntity text: aMessage encode).
+				data: (ZnEntity text: (self encode: aMessage)).
 	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ]
 ]
 
 { #category : #accessing }
 PBPharoMessageBroker >> setDebugMode [
-	debugMode := true.
+	super setDebugMode.
 	server ifNotNil: [ server debugMode: true ]
-]
-
-{ #category : #accessing }
-PBPharoMessageBroker >> settings [
-	^ settings
-]
-
-{ #category : #accessing }
-PBPharoMessageBroker >> settings: anObject [
-	settings := anObject
 ]
 
 { #category : #'start-stop' }

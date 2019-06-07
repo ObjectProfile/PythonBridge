@@ -3,10 +3,7 @@ Class {
 	#superclass : #PBAbstractProcess,
 	#instVars : [
 		'process',
-		'settings',
-		'workingDirectory',
-		'environmentVariables',
-		'pythonMainFile'
+		'environmentVariables'
 	],
 	#classVars : [
 		'PipenvPath'
@@ -85,7 +82,7 @@ PBPharoPipenvProcess >> isRunning [
 		ifNotNil: [ process isRunning ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 PBPharoPipenvProcess >> newProcess [
 	| newProcess |
 	newProcess := OSSUnixSubprocess new
@@ -107,23 +104,13 @@ PBPharoPipenvProcess >> process [
 	^ process
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 PBPharoPipenvProcess >> processArguments [
 	^ { 
 			'run'. 
 			'python'. self pythonMainFile fullName. 
 			'--port'. self settings pythonSocketAddress port asString . 
 			'--pharo'. self settings pharoSocketAddress port asString }
-]
-
-{ #category : #accessing }
-PBPharoPipenvProcess >> pythonMainFile [
-	^ pythonMainFile ifNil: [ self workingDirectory / 'start_bridge.py' ]
-]
-
-{ #category : #accessing }
-PBPharoPipenvProcess >> pythonMainFile: anObject [
-	pythonMainFile := anObject
 ]
 
 { #category : #initialization }
@@ -135,45 +122,15 @@ PBPharoPipenvProcess >> setDefaultEnvironmentVariables [
 		at: 'PIP_DEFAULT_TIMEOUT' put: '100'
 ]
 
-{ #category : #accessing }
-PBPharoPipenvProcess >> settings [
-	^ settings
-]
-
-{ #category : #accessing }
-PBPharoPipenvProcess >> settings: anObject [
-	settings := anObject
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #'start-stop' }
 PBPharoPipenvProcess >> start [
 	process := self newProcess.
 	process run
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'start-stop' }
 PBPharoPipenvProcess >> stop [
 	process ifNil: [ ^ self ].
 	process isRunning ifTrue: [ process terminate ].
 	process closeAndCleanStreams
-]
-
-{ #category : #accessing }
-PBPharoPipenvProcess >> workingDirectory [
-	^ workingDirectory
-]
-
-{ #category : #accessing }
-PBPharoPipenvProcess >> workingDirectory: anObject [
-	workingDirectory := anObject
-]
-
-{ #category : #initialization }
-PBPharoPipenvProcess >> workingDirectoryForRepositoryNamed: repoName [
-	^ (IceRepository registry 
-			detect: [ :each | each includesPackageNamed: repoName ] 
-			ifNone: [ 
-				self inform: 'Please add a clone of this project to Iceberg to access to the resources'.
-				"For travis!"
-				^ '.' asFileReference ]) location
 ]

@@ -5,7 +5,7 @@ Class {
 		'ipOrName',
 		'port'
 	],
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Platform'
 }
 
 { #category : #'as yet unclassified' }

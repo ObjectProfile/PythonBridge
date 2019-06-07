@@ -15,7 +15,7 @@ PBMessage >> encode [
 	dict := Dictionary new.
 	dict at: #type put: self type.
 	self privateEncode: dict.
-	^ NeoJSONWriter toString: dict
+	^ dict
 ]
 
 { #category : #encoding }
