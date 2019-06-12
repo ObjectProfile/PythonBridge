@@ -11,6 +11,13 @@ Class {
 	#category : #'PythonBridge-Platform-Pharo'
 }
 
+{ #category : #accessing }
+PBPharoPipenvProcess class >> application: application [
+	^ self 
+		settings: application settings 
+		workingDirectory: (PBPharoPlatform folderForApplication: application)
+]
+
 { #category : #initialization }
 PBPharoPipenvProcess class >> pipenvPath [
 	^ PipenvPath isEmptyOrNil 

@@ -13,11 +13,6 @@ PBAnswer class >> decode: dict [
 ]
 
 { #category : #accessing }
-PBAnswer class >> fromDict: dict [
-	self subclassResponsibility
-]
-
-{ #category : #accessing }
 PBAnswer class >> messageClass [
 	^ PBMessage
 ]

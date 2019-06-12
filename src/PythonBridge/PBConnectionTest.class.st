@@ -32,10 +32,9 @@ PBConnectionTest >> testNotRunning [
 ]
 
 { #category : #tests }
-PBConnectionTest >> testStartStopProcess [
+PBConnectionTest >> testSimpleExecution [
 	self deny: application isRunning.
 	application start.
-	self assert: application processHandler isRunning.
 	application send: 
 		(PBCommand new instructions: 
 			(Array with: (P3GBinaryOperator new
@@ -45,7 +44,6 @@ PBConnectionTest >> testStartStopProcess [
 						yourself))).	
 	application stop.
 	(Delay forMilliseconds: 150) wait.
-	self deny: application isRunning.
 	self should: [ application send: 
 		(PBCommand new instructions: 
 			(Array with: (P3GBinaryOperator new
@@ -53,5 +51,15 @@ PBConnectionTest >> testStartStopProcess [
 						right: 2;
 						operator: $+;
 						yourself))) ] raise: Error.
+]
+
+{ #category : #tests }
+PBConnectionTest >> testStartStopProcess [
+	self deny: application isRunning.
+	application start.
+	self assert: application processHandler isRunning.
+	application stop.
+	(Delay forMilliseconds: 150) wait.
+	self deny: application isRunning.
 	self deny: application processHandler isRunning
 ]

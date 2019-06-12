@@ -1,10 +1,14 @@
 Class {
 	#name : #PBCallbackAnswer,
 	#superclass : #PBAnswer,
-	#category : #'PythonBridge-Platform'
+	#category : #'PythonBridge-Platform-Messages'
 }
 
 { #category : #accessing }
-PBCallbackAnswer class >> messageClass [
-	^ PBCallbackMessage
+PBCallbackAnswer class >> type [
+	^ 'CALLBACK'
+]
+
+{ #category : #encoding }
+PBCallbackAnswer >> privateEncode: dict [
 ]

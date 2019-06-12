@@ -51,6 +51,11 @@ PBAbstractMessageBroker >> resolveMessageFromType: aType [
 	^ PBAnswer resolveMessageClassFromType: aType
 ]
 
+{ #category : #messaging }
+PBAbstractMessageBroker >> sendMessage: aMessage [
+	self subclassResponsibility
+]
+
 { #category : #accessing }
 PBAbstractMessageBroker >> setDebugMode [
 	debugMode := true.

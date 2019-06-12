@@ -19,8 +19,8 @@ PBPipenvPyStrategy class >> pipEnvPath: anObject [
 
 { #category : #'as yet unclassified' }
 PBPipenvPyStrategy class >> prepare [
-	PBCommunicationHandler pythonPortGenerator: [ 7100 + 99 atRandom ].
-	PBCommunicationHandler pharoPortGenerator: [ 7200 + 99 atRandom ]
+	PBCommunicationHandlerOLD pythonPortGenerator: [ 7100 + 99 atRandom ].
+	PBCommunicationHandlerOLD pharoPortGenerator: [ 7200 + 99 atRandom ]
 ]
 
 { #category : #'as yet unclassified' }

@@ -43,7 +43,7 @@ PBPharoPlatform class >> ensurePBridge: pbridgeFolder symlinkIn: aFolder [
 { #category : #utils }
 PBPharoPlatform class >> folderForApplication: application [
 	^ (IceRepository registry 
-			detect: [ :each | each includesPackageNamed: application package name ] 
+			detect: [ :each | each includesPackageNamed: application class package name ] 
 			ifNone: [ 
 				self inform: 'Please add a clone of this project to Iceberg to access to the resources'.
 				"For travis!"
@@ -76,6 +76,11 @@ PBPharoPlatform class >> installEnvironmentForApp: application [
 { #category : #hooks }
 PBPharoPlatform class >> messageBrokerClass [
 	^ PBPharoMessageBroker
+]
+
+{ #category : #accessing }
+PBPharoPlatform class >> priority [
+	^ 1
 ]
 
 { #category : #hooks }

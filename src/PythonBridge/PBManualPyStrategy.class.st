@@ -6,8 +6,8 @@ Class {
 
 { #category : #'as yet unclassified' }
 PBManualPyStrategy class >> prepare [
-	PBCommunicationHandler pythonPortGenerator: [ 7100 ].
-	PBCommunicationHandler pharoPortGenerator: [ 7200 ]
+	PBCommunicationHandlerOLD pythonPortGenerator: [ 7100 ].
+	PBCommunicationHandlerOLD pharoPortGenerator: [ 7200 ]
 ]
 
 { #category : #accessing }

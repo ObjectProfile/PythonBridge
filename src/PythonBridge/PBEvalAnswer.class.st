@@ -1,7 +1,7 @@
 Class {
 	#name : #PBEvalAnswer,
 	#superclass : #PBAnswer,
-	#category : #'PythonBridge-Platform'
+	#category : #'PythonBridge-Platform-Messages'
 }
 
 { #category : #accessing }

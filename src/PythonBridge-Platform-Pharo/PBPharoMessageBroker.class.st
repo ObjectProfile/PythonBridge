@@ -82,10 +82,11 @@ PBPharoMessageBroker >> prim_handle: req [
 { #category : #messaging }
 PBPharoMessageBroker >> sendMessage: aMessage [
 	| ans |
-	ans := ZnEasy 
-				post: self pythonUri , '/' , aMessage type
-				data: (ZnEntity text: (self encode: aMessage)).
-	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ]
+	ans := [ ZnEasy 
+					post: self pythonUri , '/' , aMessage type
+					data: (ZnEntity text: (self encode: aMessage)) ] on: Error do: [ :err | PBCommunicationError signal: 'Request fail' ].
+	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ].
+	^ ans contents
 ]
 
 { #category : #accessing }

@@ -5,7 +5,8 @@ Class {
 		'communicationHandler',
 		'processHandler',
 		'loggingHandler',
-		'executionHandler'
+		'executionHandler',
+		'settings'
 	],
 	#classVars : [
 		'DebugMode'
@@ -203,9 +204,10 @@ PBApplication >> handlers [
 		with: executionHandler
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 PBApplication >> initialize [
 	super initialize.
+	settings := PBPlatform current defaultSettings.
 	self initializeHandlers.
 ]
 
@@ -261,6 +263,16 @@ PBApplication >> registerObject: aPythonObject [
 { #category : #instructions }
 PBApplication >> send: aCommand [
 	^ executionHandler sendCommand: aCommand
+]
+
+{ #category : #accessing }
+PBApplication >> settings [
+	^ settings
+]
+
+{ #category : #accessing }
+PBApplication >> settings: anObject [
+	settings := anObject
 ]
 
 { #category : #accessing }

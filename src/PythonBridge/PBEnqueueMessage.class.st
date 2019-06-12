@@ -6,7 +6,7 @@ Class {
 		'statements',
 		'bindings'
 	],
-	#category : #'PythonBridge-Platform'
+	#category : #'PythonBridge-Platform-Messages'
 }
 
 { #category : #'as yet unclassified' }
