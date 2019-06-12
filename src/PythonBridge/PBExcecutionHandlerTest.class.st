@@ -20,19 +20,19 @@ PBExcecutionHandlerTest >> setUp [
 
 { #category : #accessing }
 PBExcecutionHandlerTest >> testJSONSerializeEncodeBindings [
-	| dict |
+	| message |
 	execHandler serializer: PBSerializer.
 	commandFactory bindingAt: #foo put: #().
-	dict := execHandler encodeCommandAsDictionary: commandFactory buildCommand.
-	self assert: ((dict at: #bindings) at: #foo) equals: (execHandler serialize: #()).
-	self deny: ((dict at: #bindings) at: #foo) = #()
+	message := execHandler buildMessageFromCommand: commandFactory buildCommand.
+	self assert: (message bindings at: #foo) equals: (execHandler serialize: #()).
+	self deny: (message bindings at: #foo) = #()
 ]
 
 { #category : #accessing }
 PBExcecutionHandlerTest >> testSerializeEncodeBindings [
-	| dict |
+	| message |
 	commandFactory bindingAt: #foo put: #().
-	dict := execHandler encodeCommandAsDictionary: commandFactory buildCommand.
-	self assert: ((dict at: #bindings) at: #foo) equals: (execHandler serialize: #()).
-	self deny: ((dict at: #bindings) at: #foo) = #()
+	message := execHandler buildMessageFromCommand: commandFactory buildCommand.
+	self assert: (message bindings at: #foo) equals: (execHandler serialize: #()).
+	self deny: (message bindings at: #foo) = #()
 ]

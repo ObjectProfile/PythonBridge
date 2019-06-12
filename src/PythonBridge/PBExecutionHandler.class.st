@@ -13,6 +13,17 @@ Class {
 }
 
 { #category : #'private protocol' }
+PBExecutionHandler >> buildMessageFromCommand: command [
+	| message |
+	message := PBEnqueueMessage 
+					commandId: command id 
+					statements: command pythonCode 
+					bindings: (command bindings asDictionary collect: [ :obj | self serialize: obj ]).
+	message addBinding: #pharoCommandId -> (self serialize: command id).
+	^ message
+]
+
+{ #category : #'private protocol' }
 PBExecutionHandler >> communicationHandler [
 	^ self application communicationHandler
 ]
@@ -20,19 +31,6 @@ PBExecutionHandler >> communicationHandler [
 { #category : #'private protocol' }
 PBExecutionHandler >> deserialize: anObject [
 	^ mapperFactory deserializer deserialize: anObject
-]
-
-{ #category : #'private protocol' }
-PBExecutionHandler >> encodeCommandAsDictionary: aCommand [
-	| p3Bindings data |
-	p3Bindings := aCommand bindings asDictionary.
-	p3Bindings at: #pharoCommandId put: aCommand id.
-	data := Dictionary new.
-	data 
-		at: #commandId put: aCommand id;
-		at: #statements put: aCommand pythonCode;
-		at: #bindings put: (p3Bindings collect: [ :obj | self serialize: obj ]).
-	^ data
 ]
 
 { #category : #'private protocol' }
@@ -103,13 +101,7 @@ PBExecutionHandler >> objectRegistry [
 
 { #category : #'private protocol' }
 PBExecutionHandler >> primitiveSendCommand: command [
-	| message |
-	message := PBEnqueueMessage 
-					commandId: command id 
-					statements: command pythonCode 
-					bindings: (command bindings asDictionary collect: [ :obj | self serialize: obj ]).
-	message addBinding: #pharoCommandId -> (self serialize: command id).
-	^ self communicationHandler sendMessage: message
+	^ self communicationHandler sendMessage: (self buildMessageFromCommand: command)
 ]
 
 { #category : #'as yet unclassified' }
