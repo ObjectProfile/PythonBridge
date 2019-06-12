@@ -127,7 +127,7 @@ def run_bridge():
 	app = Flask(__name__)
 	app.use_reloader=False
 
-	@app.route("/eval", methods=["POST"])
+	@app.route("/ENQUEUE", methods=["POST"])
 	def eval_expression():
 		data = request.get_json(force=True)
 		globalCommandList.push_command(EvalCommand(
@@ -136,7 +136,7 @@ def run_bridge():
 										{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
 		return "OK"
 
-	@app.route("/status", methods=["GET"])
+	@app.route("/IS_ALIVE", methods=["POST"])
 	def status_endpoint():
 		return "PHARO_HOOKS RUNNING"
 

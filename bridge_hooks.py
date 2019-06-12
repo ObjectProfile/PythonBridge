@@ -21,10 +21,11 @@ def observer(commandId, observerId):
 def notify(obj, notificationId):
 	bridge_globals.logger.log("PYTHON: Notify " + str(notificationId))
 	data = {}
+	data["type"] = "EVAL"
 	data["id"] = notificationId
 	data["value"] = convert_to_JSON(obj)
 	conn = http.client.HTTPConnection("localhost", str(bridge_globals.pharoPort))
-	conn.request("POST", "/notify", json.dumps(data), {
+	conn.request("POST", "/EVAL", json.dumps(data), {
 		"Content-type": "application/json",
 		"Accept": "text/plain"})
 	conn.getresponse()
@@ -33,11 +34,12 @@ def notify(obj, notificationId):
 def notify_observer(obj, commandId, observerId):
 	bridge_globals.logger.log("PYTHON: Notify observer " + str(commandId) + " " + str(observerId))
 	data = {}
+	data["type"] = "CALLBACK"
 	data["commandId"] = commandId
 	data["observerId"] = observerId
 	data["value"] = convert_to_JSON(obj)
 	conn = http.client.HTTPConnection("localhost", str(bridge_globals.pharoPort))
-	conn.request("POST", "/notifyObserver", json.dumps(data), {
+	conn.request("POST", "/CALLBACK", json.dumps(data), {
 		"Content-type": "application/json",
 		"Accept": "text/plain"})
 	conn.getresponse()
@@ -47,11 +49,12 @@ def notify_error(ex, command):
 	bridge_globals.logger.log("Error on command: " + str(command.command_id()))
 	bridge_globals.logger.log(str(ex))
 	data = {}
+	data["type"] = "ERR"
 	data["errMsg"] = str(ex)
 	data["trace"] = traceback.format_exc(100)
 	data["id"] = command.command_id()
 	conn = http.client.HTTPConnection("localhost", str(bridge_globals.pharoPort))
-	conn.request("POST", "/notifyError", json.dumps(data), {
+	conn.request("POST", "/ERR", json.dumps(data), {
 		"Content-type": "application/json",
 		"Accept": "text/plain"})
 	response = str(conn.getresponse().read().decode())
