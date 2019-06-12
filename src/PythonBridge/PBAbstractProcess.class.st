@@ -9,6 +9,11 @@ Class {
 	#category : #'PythonBridge-Platform'
 }
 
+{ #category : #accessing }
+PBAbstractProcess >> errorMessage [
+	self subclassResponsibility
+]
+
 { #category : #testing }
 PBAbstractProcess >> isRunning [
 	self subclassResponsibility

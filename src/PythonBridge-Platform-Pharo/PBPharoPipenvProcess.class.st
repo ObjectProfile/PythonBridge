@@ -75,6 +75,11 @@ PBPharoPipenvProcess >> environmentVariables [
 	^ environmentVariables
 ]
 
+{ #category : #accessing }
+PBPharoPipenvProcess >> errorMessage [
+	^ process stderrStream contents
+]
+
 { #category : #initialization }
 PBPharoPipenvProcess >> initialize [
 	super initialize.
