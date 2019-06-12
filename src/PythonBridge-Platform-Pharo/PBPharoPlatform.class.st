@@ -21,7 +21,7 @@ PBPharoPlatform class >> ensureApplicationSymlinks: application [
 	| appFolder |
 	appFolder := self folderForApplication: application.
 	self ensureFolderSymlinkFor: appFolder.
-	self ensurePBridge: (self folderForApplication: application baseApplication) symlinkIn: appFolder
+	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder
 ]
 
 { #category : #'private - symlinks' }

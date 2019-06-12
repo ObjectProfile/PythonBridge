@@ -58,7 +58,7 @@ PBApplication class >> do: aBlockClosure [
 	self isRunning ifTrue: [ ^ aBlockClosure value ].
 	[
 		self start.
-		retVal := aBlockClosure value.
+		retVal := aBlockClosure cull: self uniqueInstance.
 		self uniqueInstance commandFactory << nil.
 		self uniqueInstance commandFactory send waitForValue. ] ensure: [ self stop ].
 	^ retVal
@@ -74,7 +74,7 @@ PBApplication class >> ensurePythonBridgeSymlink [
 ]
 
 { #category : #'pipenv setup' }
-PBApplication class >> installPipenvEnvironment [
+PBApplication class >> installPipenvEnvironmentOLD [
 	| proc |
 	self createSymlinkFolder.
 	self ensurePythonBridgeSymlink.
@@ -91,6 +91,11 @@ PBApplication class >> installPipenvEnvironment [
 { #category : #testing }
 PBApplication class >> isRunning [
 	^ uniqueInstance notNil and: [ uniqueInstance isRunning ]
+]
+
+{ #category : #'pipenv setup' }
+PBApplication class >> platform [
+	^ PBPlatform current
 ]
 
 { #category : #'python hooks file' }
@@ -154,13 +159,13 @@ PBApplication class >> stop [
 
 { #category : #testing }
 PBApplication class >> test [ 
-	self assert: (self do: [ 
-		self commandFactory << (P3GBinaryOperator new
+	self assert: (self do: [ :app |
+		app commandFactory << (P3GBinaryOperator new
                      left: 1;
                      right: 2;
                      operator: $+;
                      yourself).
-		CVCF send waitForValue
+		app commandFactory send waitForValue
 	  ]) = 3
 ]
 
