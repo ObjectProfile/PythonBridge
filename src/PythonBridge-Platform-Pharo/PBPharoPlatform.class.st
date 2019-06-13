@@ -60,10 +60,8 @@ PBPharoPlatform class >> forceInstallEnvironmentForApp: application [
 				arguments: (Array 
 					with: ((self folderForApplication: application) / 'install_env.sh') fullName);
 				terminateOnShutdown;
-				redirectStderr;
-				redirectStdout;
 				runAndWait.
-	(proc exitStatus = 0 or: [ proc exitStatus = -6917529027641081856 ]) ifFalse: [ 
+	(proc exitStatus = 0 or: [ proc exitStatus < -1000 ]) ifFalse: [ 
 		self signalPipenvCreateEnvFailed ]
 ]
 
