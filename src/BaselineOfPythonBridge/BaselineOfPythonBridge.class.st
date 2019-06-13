@@ -21,6 +21,7 @@ BaselineOfPythonBridge >> baseline: spec [
                 spec
                     repository: 'github://svenvc/NeoJSON/repository' ].
 			spec
-				package: 'PythonBridge' with: [ spec requires: 'OSSubprocess' ]
+				package: 'PythonBridge' with: [ spec requires: 'OSSubprocess' ];
+				package: 'PythonBridge-Platform-Pharo' with: [ spec requires: 'PythonBridge' ].
 			 ]
 ]
