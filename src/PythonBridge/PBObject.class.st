@@ -1,8 +1,8 @@
 Class {
 	#name : #PBObject,
 	#superclass : #Object,
-	#traits : 'P3GAttributeAccess',
-	#classTraits : 'P3GAttributeAccess classTrait',
+	#traits : 'P3GAttributeAccess + P3GCallable',
+	#classTraits : 'P3GAttributeAccess classTrait + P3GCallable classTrait',
 	#instVars : [
 		'pythonVariable'
 	],
