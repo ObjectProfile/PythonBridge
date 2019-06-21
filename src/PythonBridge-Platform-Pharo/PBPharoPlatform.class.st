@@ -55,6 +55,11 @@ PBPharoPlatform class >> installEnvironmentForApp: application [
 ]
 
 { #category : #hooks }
+PBPharoPlatform class >> jsonSerializerClass [
+	^ PBNeoJsonSerializer
+]
+
+{ #category : #hooks }
 PBPharoPlatform class >> messageBrokerClass [
 	^ PBPharoMessageBroker
 ]
