@@ -5,7 +5,6 @@ Class {
 		'commandQueue',
 		'weakRegistry',
 		'objectRegistry',
-		'serializer',
 		'promiseRegistry',
 		'mapperFactory'
 	],
@@ -146,11 +145,6 @@ PBExecutionHandler >> sendCommand: command [
 { #category : #'private protocol' }
 PBExecutionHandler >> serialize: anObject [
 	^ mapperFactory serializer serialize: anObject
-]
-
-{ #category : #accessing }
-PBExecutionHandler >> serializer: anObject [
-	serializer := anObject
 ]
 
 { #category : #'private protocol' }

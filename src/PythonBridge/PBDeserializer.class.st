@@ -28,7 +28,7 @@ PBDeserializer >> buildProxyFor: rawObject [
 
 { #category : #'private protocol' }
 PBDeserializer >> deserialize: str [
-	^ self privateDeserialize: (NeoJSONReader fromString: str).
+	^ self privateDeserialize: (serializerWrapper deserialize: str).
 ]
 
 { #category : #'private protocol' }

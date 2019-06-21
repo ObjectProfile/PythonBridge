@@ -3,6 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'mappings',
+		'serializerWrapper',
 		'executionHandler',
 		'application'
 	],
@@ -35,6 +36,12 @@ PBMapper >> executionHandler [
 { #category : #accessing }
 PBMapper >> executionHandler: anObject [
 	executionHandler := anObject
+]
+
+{ #category : #initialization }
+PBMapper >> initialize [
+	super initialize.
+	serializerWrapper := PBPlatform current jsonSerializerClass new
 ]
 
 { #category : #accessing }

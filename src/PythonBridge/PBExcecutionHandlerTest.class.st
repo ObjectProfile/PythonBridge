@@ -21,7 +21,6 @@ PBExcecutionHandlerTest >> setUp [
 { #category : #accessing }
 PBExcecutionHandlerTest >> testJSONSerializeEncodeBindings [
 	| message |
-	execHandler serializer: PBSerializer.
 	commandFactory bindingAt: #foo put: #().
 	message := execHandler buildMessageFromCommand: commandFactory buildCommand.
 	self assert: (message bindings at: #foo) equals: (execHandler serialize: #()).

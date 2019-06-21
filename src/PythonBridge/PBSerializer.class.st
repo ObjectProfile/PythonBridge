@@ -22,5 +22,5 @@ PBSerializer class >> serialize: anObject [
 
 { #category : #api }
 PBSerializer >> serialize: anObject [
-	^ NeoJSONWriter toString: anObject
+	^ serializerWrapper serialize: anObject
 ]

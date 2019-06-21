@@ -37,7 +37,22 @@ PBPlatform class >> getConcretePlatform [
 										ifFalse: [ next ] ] ] 
 ]
 
+{ #category : #hooks }
+PBPlatform class >> jsonSerializerClass [
+	self subclassResponsibility
+]
+
+{ #category : #hooks }
+PBPlatform class >> messageBrokerClass [
+	self subclassResponsibility
+]
+
 { #category : #accessing }
 PBPlatform class >> priority [
 	^ -547835385
+]
+
+{ #category : #hooks }
+PBPlatform class >> processClass [
+	self subclassResponsibility
 ]
