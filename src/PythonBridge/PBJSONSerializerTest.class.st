@@ -1,29 +1,64 @@
 Class {
-	#name : #PBJSONSerializerTest,
+	#name : #PBJsonSerializerTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'mapper'
+		'serializer'
 	],
-	#category : #'PythonBridge-Tests'
+	#category : #'PythonBridge-Platform'
 }
 
-{ #category : #tests }
-PBJSONSerializerTest >> serializer [
-	^ mapper serializer
+{ #category : #testing }
+PBJsonSerializerTest class >> isAbstract [
+	^ self == PBJsonSerializerTest
 ]
 
-{ #category : #tests }
-PBJSONSerializerTest >> setUp [
+{ #category : #asserting }
+PBJsonSerializerTest >> assertDeserialize: aString equals: anObject [
+	self assert: (serializer deserialize: aString) equals: anObject
+]
+
+{ #category : #asserting }
+PBJsonSerializerTest >> assertSerialize: anObject equals: aString [
+	self assert: (serializer serialize: anObject) equals: aString
+]
+
+{ #category : #running }
+PBJsonSerializerTest >> jsonSerializerClass [
+	self subclassResponsibility
+]
+
+{ #category : #running }
+PBJsonSerializerTest >> setUp [
 	super setUp.
-	mapper := PBMapperFactory forExecutionHandler: self
+	serializer := self jsonSerializerClass new
 ]
 
 { #category : #tests }
-PBJSONSerializerTest >> testSerializeArray [
-	self assert: (self serializer serialize: #(33 'foo')) equals: '[33,"foo"]'
+PBJsonSerializerTest >> testDeserializeArray [
+	self assertDeserialize: '[33,"foo"]' equals: #(33 'foo')
 ]
 
 { #category : #tests }
-PBJSONSerializerTest >> testSerializeNil [
-	self assert: (self serializer serialize: nil) equals: 'null'
+PBJsonSerializerTest >> testDeserializeNestedArrays [
+	self assertDeserialize: '[33,["foo","bar"]]' equals: #(33 #('foo' 'bar'))
+]
+
+{ #category : #tests }
+PBJsonSerializerTest >> testDeserializeNil [
+	self assertDeserialize: 'null' equals: nil
+]
+
+{ #category : #tests }
+PBJsonSerializerTest >> testSerializeArray [
+	self assertSerialize: #(33 'foo') equals: '[33,"foo"]'
+]
+
+{ #category : #tests }
+PBJsonSerializerTest >> testSerializeNestedArrays [
+	self assertSerialize: #(33 #('foo' 'bar')) equals: '[33,["foo","bar"]]'
+]
+
+{ #category : #tests }
+PBJsonSerializerTest >> testSerializeNil [
+	self assertSerialize: nil equals: 'null'
 ]

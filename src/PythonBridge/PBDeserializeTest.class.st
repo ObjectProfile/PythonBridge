@@ -1,5 +1,5 @@
 Class {
-	#name : #PBJSONDeserializerTest,
+	#name : #PBDeserializeTest,
 	#superclass : #TestCase,
 	#instVars : [
 		'mapper'
@@ -8,45 +8,45 @@ Class {
 }
 
 { #category : #running }
-PBJSONDeserializerTest >> application [
+PBDeserializeTest >> application [
 	^ 'FOO'
 ]
 
 { #category : #running }
-PBJSONDeserializerTest >> deserialize: anObject [
+PBDeserializeTest >> deserialize: anObject [
 	^ self deserializer deserialize: anObject
 ]
 
 { #category : #running }
-PBJSONDeserializerTest >> deserializer [
+PBDeserializeTest >> deserializer [
 	^ mapper deserializer
 ]
 
 { #category : #running }
-PBJSONDeserializerTest >> setUp [
+PBDeserializeTest >> setUp [
 	super setUp.
 	mapper := PBMapperFactory forExecutionHandler: self stubExecutionHandler
 ]
 
 { #category : #running }
-PBJSONDeserializerTest >> stubExecutionHandler [
+PBDeserializeTest >> stubExecutionHandler [
 	^ PBExecutionHandler new
 			application: self application;
 			yourself
 ]
 
 { #category : #tests }
-PBJSONDeserializerTest >> testDeserializeArray [
+PBDeserializeTest >> testDeserializeArray [
 	self assert: (self deserialize: '[33,"foo"]') equals: #(33 'foo')
 ]
 
 { #category : #tests }
-PBJSONDeserializerTest >> testDeserializeNull [
+PBDeserializeTest >> testDeserializeNull [
 	self assert: (self deserialize: 'null') equals: nil
 ]
 
 { #category : #tests }
-PBJSONDeserializerTest >> testDeserializeProxy [
+PBDeserializeTest >> testDeserializeProxy [
 	| proxy |
 	proxy := self deserialize: '{"__pyclass__":"MyClass","__pyid__":"abcde12345"}'.
 	self assert: proxy pythonClass equals: #MyClass.
@@ -56,7 +56,7 @@ PBJSONDeserializerTest >> testDeserializeProxy [
 ]
 
 { #category : #tests }
-PBJSONDeserializerTest >> testDeserializeProxyInArray [
+PBDeserializeTest >> testDeserializeProxyInArray [
 	| proxy arr |
 	arr := self deserialize: '[{"__pyclass__":"MyClass","__pyid__":"abcde12345"}]'.
 	self assert: arr size equals: 1.
