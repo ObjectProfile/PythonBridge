@@ -71,7 +71,7 @@ PBCommandQueueTest >> testFinishCommand2 [
 PBCommandQueueTest >> testFinishNotFoundCommand [
 	self 
 		should: [ queue finishCommandId: 'aa' ]
-		raise: NotFound
+		raise: Error
 ]
 
 { #category : #tests }
@@ -102,5 +102,5 @@ PBCommandQueueTest >> testNotFoundCommand [
 	queue enqueueCommand: PBCommand new.
 	self 
 		should: [ queue finishCommandId: 'aa' ]
-		raise: NotFound
+		raise: Error
 ]

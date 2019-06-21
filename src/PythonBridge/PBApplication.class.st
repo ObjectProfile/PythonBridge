@@ -22,26 +22,6 @@ PBApplication class >> baseApplication [
 	^ PBApplication
 ]
 
-{ #category : #'python hooks file' }
-PBApplication class >> createSymlinkFolder [
-	| symlinkRef |
-	symlinkRef := self repositoryName asFileReference.
-	symlinkRef exists ifFalse: [ 
-		self createSymlinkFor: self repositoryFileReference on: symlinkRef ]
-]
-
-{ #category : #'python hooks file' }
-PBApplication class >> createSymlinkFor: originalFile on: targetFile [
-	OSSUnixSubprocess new
-				command: '/bin/ln';
-				arguments: (Array 
-									with: '-s' 
-									with: originalFile asFileReference fullName 
-									with: targetFile asFileReference fullName);
-				terminateOnShutdown;
-				runAndWaitOnExitDo: [ :command | ^ self ].
-]
-
 { #category : #debug }
 PBApplication class >> debugMode [
 	^ DebugMode ifNil: [ false ]
@@ -64,30 +44,6 @@ PBApplication class >> do: aBlockClosure [
 	^ retVal
 ]
 
-{ #category : #'python hooks file' }
-PBApplication class >> ensurePythonBridgeSymlink [
-	| symlinkRef |
-	symlinkRef := (self repositoryFileReference / 'PythonBridge').
-	symlinkRef exists ifFalse: [ 
-		self createSymlinkFor: PBApplication repositoryFileReference on: symlinkRef ].
-	
-]
-
-{ #category : #'pipenv setup' }
-PBApplication class >> installPipenvEnvironmentOLD [
-	| proc |
-	self createSymlinkFolder.
-	self ensurePythonBridgeSymlink.
-	proc := OSSUnixSubprocess new
-				command: '/bin/bash';
-				arguments: (Array 
-									with: (self repositoryFileReference / 'install_env.sh') fullName);
-				terminateOnShutdown;
-				runAndWait.
-	proc exitStatus = 0 ifFalse: [ 
-		self signalPipenvCreateEnvFailed ]
-]
-
 { #category : #testing }
 PBApplication class >> isRunning [
 	^ uniqueInstance notNil and: [ uniqueInstance isRunning ]
@@ -100,17 +56,7 @@ PBApplication class >> platform [
 
 { #category : #'python hooks file' }
 PBApplication class >> repositoryFileReference [
-	^ (IceRepository registry 
-			detect: [ :each | each includesPackageNamed: self repositoryName ] 
-			ifNone: [ 
-				self inform: 'Please add a clone of this project to Iceberg to access to the resources'.
-				"For travis!"
-				^ '.' asFileReference ]) location
-]
-
-{ #category : #'python hooks file' }
-PBApplication class >> repositoryName [
-	^ self package name
+	^ self platform folderForApplication: self
 ]
 
 { #category : #instructions }
@@ -126,19 +72,6 @@ PBApplication class >> resetUniqueInstance [
 PBApplication class >> send: obj [
 	self assert: self isRunning.
 	^ self uniqueInstance send: obj
-]
-
-{ #category : #'pipenv setup' }
-PBApplication class >> signalPipenvCreateEnvFailed [
-	"
-	Python bridge attempt of creating Pipenv environment failed. To attempt to generate the Pipenv
-	environment manually go the project git folder. It may be the PythonBridge, KerasBridge or your
-	Bridge, because each of them has a different Pipfile and Pipenv environment.
-	
-	To remove the current Pipenv environment run in the folder the command: `pipenv --rm`
-	To manually create the Pipenv environment run in the folder the command: `bash install_env.sh`
-	"
-	Error signal: 'Attempt for creating Pipenv environment failed.'
 ]
 
 { #category : #'start-stop' }

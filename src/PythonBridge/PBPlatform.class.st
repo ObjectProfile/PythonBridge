@@ -7,12 +7,12 @@ Class {
 	#category : #'PythonBridge-Platform'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 PBPlatform class >> current [
 	^ Current ifNil: [ Current := self getConcretePlatform ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 PBPlatform class >> current: aPlatform [
 	Current := aPlatform
 ]
@@ -24,7 +24,7 @@ PBPlatform class >> defaultSettings [
 		pythonSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: (6900 + 99 atRandom))
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #utils }
 PBPlatform class >> getConcretePlatform [
 	^ (self allSubclasses reject: #isAbstract) 
 			inject: nil 
@@ -47,12 +47,22 @@ PBPlatform class >> messageBrokerClass [
 	self subclassResponsibility
 ]
 
-{ #category : #accessing }
+{ #category : #private }
 PBPlatform class >> priority [
 	^ -547835385
 ]
 
 { #category : #hooks }
 PBPlatform class >> processClass [
+	self subclassResponsibility
+]
+
+{ #category : #hooks }
+PBPlatform class >> uiManager [
+	^ self uiManagerClass new
+]
+
+{ #category : #private }
+PBPlatform class >> uiManagerClass [
 	self subclassResponsibility
 ]

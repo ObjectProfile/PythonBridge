@@ -30,7 +30,7 @@ PBProcessTest >> destroyTmpFile: aFile [
 	self subclassResponsibility
 ]
 
-{ #category : #running }
+{ #category : #hooks }
 PBProcessTest >> processClass [
 	self subclassResponsibility
 ]
@@ -41,7 +41,7 @@ PBProcessTest >> setUp [
 	tmpPythonFile := self createTmpPythonFile.
 	process := self processClass
 		settings: self defaultSettings
-		workingDirectory: FileLocator workingDirectory.
+		workingDirectory: self processClass workingDirectory.
 	process pythonMainFile: tmpPythonFile
 ]
 

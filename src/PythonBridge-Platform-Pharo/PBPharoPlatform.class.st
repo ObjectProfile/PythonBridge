@@ -73,3 +73,8 @@ PBPharoPlatform class >> priority [
 PBPharoPlatform class >> processClass [
 	self subclassResponsibility
 ]
+
+{ #category : #private }
+PBPharoPlatform class >> uiManagerClass [
+	^ PBPharoUiManager
+]

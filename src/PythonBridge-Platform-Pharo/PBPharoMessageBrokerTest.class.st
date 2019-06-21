@@ -31,6 +31,11 @@ PBPharoMessageBrokerTest >> errorResponse [
 	^ ZnResponse serverError: 'ERROR'
 ]
 
+{ #category : #hooks }
+PBPharoMessageBrokerTest >> messageBrokerClass [
+	^ PBPharoMessageBroker
+]
+
 { #category : #private }
 PBPharoMessageBrokerTest >> primHandle: aRequest [
 	| answer |

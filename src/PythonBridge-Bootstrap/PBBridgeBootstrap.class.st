@@ -6,7 +6,7 @@ Class {
 		'prefix',
 		'packageName'
 	],
-	#category : #'PythonBridge-Core'
+	#category : #'PythonBridge-Bootstrap'
 }
 
 { #category : #'as yet unclassified' }
@@ -85,8 +85,6 @@ PBBridgeBootstrap >> createClasses [
 { #category : #create }
 PBBridgeBootstrap >> createFiles [
 	| folder |
-	OSPlatform current isWindows ifFalse: [ 
-		self applicationClass ensurePythonBridgeSymlink ].
 	folder := self applicationClass repositoryFileReference.
 	PBApplication repositoryFileReference / 'start_bridge.py' copyTo: folder / 'start_bridge.py'.
 	PBApplication repositoryFileReference / 'Pipfile' copyTo: folder / 'Pipfile'.

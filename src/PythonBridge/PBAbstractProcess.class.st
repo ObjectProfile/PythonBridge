@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : #accessing }
+PBAbstractProcess class >> workingDirectory [
+	self subclassResponsibility
+]
+
+{ #category : #accessing }
 PBAbstractProcess >> errorMessage [
 	self subclassResponsibility
 ]

@@ -5,7 +5,7 @@ Class {
 		'ivar1',
 		'ivar2'
 	],
-	#category : #'PythonBridge-Platform'
+	#category : #'PythonBridge-Platform-Messages'
 }
 
 { #category : #'as yet unclassified' }

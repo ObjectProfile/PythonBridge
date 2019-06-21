@@ -63,6 +63,11 @@ PBMessageBrokerTest >> initialize [
 	handlerBlock := [ :r |  ]
 ]
 
+{ #category : #hooks }
+PBMessageBrokerTest >> messageBrokerClass [
+	self subclassResponsibility
+]
+
 { #category : #acessing }
 PBMessageBrokerTest >> pythonUri [
 	^ 'http://' , settings pythonSocketAddress printAddress
@@ -82,7 +87,7 @@ PBMessageBrokerTest >> setHandler: aBlock [
 PBMessageBrokerTest >> setUp [
 	super setUp.
 	settings := self defaultSettings.
-	broker := PBPharoMessageBroker settings: settings.
+	broker := self messageBrokerClass settings: settings.
 	broker start.
 	self buildAndStartStubServer
 ]

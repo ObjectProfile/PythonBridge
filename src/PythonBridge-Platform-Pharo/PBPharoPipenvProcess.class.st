@@ -70,6 +70,11 @@ PBPharoPipenvProcess class >> signalPipenvNotFound [
 	Error signal: 'Error: Pipenv command could not be found.'
 ]
 
+{ #category : #hooks }
+PBPharoPipenvProcess class >> workingDirectory [
+	^ FileLocator workingDirectory
+]
+
 { #category : #accessing }
 PBPharoPipenvProcess >> environmentVariables [
 	^ environmentVariables
