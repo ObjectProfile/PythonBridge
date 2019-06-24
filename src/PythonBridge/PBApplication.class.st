@@ -64,7 +64,7 @@ PBApplication class >> resetUniqueInstance [
 	uniqueInstance ifNotNil: [ 
 		[ uniqueInstance stop ] 
 			on: Error 
-			do: [ UIManager inform: 'Error on reseting unique instance.' ]. ].
+			do: [ PBPlatform current uiManager inform: 'Error on reseting unique instance.' ]. ].
 	uniqueInstance := nil
 ]
 
