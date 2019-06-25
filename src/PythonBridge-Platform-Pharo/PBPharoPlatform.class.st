@@ -78,3 +78,8 @@ PBPharoPlatform class >> processClass [
 PBPharoPlatform class >> uiManagerClass [
 	^ PBPharoUiManager
 ]
+
+{ #category : #hooks }
+PBPharoPlatform class >> weakRegistryClass [
+	^ PBPharoWeakRegistry
+]

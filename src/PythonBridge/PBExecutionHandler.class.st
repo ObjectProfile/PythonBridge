@@ -43,7 +43,7 @@ PBExecutionHandler >> initialize [
 	commandQueue := PBCommandQueue new.
 	mapperFactory := PBMapperFactory forExecutionHandler: self.
 	promiseRegistry := PBPromiseRegistry new.
-	weakRegistry := WeakRegistry new.
+	weakRegistry := PBPlatform current weakRegistry.
 	objectRegistry := PBObjectRegistry new
 ]
 
@@ -107,8 +107,8 @@ PBExecutionHandler >> primitiveSendCommand: command [
 PBExecutionHandler >> registerObject: aPythonObject [
 	objectRegistry registerObject: aPythonObject.
 	weakRegistry 
-		add: aPythonObject 
-		executor: (PBRegistryFinalizer 
+		registerObject: aPythonObject 
+		finalizer: (PBRegistryFinalizer 
 							pythonVariable: aPythonObject pythonVariable 
 							executionHandler: self)
 ]
@@ -155,7 +155,7 @@ PBExecutionHandler >> signalObserver: observer withValue: object [
 { #category : #accessing }
 PBExecutionHandler >> stop [
 	super stop.
-	weakRegistry removeAll
+	weakRegistry destroy
 ]
 
 { #category : #'as yet unclassified' }

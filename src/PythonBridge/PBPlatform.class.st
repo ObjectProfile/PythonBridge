@@ -66,3 +66,13 @@ PBPlatform class >> uiManager [
 PBPlatform class >> uiManagerClass [
 	self subclassResponsibility
 ]
+
+{ #category : #hooks }
+PBPlatform class >> weakRegistry [
+	^ self weakRegistryClass new
+]
+
+{ #category : #hooks }
+PBPlatform class >> weakRegistryClass [
+	self subclassResponsibility
+]

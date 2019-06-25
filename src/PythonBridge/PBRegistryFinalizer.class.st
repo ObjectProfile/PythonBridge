@@ -1,6 +1,6 @@
 Class {
 	#name : #PBRegistryFinalizer,
-	#superclass : #Object,
+	#superclass : #PBAbstractFinalizer,
 	#instVars : [
 		'pythonVariable',
 		'executionHandler'
