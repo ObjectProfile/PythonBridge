@@ -7,6 +7,7 @@ Class {
 { #category : #running }
 PBPharoWeakFinalizerTest >> triggerGC [
 	Smalltalk garbageCollect.
+	(Delay forMilliseconds: 100) wait.
 	Smalltalk garbageCollect.
 ]
 
