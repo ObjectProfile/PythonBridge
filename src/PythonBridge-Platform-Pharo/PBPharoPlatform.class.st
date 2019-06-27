@@ -64,6 +64,11 @@ PBPharoPlatform class >> messageBrokerClass [
 	^ PBPharoMessageBroker
 ]
 
+{ #category : #hooks }
+PBPharoPlatform class >> newRandomName [
+	^ 'pb' , UUID new asString36
+]
+
 { #category : #accessing }
 PBPharoPlatform class >> priority [
 	^ 1

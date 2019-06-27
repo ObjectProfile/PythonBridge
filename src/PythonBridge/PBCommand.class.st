@@ -45,7 +45,7 @@ PBCommand >> id: anObject [
 { #category : #initialization }
 PBCommand >> initialize [
 	super initialize.
-	id := UUID new asString36.
+	id := PBPlatform current newRandomName.
 	bindings := #().
 	observers := #().
 	instructions := OrderedCollection new.

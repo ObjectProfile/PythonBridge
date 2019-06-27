@@ -11,7 +11,7 @@ Class {
 
 { #category : #'instance creation' }
 PBObject class >> newPythonVar [
-	^ ('pb' , UUID new asString36) asP3GIdentifier
+	^ PBPlatform current newRandomName asP3GIdentifier
 ]
 
 { #category : #initialization }

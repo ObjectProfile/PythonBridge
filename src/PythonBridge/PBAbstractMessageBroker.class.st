@@ -14,16 +14,6 @@ PBAbstractMessageBroker >> addCallback: aBlock answerClass: answerCls [
 	messageCallbacks at: answerCls put: aBlock
 ]
 
-{ #category : #messaging }
-PBAbstractMessageBroker >> decode: request [
-	self subclassResponsibility
-]
-
-{ #category : #messaging }
-PBAbstractMessageBroker >> encode: aMessage [
-	self subclassResponsibility
-]
-
 { #category : #initialization }
 PBAbstractMessageBroker >> initialize [
 	super initialize.

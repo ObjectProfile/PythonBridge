@@ -47,6 +47,11 @@ PBPlatform class >> messageBrokerClass [
 	self subclassResponsibility
 ]
 
+{ #category : #hooks }
+PBPlatform class >> newRandomName [
+	self subclassResponsibility
+]
+
 { #category : #private }
 PBPlatform class >> priority [
 	^ -547835385

@@ -31,7 +31,7 @@ PBMessageBrokerTest >> brokerUri [
 	^ 'http://' , settings pharoSocketAddress printAddress
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 PBMessageBrokerTest >> buildAndStartStubServer [
 	self subclassResponsibility
 ]

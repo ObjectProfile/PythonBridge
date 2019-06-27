@@ -11,5 +11,5 @@ PBUtils class >> newP3Variable [
 
 { #category : #'instance creation' }
 PBUtils class >> newP3VariableName [
-	^ 'pb' , UUID new asString36
+	^ PBPlatform current newRandomName
 ]
