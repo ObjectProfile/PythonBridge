@@ -13,6 +13,11 @@ PBPharoProcessTest >> createTmpPythonFile [
 ]
 
 { #category : #utils }
+PBPharoProcessTest >> defaultTmpFile [
+	^ 'tmp.py' asFileReference
+]
+
+{ #category : #utils }
 PBPharoProcessTest >> destroyTmpFile: aFile [
 	aFile deleteIfAbsent: [  ]
 ]

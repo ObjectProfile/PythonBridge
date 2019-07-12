@@ -9,6 +9,13 @@ Class {
 	#category : #'PythonBridge-Platform'
 }
 
+{ #category : #'as yet unclassified' }
+PBAbstractMessageBroker class >> settings: settings [
+	^ self new
+		settings: settings;
+		yourself
+]
+
 { #category : #messaging }
 PBAbstractMessageBroker >> addCallback: aBlock answerClass: answerCls [
 	messageCallbacks at: answerCls put: aBlock

@@ -11,13 +11,6 @@ Class {
 	#category : #'PythonBridge-Platform-Pharo'
 }
 
-{ #category : #accessing }
-PBPharoPipenvProcess class >> application: application [
-	^ self 
-		settings: application settings 
-		workingDirectory: (PBPharoPlatform folderForApplication: application)
-]
-
 { #category : #initialization }
 PBPharoPipenvProcess class >> pipenvPath [
 	^ PipenvPath isEmptyOrNil 
@@ -30,6 +23,11 @@ PBPharoPipenvProcess class >> pipenvPath: aString [
 	PipenvPath := aString
 ]
 
+{ #category : #accessing }
+PBPharoPipenvProcess class >> platform [
+	^ PBPharoPlatform
+]
+
 { #category : #initialization }
 PBPharoPipenvProcess class >> resolvePipenvPath [
 	^ (OSSUnixSubprocess new
@@ -40,19 +38,6 @@ PBPharoPipenvProcess class >> resolvePipenvPath [
 				terminateOnShutdown;
 				runAndWaitOnExitDo: [ :command :outString | ^ outString trim ]) 
 					ifEmpty: [ self signalPipenvNotFound ]
-]
-
-{ #category : #accessing }
-PBPharoPipenvProcess class >> settings: settings application: application [
-	^ self settings: settings workingDirectory: (PBPharoPlatform folderForApplication: application)
-]
-
-{ #category : #accessing }
-PBPharoPipenvProcess class >> settings: settings workingDirectory: fileRef [
-	^ self new
-		settings: settings;
-		workingDirectory: fileRef;
-		yourself
 ]
 
 { #category : #initialization }
@@ -68,11 +53,6 @@ PBPharoPipenvProcess class >> signalPipenvNotFound [
 	
 	"
 	Error signal: 'Error: Pipenv command could not be found.'
-]
-
-{ #category : #hooks }
-PBPharoPipenvProcess class >> workingDirectory [
-	^ FileLocator workingDirectory
 ]
 
 { #category : #accessing }

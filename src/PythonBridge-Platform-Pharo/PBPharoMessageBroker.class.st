@@ -7,13 +7,6 @@ Class {
 	#category : #'PythonBridge-Platform-Pharo'
 }
 
-{ #category : #'as yet unclassified' }
-PBPharoMessageBroker class >> settings: settings [
-	^ self new
-		settings: settings;
-		yourself
-]
-
 { #category : #messaging }
 PBPharoMessageBroker >> decode: request [
 	^ NeoJSONReader fromString: request contents

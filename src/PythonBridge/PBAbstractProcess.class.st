@@ -10,8 +10,33 @@ Class {
 }
 
 { #category : #accessing }
-PBAbstractProcess class >> workingDirectory [
+PBAbstractProcess class >> application: application [
+	^ self 
+		settings: application settings 
+		workingDirectory: (PBPlatform current folderForApplication: application)
+]
+
+{ #category : #accessing }
+PBAbstractProcess class >> platform [
 	self subclassResponsibility
+]
+
+{ #category : #accessing }
+PBAbstractProcess class >> settings: settings application: application [
+	^ self settings: settings workingDirectory: (PBPlatform current folderForApplication: application)
+]
+
+{ #category : #accessing }
+PBAbstractProcess class >> settings: settings workingDirectory: fileRef [
+	^ self new
+		settings: settings;
+		workingDirectory: fileRef;
+		yourself
+]
+
+{ #category : #hooks }
+PBAbstractProcess class >> workingDirectory [
+	^ self platform folderForApplication: PBApplication
 ]
 
 { #category : #accessing }

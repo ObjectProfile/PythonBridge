@@ -30,8 +30,7 @@ PBPythonHandler >> platform [
 
 { #category : #testing }
 PBPythonHandler >> start [
-	self platform ensureApplicationSymlinks: self application.
-	self platform installEnvironmentForApp: self application.
+	self platform ensureEnvironmentForApp: self application.
 	^ process start
 ]
 

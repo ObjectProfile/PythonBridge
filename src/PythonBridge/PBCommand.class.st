@@ -93,9 +93,9 @@ PBCommand >> promise: anObject [
 PBCommand >> pythonCode [
 	| py3CodeStream |
 	py3CodeStream := String new writeStream.
-	(P3GInstructionsList new
-		addAll: self instructions;
-		yourself) writePython3On: py3CodeStream.
+	self instructions do: [ :instr | 
+			instr writePython3On: py3CodeStream.
+			py3CodeStream << String lf ].
 	^ py3CodeStream contents
 ]
 

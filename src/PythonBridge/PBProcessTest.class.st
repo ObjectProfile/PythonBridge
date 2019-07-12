@@ -13,11 +13,6 @@ PBProcessTest class >> isAbstract [
 	^ self == PBProcessTest
 ]
 
-{ #category : #utils }
-PBProcessTest >> createTmpPythonFile [
-	self subclassResponsibility
-]
-
 { #category : #running }
 PBProcessTest >> defaultSettings [
 	^ PBSettings 
@@ -25,8 +20,8 @@ PBProcessTest >> defaultSettings [
 		pythonSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: 6539)
 ]
 
-{ #category : #utils }
-PBProcessTest >> destroyTmpFile: aFile [
+{ #category : #running }
+PBProcessTest >> defaultTmpFile [
 	self subclassResponsibility
 ]
 
@@ -38,17 +33,15 @@ PBProcessTest >> processClass [
 { #category : #running }
 PBProcessTest >> setUp [
 	super setUp.
-	tmpPythonFile := self createTmpPythonFile.
 	process := self processClass
 		settings: self defaultSettings
 		workingDirectory: self processClass workingDirectory.
-	process pythonMainFile: tmpPythonFile
+	process pythonMainFile: self defaultTmpFile
 ]
 
 { #category : #running }
 PBProcessTest >> tearDown [
 	process stop.
-	self destroyTmpFile: tmpPythonFile.
 	super tearDown
 ]
 

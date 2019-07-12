@@ -44,6 +44,17 @@ PBWeakFinalizerTest >> testBlockFinalizer [
 ]
 
 { #category : #running }
+PBWeakFinalizerTest >> testDestroy [
+	| obj |
+	obj := Object new.
+	weakRegistry registerObject: obj finalizer: self countFinalizer.
+	weakRegistry destroy.
+	obj := nil.
+	self triggerGC.
+	self assertCount: 0
+]
+
+{ #category : #running }
 PBWeakFinalizerTest >> testGcMultObjects [
 	| obj1 obj2 obj3 |
 	obj1 := Object new.
@@ -78,6 +89,7 @@ PBWeakFinalizerTest >> testNotGcObject [
 	| obj |
 	obj := Object new.
 	weakRegistry registerObject: obj finalizer: self countFinalizer.
+	self triggerGC.
 	self assertCount: 0
 ]
 

@@ -93,6 +93,11 @@ PBMessageBrokerTest >> setUp [
 ]
 
 { #category : #running }
+PBMessageBrokerTest >> stopStubServer [
+	self subclassResponsibility 
+]
+
+{ #category : #running }
 PBMessageBrokerTest >> tearDown [
 	broker ifNotNil: [ broker stop ].
 	self stopStubServer
@@ -109,13 +114,13 @@ PBMessageBrokerTest >> testEnqueueCommandMessage [
 	self setHandler: [ :assoc | | bindings |
 		self assert: assoc key equals: PBEnqueueMessage type.
 		self assert: assoc value size equals: 4.
-		self assert: (assoc value at: #type) equals: PBEnqueueMessage type.
-		self assert: (assoc value at: #commandId) equals: '7365'.
-		self assert: (assoc value at: #statements) equals: 'foo().cat()'.
-		bindings := assoc value at: #bindings.
+		self assert: (assoc value at: 'type') equals: PBEnqueueMessage type.
+		self assert: (assoc value at: 'commandId') equals: '7365'.
+		self assert: (assoc value at: 'statements') equals: 'foo().cat()'.
+		bindings := assoc value at: 'bindings'.
 		self assert: bindings size equals: 2.
-		self assert: (bindings at: #foo) equals: 42.
-		self assert: (bindings at: #bar) equals: 'zork'.
+		self assert: (bindings at: 'foo') equals: 42.
+		self assert: (bindings at: 'bar') equals: 'zork'.
 		flag := true.
 		self answer ].
 	broker sendMessage: msg.

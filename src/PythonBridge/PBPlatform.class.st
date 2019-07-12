@@ -24,6 +24,16 @@ PBPlatform class >> defaultSettings [
 		pythonSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: (6900 + 99 atRandom))
 ]
 
+{ #category : #'as yet unclassified' }
+PBPlatform class >> ensureEnvironmentForApp: anApplication [
+	self subclassResponsibility
+]
+
+{ #category : #utils }
+PBPlatform class >> folderForApplication: application [
+	self subclassResponsibility
+]
+
 { #category : #utils }
 PBPlatform class >> getConcretePlatform [
 	^ (self allSubclasses reject: #isAbstract) 
@@ -35,6 +45,11 @@ PBPlatform class >> getConcretePlatform [
 									candidate priority > next priority
 										ifTrue: [ candidate ]
 										ifFalse: [ next ] ] ] 
+]
+
+{ #category : #testing }
+PBPlatform class >> isAbstract [
+	^ self name = 'PBPlatform' asSymbol
 ]
 
 { #category : #hooks }

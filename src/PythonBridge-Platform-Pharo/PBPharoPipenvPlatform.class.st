@@ -4,6 +4,12 @@ Class {
 	#category : #'PythonBridge-Platform-Pharo'
 }
 
+{ #category : #'as yet unclassified' }
+PBPharoPipenvPlatform class >> ensureEnvironmentForApp: anApplication [
+	self ensureApplicationSymlinks: anApplication.
+	self installEnvironmentForApp: anApplication.
+]
+
 { #category : #utils }
 PBPharoPipenvPlatform class >> forceInstallEnvironmentForApp: application [
 	| proc |

@@ -54,6 +54,11 @@ PBPharoPlatform class >> folderForApplication: application [
 PBPharoPlatform class >> installEnvironmentForApp: application [
 ]
 
+{ #category : #testing }
+PBPharoPlatform class >> isAbstract [
+	^ self name = 'PBPharoPlatform' asSymbol
+]
+
 { #category : #hooks }
 PBPharoPlatform class >> jsonSerializerClass [
 	^ PBNeoJsonSerializer

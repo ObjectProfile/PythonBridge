@@ -38,7 +38,7 @@ PBPromiseRegistryTest >> testSignalPromise [
 		flag := true.
 		semaphore signal. ] fork.
 	registry signalPromiseId: '123' with: #foo.
-	semaphore wait: (Duration milliSeconds: 500).
+	semaphore wait.
 	self assert: flag
 ]
 
@@ -55,6 +55,6 @@ PBPromiseRegistryTest >> testSignalPromiseWithTransformBlock [
 		flag := true.
 		semaphore signal. ] fork.
 	registry signalPromiseId: '123' with: #foo.
-	semaphore wait: (Duration milliSeconds: 500).
+	semaphore wait.
 	self assert: flag
 ]
