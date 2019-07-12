@@ -61,7 +61,7 @@ PBObserver >> isPythonValue [
 
 { #category : #'error handling' }
 PBObserver >> pharoNotify: anObject [
-	callback cull: anObject
+	^ callback cull: anObject
 ]
 
 { #category : #'error handling' }

@@ -87,10 +87,11 @@ PBExecutionHandler >> notifyHandler: dict [
 
 { #category : #handlers }
 PBExecutionHandler >> notifyObserverHandler: dict [
-	self 
+	| val |
+	val := self 
 		signalObserver: (self getObserverAtCommandId: (dict at: #commandId) id: (dict at: #observerId)) 
 		withValue: (self deserialize: (dict at: #value)).
-	^ PBCallbackAnswer new
+	^ PBCallbackAnswer val: (self serialize: val)
 ]
 
 { #category : #initialization }
@@ -149,7 +150,7 @@ PBExecutionHandler >> serialize: anObject [
 
 { #category : #'private protocol' }
 PBExecutionHandler >> signalObserver: observer withValue: object [
-	observer pharoNotify: object
+	^ observer pharoNotify: object
 ]
 
 { #category : #accessing }
