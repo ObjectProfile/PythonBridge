@@ -42,8 +42,10 @@ def notify_observer(obj, commandId, observerId):
 	conn.request("POST", "/CALLBACK", json.dumps(data), {
 		"Content-type": "application/json",
 		"Accept": "text/plain"})
-	conn.getresponse()
+	response = str(conn.getresponse().read().decode())
 	bridge_globals.logger.log("PYTHON: Finish notify observer")
+	rawValue = json.loads(response)['val']
+	return convert_from_JSON(rawValue)
 
 def notify_error(ex, command):
 	bridge_globals.logger.log("Error on command: " + str(command.command_id()))
