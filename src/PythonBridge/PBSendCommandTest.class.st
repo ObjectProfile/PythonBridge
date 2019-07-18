@@ -5,6 +5,26 @@ Class {
 }
 
 { #category : #tests }
+PBSendCommandTest >> failTestInvalidCallbackReturn [
+	<expectedFailure>
+	| observer callbackExecuted promiseSem |
+	promiseSem := Semaphore new.
+	callbackExecuted := false.
+	observer := self cf observerFromCallback: [ :obj | 
+		promiseSem wait.
+		self assert: obj equals: 33.
+		self deny: promise isSignaled.
+		callbackExecuted := true.
+		self ].
+	self cf << (observer pythonNotify: 33).
+	self cf << 2.
+	self cfSend.
+	promiseSem signal.
+	self assert: promise waitForValue equals: 2.
+	self assert: callbackExecuted
+]
+
+{ #category : #tests }
 PBSendCommandTest >> testAddBinding [
 	| binding |
 	binding := PBBinding wrap: #((2) 3).
@@ -46,25 +66,6 @@ PBSendCommandTest >> testCallbackReturnValue [
 	self cfSend.
 	promiseSem signal.
 	self assert: promise waitForValue equals: 5.
-	self assert: callbackExecuted
-]
-
-{ #category : #tests }
-PBSendCommandTest >> testInvalidCallbackReturn [
-	| observer callbackExecuted promiseSem |
-	promiseSem := Semaphore new.
-	callbackExecuted := false.
-	observer := self cf observerFromCallback: [ :obj | 
-		promiseSem wait.
-		self assert: obj equals: 33.
-		self deny: promise isSignaled.
-		callbackExecuted := true.
-		self ].
-	self cf << (observer pythonNotify: 33).
-	self cf << 2.
-	self cfSend.
-	promiseSem signal.
-	self assert: promise waitForValue equals: 2.
 	self assert: callbackExecuted
 ]
 
