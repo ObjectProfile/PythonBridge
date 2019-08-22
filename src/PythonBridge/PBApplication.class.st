@@ -49,6 +49,11 @@ PBApplication class >> isRunning [
 	^ uniqueInstance notNil and: [ uniqueInstance isRunning ]
 ]
 
+{ #category : #testing }
+PBApplication class >> module [
+	^ self uniqueInstance module
+]
+
 { #category : #'pipenv setup' }
 PBApplication class >> platform [
 	^ PBPlatform current
@@ -176,6 +181,11 @@ PBApplication >> log: aLog [
 { #category : #accessing }
 PBApplication >> loggingHandler [
 	^ loggingHandler
+]
+
+{ #category : #accessing }
+PBApplication >> module [
+	self subclassResponsibility
 ]
 
 { #category : #'instance creation' }

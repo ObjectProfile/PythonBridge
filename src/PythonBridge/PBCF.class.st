@@ -91,8 +91,19 @@ PBCF class >> send [
 ]
 
 { #category : #'old api' }
+PBCF class >> send: aPythonStatement [
+	self << aPythonStatement.
+	^ self send
+]
+
+{ #category : #'old api' }
 PBCF class >> sendAndWait [
 	^ self send waitForValue
+]
+
+{ #category : #'old api' }
+PBCF class >> sendAndWait: aPythonStatement [
+	^ (self send: aPythonStatement) waitForValue
 ]
 
 { #category : #'as yet unclassified' }

@@ -10,6 +10,22 @@ Class {
 }
 
 { #category : #'instance creation' }
+PBObject class >> fromProxy: aProxy [
+	| obj |
+	obj := self new.
+	obj pythonVariable: aProxy pythonVariable.
+	self assert: obj pythonClass asString = aProxy pythonVariable.
+	^ obj
+]
+
+{ #category : #'instance creation' }
+PBObject class >> fromPythonReference: pythonVar [
+	^ super new
+			pythonVariable: pythonVar;
+			yourself.
+]
+
+{ #category : #'instance creation' }
 PBObject class >> newPythonVar [
 	^ PBPlatform current newRandomName asP3GIdentifier
 ]
@@ -37,13 +53,10 @@ PBObject >> basicCreateObjectArgs: posArgs [
 
 { #category : #'as yet unclassified' }
 PBObject >> basicCreateObjectArgs: posArgs nameArgs: nameArgs [
-	| varName |
-	self isCreated ifTrue: [ ^ self ].
-	varName := self newPythonVar.
-	pythonVariable := varName.
-	self application commandFactory << (
-		self registerIdPyExpression: (self pythonClass callWith: posArgs with: nameArgs asDictionary)).
-	self registerObject
+	^ self basicCreateObjectExpr: 
+			(self pythonConstructor 
+				callWith: posArgs 
+				with: nameArgs asDictionary)
 ]
 
 { #category : #'as yet unclassified' }
@@ -88,6 +101,11 @@ PBObject >> isPythonValue [
 	^ true
 ]
 
+{ #category : #accessing }
+PBObject >> module [
+	^ self applicationClass module
+]
+
 { #category : #'instance creation' }
 PBObject >> newPythonVar [
 	^ self class newPythonVar
@@ -101,6 +119,11 @@ PBObject >> pythonClass [
 { #category : #'as yet unclassified' }
 PBObject >> pythonClassName [
 	^ self pythonClass attributeIdentifier name
+]
+
+{ #category : #'as yet unclassified' }
+PBObject >> pythonConstructor [
+	^ self pythonClass
 ]
 
 { #category : #'as yet unclassified' }

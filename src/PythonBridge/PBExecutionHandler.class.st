@@ -87,11 +87,14 @@ PBExecutionHandler >> notifyHandler: dict [
 
 { #category : #handlers }
 PBExecutionHandler >> notifyObserverHandler: dict [
-	| val |
+	| val serialization |
 	val := self 
 		signalObserver: (self getObserverAtCommandId: (dict at: #commandId) id: (dict at: #observerId)) 
 		withValue: (self deserialize: (dict at: #value)).
-	^ PBCallbackAnswer val: (self serialize: val)
+	serialization := [ self serialize: val ] on: Error do: [ :err | 
+		self application log: err printString.
+		self serialize: nil ].
+	^ PBCallbackAnswer val: serialization
 ]
 
 { #category : #initialization }
