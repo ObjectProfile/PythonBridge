@@ -8,8 +8,8 @@ Class {
 GTPythonVariablesBrowser >> basicVariableNodesFor: anObject in: aCollection [
 	(anObject isKindOf: PBProxyObject) 
 		ifFalse: [ ^ super basicVariableNodesFor: anObject in: aCollection ].
-	PBCF << (anObject => #__dict__).
-	PBCF sendAndWait associationsDo: [ :assoc |
+	anObject application commandFactory << (#bridge_inspect callWith: { anObject }).
+	anObject application commandFactory sendAndWait associationsDo: [ :assoc |
 		aCollection add: (GTInspectorPythonIVarNode 
 									hostObject: anObject 
 									name: assoc key 
