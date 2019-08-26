@@ -31,5 +31,5 @@ PBErrorAnswer >> handlingAction: anObject [
 
 { #category : #encoding }
 PBErrorAnswer >> privateEncode: dict [
-	dict at: #handlingAction put: handlingAction encodeAsDictionary
+	dict addAll: handlingAction encodeAsDictionary
 ]

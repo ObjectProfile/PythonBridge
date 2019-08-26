@@ -133,7 +133,7 @@ PBExecutionHandler >> registerPromiseForCommand: aCommand [
 PBExecutionHandler >> safeTriggerDebugger: error [
 	[ self triggerDebugger: error ] 
 		ifCurtailed: [ 
-			error proceedAction: error defaultProceedAction ]
+			^ error proceedAction: error defaultProceedAction ]
 ]
 
 { #category : #'private protocol' }
