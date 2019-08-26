@@ -45,10 +45,10 @@ class EvalCommand:
 		if actionSymbol == "IGNORE":
 			pass
 		if actionSymbol == "DROP_QUEUE":
-			globalCommandList.drop_queue()
+			bridge_globals.globalCommandList.drop_queue()
 		if actionSymbol == "REPLACE_COMMAND":
 			commandDict = actionDict["command"]
-			globalCommandList.push_command_at_first(EvalCommand(commandDict["commandId"], commandDict["statements"], commandDict["bindings"]))
+			bridge_globals.globalCommandList.push_command_at_first(EvalCommand(commandDict["commandId"], commandDict["statements"], commandDict["bindings"]))
 		 
 	def command_id(self):
 		return self.commandId
@@ -158,7 +158,8 @@ def run_bridge():
 		print("NO LOG")
 		bridge_globals.logger = NoLogger()
 	bridge_globals.pyPort = args["port"]
-	globalCommandList = PythonCommandList()
+	bridge_globals.globalCommandList = PythonCommandList()
+	globalCommandList = bridge_globals.globalCommandList
 	env = clean_locals_env()
 
 	ThreadedFlask(app,int(bridge_globals.pyPort))
