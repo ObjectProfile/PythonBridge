@@ -62,3 +62,9 @@ def notify_error(ex, command):
 	response = str(conn.getresponse().read().decode())
 	bridge_globals.logger.log(response)
 	return json.loads(response)
+
+def bridge_inspect(obj):
+	if hasattr(obj,'__dict__'):
+		return obj.__dict__
+	else:
+		return {}
