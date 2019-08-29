@@ -7,10 +7,6 @@
 
 This project depends on Python3.6 (or Python3.7) and Pipenv.
 
-To install Python3.6 follow the instructions on the Python webpage https://www.python.org/downloads/release/python-368/. To verify if you have Python3.6 just run in a terminal `python3.6 --version`, it should print something like `Python 3.6.4`.
-
-To install Pipenv just use the following Pip instruction `pip install pipenv`, though depending on your python installation you may need to call it with `sudo`. If the command `pip` is not found, use `pip3` instead. To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`. We strongly suggest you to upgrade your pipenv version if it is older that 2018.11.26, because it has important bugfixes and performance improvements. To upgrade it just run `sudo pip install pipenv --upgrade`.
-
 # Installation
 
 To install PythonBridge on Pharo just run the following script in a Pharo Playground:
@@ -19,24 +15,13 @@ Metacello new
     baseline: 'PythonBridge';
     repository: 'github://ObjectProfile/PythonBridge/src';
     load.
-(Smalltalk at: #PBApplication) installPipenvEnvironment
 ``` 
 The first part of the script is responsible of downloading the PythonBridge code and loading it in the image.
 The second part of the script is responsible of creating a pipenv environment for isolating the python libraries used by the bridge.
 
 Depending on the internet connection, the script could take a couple of minutes to run.
 
-## Troubleshooting
-
-### Pipenv command is not found
-It might occurs because Pharo can not find you `pipenv` binary.
-To solve this problem, it is possible to set manually pipenv path.
-Just run `which pipenv` in a terminal and copy the output of this command.
-Paste the previously copied of the command in the string of the script below:
-
-```
-PBPipenvPyStrategy pipEnvPath: '/PATH/TO/PIPENV/BINARY'
-```
+A more in depth guide is present on the official website of this project https://objectprofile.github.io/PythonBridge/.
 
 # Simple test
 
@@ -51,7 +36,3 @@ PBApplication do: [
 	PBCF send waitForValue
 	 ]
 ```
-
-# Limitations
-
-- You cannot have two images running at the same time with an open connection to Python. In the future, we will be able to manually set the port.
