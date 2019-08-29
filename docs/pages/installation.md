@@ -64,12 +64,6 @@ The second part of the script is responsible of creating a pipenv environment fo
 
 If pipenv path is not found by Pharo you may need to provide the route manually. To know more about this go to the [Troubleshooting section](#troubleshooting).
 
-Notice that each PythonBridge application has its own pipenv environment and must be created independently. Therefore, if we have 2 different applications, such as the base PythonBridge and KerasBridge we need to run the script for both:
-```Smalltalk
-PBApplication installPipenvEnvironment.
-Keras installPipenvEnvironment.
-``` 
-
 ## Manually creating Pipenv environment
 
 If the second part of the script of the previous step `(Smalltalk at: #PBApplication) installPipenvEnvironment` was a success you may skip this step.
