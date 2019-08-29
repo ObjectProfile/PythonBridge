@@ -57,7 +57,6 @@ Metacello new
     baseline: 'PythonBridge';
     repository: 'github://ObjectProfile/PythonBridge/src';
     load.
-(Smalltalk at: #PBApplication) installPipenvEnvironment
 ``` 
 
 The first part of the script is responsible of downloading the PythonBridge code and loading it in the image.
