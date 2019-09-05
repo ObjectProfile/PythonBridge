@@ -1,5 +1,4 @@
-from flask import Flask, request
-import http.client
+import flask_platform
 import argparse
 import threading
 import json
@@ -7,21 +6,6 @@ import sys
 from PythonBridge import bridge_globals, bridge_hooks
 from PythonBridge.bridge_hooks import *
 from PythonBridge.object_registry import registry
-
-class ThreadedFlask():
-	def __init__(self, flaskApp, port):
-		self.flaskApp = flaskApp
-		self.port = port
-		thread = threading.Thread(target=self.run, args=())
-		thread.daemon = True
-		thread.start()
-
-	def run(self):
-		try:
-			self.flaskApp.run(port=self.port)
-		except OSError as err:
-			print(str(err))
-			exit(48)
 
 class EvalCommand:
 	statements = ""
@@ -122,6 +106,12 @@ class PythonCommandList:
 def clean_locals_env():
 	return locals()
 
+def enqueue_command(data):
+	bridge_globals.globalCommandList.push_command(EvalCommand(
+										data["commandId"], 
+										data["statements"],
+										{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
+
 def run_bridge():
 	##### FLASK API
 	app = Flask(__name__)
@@ -130,7 +120,7 @@ def run_bridge():
 	@app.route("/ENQUEUE", methods=["POST"])
 	def eval_expression():
 		data = request.get_json(force=True)
-		globalCommandList.push_command(EvalCommand(
+		bridge_globals.globalCommandList.push_command(EvalCommand(
 										data["commandId"], 
 										data["statements"],
 										{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
@@ -161,8 +151,9 @@ def run_bridge():
 	bridge_globals.globalCommandList = PythonCommandList()
 	globalCommandList = bridge_globals.globalCommandList
 	env = clean_locals_env()
-
-	ThreadedFlask(app,int(bridge_globals.pyPort))
+	msg_service = flask_platform.build_service(int(args["port"]), int(args["pharo"]), enqueue_command)
+	bridge_globals.msg_service = msg_service
+	msg_service.start_on_thread()
 
 	while True:
 		command = globalCommandList.consume_command()
