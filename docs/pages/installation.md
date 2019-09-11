@@ -68,8 +68,6 @@ If pipenv path is not found by Pharo you may need to provide the route manually.
 
 ## Manually creating Pipenv environment
 
-If the second part of the script of the previous step `(Smalltalk at: #PBApplication) installPipenvEnvironment` was a success you may skip this step.
-
 If Pharo was unable to create the Pipenv you may need to do it manually. For this you must run in a terminal the following script:
 ```bash
 cd /PATH/TO/ICEBERG/PYTHON_BRIDGE/REPOSITORY
