@@ -46,7 +46,7 @@ To verify python installed correctly just run `python3 --version` and you should
 
 To install Pipenv just use the following Pip instruction `pip install pipenv`, though depending on your python installation you may need to call it with `sudo`. This may happen if you are using Ubuntu or the OSX Homebrew python installation. If the command `pip` is not found, use `pip3` instead. 
 
-To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`. We strongly suggest you to upgrade your pipenv version if it is older that 2018.11.26, because it has important bugfixes and performance improvements. To upgrade it just run `pip install pipenv --upgrade`.
+To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`. We strongly suggest you to upgrade your pipenv version if it is older than 2018.11.26, because it has important bugfixes and performance improvements. To upgrade it just run `pip install pipenv --upgrade`.
 
 
 ## Download and Install PythonBridge
@@ -57,19 +57,12 @@ Metacello new
     baseline: 'PythonBridge';
     repository: 'github://ObjectProfile/PythonBridge/src';
     load.
-(Smalltalk at: #PBApplication) installPipenvEnvironment
 ``` 
 
 The first part of the script is responsible of downloading the PythonBridge code and loading it in the image.
-The second part of the script is responsible of creating a pipenv environment for isolating the python libraries used by the bridge.
 
 If pipenv path is not found by Pharo you may need to provide the route manually. To know more about this go to the [Troubleshooting section](#troubleshooting).
 
-Notice that each PythonBridge application has its own pipenv environment and must be created independently. Therefore, if we have 2 different applications, such as the base PythonBridge and KerasBridge we need to run the script for both:
-```Smalltalk
-PBApplication installPipenvEnvironment.
-Keras installPipenvEnvironment.
-``` 
 
 ## Manually creating Pipenv environment
 

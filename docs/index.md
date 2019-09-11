@@ -39,10 +39,8 @@ Metacello new
     baseline: 'PythonBridge';
     repository: 'github://ObjectProfile/PythonBridge/src';
     load.
-(Smalltalk at: #PBApplication) installPipenvEnvironment
 ``` 
 The first part of the script is responsible of downloading the PythonBridge code and loading it in the image.
-The second part of the script is responsible of creating a pipenv environment for isolating the python libraries used by the bridge.
 
 1. Test the installation running the tests and inspecting the result of our HelloWorld example:
 ```smalltalk
@@ -55,7 +53,7 @@ PBApplication do: [
 	PBCF send waitForValue
 	 ]
 ```
-<small>This examples should return 3.</small>
+<small>This examples should return 3. The first time the bridge is started it may take a couple of minutes to install the pipenv environment required to run python.</small>
 
 
 ## Bridges based on PythonBridge
