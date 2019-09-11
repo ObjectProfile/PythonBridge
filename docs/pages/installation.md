@@ -25,12 +25,14 @@ PythonBridge has two kind of dependencies, the ones that are automatically insta
 
 ### Python Automatically installed dependencies
 1. Flask
+1. Msgpack
 
 ### Pharo Automatically installed dependencies
 1. Python3Generatoy
 1. Zinc
 1. NeoJSON
 1. OSSubprocess
+1. Msgpack
 
 ## Install Python 3.6
 
