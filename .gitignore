@@ -2,3 +2,4 @@
 /PythonBridge
 /__pycache__
 .DS_Store
+Pipfile.lock
