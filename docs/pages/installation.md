@@ -25,12 +25,14 @@ PythonBridge has two kind of dependencies, the ones that are automatically insta
 
 ### Python Automatically installed dependencies
 1. Flask
+1. Msgpack
 
 ### Pharo Automatically installed dependencies
 1. Python3Generatoy
 1. Zinc
 1. NeoJSON
 1. OSSubprocess
+1. Msgpack
 
 ## Install Python 3.6
 
@@ -46,7 +48,7 @@ To verify python installed correctly just run `python3 --version` and you should
 
 To install Pipenv just use the following Pip instruction `pip install pipenv`, though depending on your python installation you may need to call it with `sudo`. This may happen if you are using Ubuntu or the OSX Homebrew python installation. If the command `pip` is not found, use `pip3` instead. 
 
-To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`. We strongly suggest you to upgrade your pipenv version if it is older that 2018.11.26, because it has important bugfixes and performance improvements. To upgrade it just run `pip install pipenv --upgrade`.
+To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`. We strongly suggest you to upgrade your pipenv version if it is older than 2018.11.26, because it has important bugfixes and performance improvements. To upgrade it just run `pip install pipenv --upgrade`.
 
 
 ## Download and Install PythonBridge
@@ -60,13 +62,10 @@ Metacello new
 ``` 
 
 The first part of the script is responsible of downloading the PythonBridge code and loading it in the image.
-The second part of the script is responsible of creating a pipenv environment for isolating the python libraries used by the bridge.
 
 If pipenv path is not found by Pharo you may need to provide the route manually. To know more about this go to the [Troubleshooting section](#troubleshooting).
 
 ## Manually creating Pipenv environment
-
-If the second part of the script of the previous step `(Smalltalk at: #PBApplication) installPipenvEnvironment` was a success you may skip this step.
 
 If Pharo was unable to create the Pipenv you may need to do it manually. For this you must run in a terminal the following script:
 ```bash
