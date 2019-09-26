@@ -45,11 +45,21 @@ PBAbstractMessageBroker >> pythonUri [
 
 { #category : #private }
 PBAbstractMessageBroker >> resolveMessageFromType: aType [
-	^ PBAnswer resolveMessageClassFromType: aType
+	^ PBOldAnswer resolveMessageClassFromType: aType
+]
+
+{ #category : #messaging }
+PBAbstractMessageBroker >> sendAsyncMessage: aMessage [
+	self subclassResponsibility
 ]
 
 { #category : #messaging }
 PBAbstractMessageBroker >> sendMessage: aMessage [
+	self subclassResponsibility
+]
+
+{ #category : #messaging }
+PBAbstractMessageBroker >> sendSyncMessage: aMessage [
 	self subclassResponsibility
 ]
 

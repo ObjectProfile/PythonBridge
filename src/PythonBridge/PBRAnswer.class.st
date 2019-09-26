@@ -1,16 +1,11 @@
 Class {
-	#name : #PBMessage,
-	#superclass : #PBAbstractMessage,
+	#name : #PBRAnswer,
+	#superclass : #PBAbstractAnswer,
 	#category : #'PythonBridge-Platform-Messages'
 }
 
-{ #category : #accessing }
-PBMessage class >> type [
-	^ #MSG
-]
-
 { #category : #encoding }
-PBMessage >> encode [
+PBRAnswer >> encode [
 	| dict |
 	dict := Dictionary new.
 	dict at: #type put: self type. 
@@ -19,5 +14,11 @@ PBMessage >> encode [
 ]
 
 { #category : #encoding }
-PBMessage >> privateEncode: dict [
+PBRAnswer >> privateEncode: dict [
+	dict at: #__sync put: self syncId
+]
+
+{ #category : #writing }
+PBRAnswer >> syncId [
+	^ message syncId
 ]

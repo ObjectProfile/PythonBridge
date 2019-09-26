@@ -20,7 +20,7 @@ PBCommunicationHandler >> initializeHandler [
 
 { #category : #testing }
 PBCommunicationHandler >> isPythonReady [
-	[ self sendMessage: PBIsAliveMessage new ] 
+	[ self sendMessage: PBIsAliveMessageOld new ] 
 		on: PBCommunicationError 
 		do: [ :e | ^ false ].
 	^ true

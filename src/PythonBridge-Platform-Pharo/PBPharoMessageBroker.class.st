@@ -24,7 +24,7 @@ PBPharoMessageBroker >> handleMessage: aDict [
 	(messageCallbacks includesKey: msgClass) 
 		ifFalse: [ ^ self invalidType ].
 	answerMsg := (messageCallbacks at: msgClass) value: aDict.
-	(answerMsg isKindOf: PBAnswer) ifFalse: [ PBCommunicationError signal ].
+	(answerMsg isKindOf: PBOldAnswer) ifFalse: [ PBCommunicationError signal ].
 	^ answerMsg
 ]
 
@@ -73,7 +73,22 @@ PBPharoMessageBroker >> prim_handle: req [
 ]
 
 { #category : #messaging }
+PBPharoMessageBroker >> sendAsyncMessage: aMessage [
+	self sendSyncMessage: aMessage
+]
+
+{ #category : #messaging }
 PBPharoMessageBroker >> sendMessage: aMessage [
+	| ans |
+	ans := [ ZnEasy 
+					post: self pythonUri , '/' , aMessage type
+					data: (ZnEntity text: (self encode: aMessage)) ] on: Error do: [ :err | PBCommunicationError signal: 'Request fail' ].
+	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ].
+	^ ans contents
+]
+
+{ #category : #messaging }
+PBPharoMessageBroker >> sendSyncMessage: aMessage [
 	| ans |
 	ans := [ ZnEasy 
 					post: self pythonUri , '/' , aMessage type

@@ -1,6 +1,6 @@
 Class {
 	#name : #PBStubMessage,
-	#superclass : #PBMessage,
+	#superclass : #PBSyncMessage,
 	#instVars : [
 		'ivar1',
 		'ivar2'
@@ -8,12 +8,14 @@ Class {
 	#category : #'PythonBridge-Platform-Messages'
 }
 
-{ #category : #'as yet unclassified' }
-PBStubMessage class >> ivar1: ivar1 ivar2: ivar2 [
-	^ self new
-		ivar1: ivar1;
-		ivar2: ivar2;
-		yourself
+{ #category : #accessing }
+PBStubMessage class >> answerClass [
+	^ PBStubAnswer
+]
+
+{ #category : #accessing }
+PBStubMessage class >> type [
+	^ #STUB
 ]
 
 { #category : #accessing }
@@ -36,8 +38,10 @@ PBStubMessage >> ivar2: anObject [
 	ivar2 := anObject
 ]
 
-{ #category : #encoding }
-PBStubMessage >> privateEncode: dict [
-	dict at: #ivar1 put: ivar1.
-	dict at: #ivar2 put: ivar2
+{ #category : #encode }
+PBStubMessage >> privateEncode: aDict [
+	super privateEncode: aDict.
+	aDict at: #ivar1 put: ivar1.
+	aDict at: #ivar2f put: ivar2 first.
+	aDict at: #ivar2r put: ivar2 allButFirst.
 ]

@@ -1,6 +1,6 @@
 Class {
-	#name : #PBEnqueueMessage,
-	#superclass : #PBMessage,
+	#name : #PBEnqueueCommandMessage,
+	#superclass : #PBAsyncMessage,
 	#instVars : [
 		'commandId',
 		'statements',
@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-PBEnqueueMessage class >> commandId: commandId statements: statements bindings: bindings [
+PBEnqueueCommandMessage class >> commandId: commandId statements: statements bindings: bindings [
 	^ self new
 			commandId: commandId;
 			statements: statements;
@@ -18,60 +18,60 @@ PBEnqueueMessage class >> commandId: commandId statements: statements bindings: 
 			yourself
 ]
 
-{ #category : #accessing }
-PBEnqueueMessage class >> type [
+{ #category : #'as yet unclassified' }
+PBEnqueueCommandMessage class >> type [
 	^ 'ENQUEUE'
 ]
 
-{ #category : #accessing }
-PBEnqueueMessage >> addBinding: assoc [
+{ #category : #adding }
+PBEnqueueCommandMessage >> addBinding: assoc [
 	bindings add: assoc
 ]
 
-{ #category : #accessing }
-PBEnqueueMessage >> addBindings: assocs [
+{ #category : #adding }
+PBEnqueueCommandMessage >> addBindings: assocs [
 	assocs do: [ :assoc | self addBinding: assoc ]
 ]
 
 { #category : #accessing }
-PBEnqueueMessage >> bindings [
+PBEnqueueCommandMessage >> bindings [
 	^ bindings
 ]
 
 { #category : #accessing }
-PBEnqueueMessage >> bindings: anObject [
+PBEnqueueCommandMessage >> bindings: anObject [
 	bindings := anObject
 ]
 
 { #category : #accessing }
-PBEnqueueMessage >> commandId [
+PBEnqueueCommandMessage >> commandId [
 	^ commandId
 ]
 
 { #category : #accessing }
-PBEnqueueMessage >> commandId: anObject [
+PBEnqueueCommandMessage >> commandId: anObject [
 	commandId := anObject
 ]
 
-{ #category : #initialization }
-PBEnqueueMessage >> initialize [
+{ #category : #adding }
+PBEnqueueCommandMessage >> initialize [
 	super initialize.
 	bindings := Dictionary new
 ]
 
-{ #category : #encoding }
-PBEnqueueMessage >> privateEncode: dict [
+{ #category : #adding }
+PBEnqueueCommandMessage >> privateEncode: dict [
 	dict at: #commandId put: commandId.
 	dict at: #statements put: statements.
 	dict at: #bindings put: bindings
 ]
 
 { #category : #accessing }
-PBEnqueueMessage >> statements [
+PBEnqueueCommandMessage >> statements [
 	^ statements
 ]
 
 { #category : #accessing }
-PBEnqueueMessage >> statements: anObject [
+PBEnqueueCommandMessage >> statements: anObject [
 	statements := anObject
 ]

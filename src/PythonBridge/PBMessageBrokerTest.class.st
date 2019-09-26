@@ -107,14 +107,14 @@ PBMessageBrokerTest >> tearDown [
 PBMessageBrokerTest >> testEnqueueCommandMessage [
 	| flag msg |
 	flag := false.
-	msg := PBEnqueueMessage 
+	msg := PBEnqueueMessageOld 
 				commandId: '7365'
 				statements: 'foo().cat()'
 				bindings: { #foo -> 42 . #bar -> 'zork' } asDictionary.
 	self setHandler: [ :assoc | | bindings |
-		self assert: assoc key equals: PBEnqueueMessage type.
+		self assert: assoc key equals: PBEnqueueMessageOld type.
 		self assert: assoc value size equals: 4.
-		self assert: (assoc value at: 'type') equals: PBEnqueueMessage type.
+		self assert: (assoc value at: 'type') equals: PBEnqueueMessageOld type.
 		self assert: (assoc value at: 'commandId') equals: '7365'.
 		self assert: (assoc value at: 'statements') equals: 'foo().cat()'.
 		bindings := assoc value at: 'bindings'.
@@ -131,12 +131,12 @@ PBMessageBrokerTest >> testEnqueueCommandMessage [
 PBMessageBrokerTest >> testErrorOnCallback [
 	| flag |
 	flag := false.
-	self for: PBEvalAnswer setCallback: [ :dict |
+	self for: PBEvalAnswerOld setCallback: [ :dict |
 		Error signal.
 		flag := true ].
 	self should: [ 
 			self sendMessageToBroker: { 
-				#type -> PBEvalAnswer type.
+				#type -> PBEvalAnswerOld type.
 				#value -> 'foobar' } asDictionary ]
 		raise: PBCommunicationError.
 	self deny: flag
@@ -146,13 +146,13 @@ PBMessageBrokerTest >> testErrorOnCallback [
 PBMessageBrokerTest >> testEvalAnswer [
 	| flag |
 	flag := false.
-	self for: PBEvalAnswer setCallback: [ :dict |
-		self assert: (dict at: #type) equals: PBEvalAnswer type.
+	self for: PBEvalAnswerOld setCallback: [ :dict |
+		self assert: (dict at: #type) equals: PBEvalAnswerOld type.
 		self assert: (dict at: #value) equals: 'foobar'.
 		flag := true.
-		PBEvalAnswer new ].
+		PBEvalAnswerOld new ].
 	self sendMessageToBroker: { 
-				#type -> PBEvalAnswer type.
+				#type -> PBEvalAnswerOld type.
 				#value -> 'foobar' } asDictionary.
 	self assert: flag
 ]
@@ -162,13 +162,13 @@ PBMessageBrokerTest >> testIsAliveMessage [
 	| flag |
 	flag := false.
 	self setHandler: [ :assoc |
-		self assert: assoc key equals: PBIsAliveMessage type.
+		self assert: assoc key equals: PBIsAliveMessageOld type.
 		self assert: assoc value associations size equals: 1.
 		self assert: assoc value associations first key equals: #type.
-		self assert: assoc value associations first value equals: PBIsAliveMessage type.
+		self assert: assoc value associations first value equals: PBIsAliveMessageOld type.
 		flag := true.
 		self answer ].
-	broker sendMessage: PBIsAliveMessage new.
+	broker sendMessage: PBIsAliveMessageOld new.
 	self assert: flag
 ]
 
@@ -181,11 +181,11 @@ PBMessageBrokerTest >> testIsRunning [
 PBMessageBrokerTest >> testWrongRouteAnswer [
 	| flag |
 	flag := false.
-	self for: PBEvalAnswer setCallback: [ :dict |
+	self for: PBEvalAnswerOld setCallback: [ :dict |
 		flag := true.
 		self answer ].
 	self 
-		should: [ self sendMessageToBroker: { #type -> PBCallbackAnswer type } asDictionary ] 
+		should: [ self sendMessageToBroker: { #type -> PBCallbackAnswerOld type } asDictionary ] 
 		raise: PBCommunicationError.
 	self deny: flag
 ]

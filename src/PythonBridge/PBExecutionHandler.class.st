@@ -14,7 +14,7 @@ Class {
 { #category : #'private protocol' }
 PBExecutionHandler >> buildMessageFromCommand: command [
 	| message |
-	message := PBEnqueueMessage 
+	message := PBEnqueueMessageOld 
 					commandId: command id 
 					statements: command pythonCode 
 					bindings: (command bindings asDictionary collect: [ :obj | self serialize: obj ]).
@@ -50,9 +50,9 @@ PBExecutionHandler >> initialize [
 { #category : #initialization }
 PBExecutionHandler >> initializeHandler [
 	self communicationHandler
-		addHandler: [ :dict | self notifyHandler: dict ] forAnswerCls: PBEvalAnswer;
-		addHandler: [ :dict | self notifyErrorHandler: dict ] forAnswerCls: PBErrorAnswer;
-		addHandler: [ :dict | self notifyObserverHandler: dict ] forAnswerCls: PBCallbackAnswer.
+		addHandler: [ :dict | self notifyHandler: dict ] forAnswerCls: PBEvalAnswerOld;
+		addHandler: [ :dict | self notifyErrorHandler: dict ] forAnswerCls: PBErrorAnswerOl;
+		addHandler: [ :dict | self notifyObserverHandler: dict ] forAnswerCls: PBCallbackAnswerOld.
 ]
 
 { #category : #'as yet unclassified' }
@@ -72,7 +72,7 @@ PBExecutionHandler >> notifyErrorHandler: dict [
 					trace: (dict at: #trace);
 					yourself.
 	self safeTriggerDebugger: error.
-	^ PBErrorAnswer handlingAction: error proceedAction
+	^ PBErrorAnswerOl handlingAction: error proceedAction
 ]
 
 { #category : #handlers }
@@ -82,7 +82,7 @@ PBExecutionHandler >> notifyHandler: dict [
 		ifPresent:
 			[ :id | self updatePromiseId: id with: (self deserialize: (dict at: #value)) ]
 		ifAbsent: [ self application log: (PBErrorLog message: 'Notify for missing promise.') ].
-	^ PBEvalAnswer new
+	^ PBEvalAnswerOld new
 ]
 
 { #category : #handlers }
@@ -94,7 +94,7 @@ PBExecutionHandler >> notifyObserverHandler: dict [
 	serialization := [ self serialize: val ] on: Error do: [ :err | 
 		self application log: err printString.
 		self serialize: nil ].
-	^ PBCallbackAnswer val: serialization
+	^ PBCallbackAnswerOld val: serialization
 ]
 
 { #category : #initialization }
