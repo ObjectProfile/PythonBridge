@@ -8,8 +8,8 @@ Class {
 }
 
 { #category : #adding }
-PBCommunicationHandler >> addHandler: aBlock forAnswerCls: answerCls [
-	^ messageBroker addCallback: aBlock answerClass: answerCls
+PBCommunicationHandler >> addHandler: aBlock forMessageClass: messageClass [
+	^ messageBroker addCallback: aBlock messageClass: messageClass
 ]
 
 { #category : #initialization }
@@ -20,7 +20,7 @@ PBCommunicationHandler >> initializeHandler [
 
 { #category : #testing }
 PBCommunicationHandler >> isPythonReady [
-	[ self sendMessage: PBIsAliveMessageOld new ] 
+	[ self sendMessage: PBIsAliveMessage new ] 
 		on: PBCommunicationError 
 		do: [ :e | ^ false ].
 	^ true

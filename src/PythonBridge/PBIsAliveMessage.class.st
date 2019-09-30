@@ -11,5 +11,5 @@ PBIsAliveMessage class >> answerClass [
 
 { #category : #accessing }
 PBIsAliveMessage class >> type [
-	^ 'IS_ALIVE'
+	^ #IS_ALIVE
 ]

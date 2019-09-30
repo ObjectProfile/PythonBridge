@@ -53,3 +53,10 @@ PBMessageTest >> testEncodeMessage [
 		(#__sync -> msg syncId)} asDictionary.
 	self assert: msg encode equals: dict
 ]
+
+{ #category : #tests }
+PBMessageTest >> testNoDuplicatedTypes [
+	| messageClasses |
+	messageClasses := PBAbstractMessage allSubclasses.
+	self assert: (messageClasses collect: #type) asSet size equals: messageClasses size
+]

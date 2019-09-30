@@ -78,6 +78,16 @@ PBPlatform class >> processClass [
 ]
 
 { #category : #hooks }
+PBPlatform class >> serializer [
+	^ self serializerClass new
+]
+
+{ #category : #hooks }
+PBPlatform class >> serializerClass [
+	^ self jsonSerializerClass
+]
+
+{ #category : #hooks }
 PBPlatform class >> uiManager [
 	^ self uiManagerClass new
 ]

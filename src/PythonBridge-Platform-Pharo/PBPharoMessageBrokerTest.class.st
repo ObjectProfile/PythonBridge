@@ -6,7 +6,7 @@ Class {
 
 { #category : #utils }
 PBPharoMessageBrokerTest >> answer [
-	^ ZnResponse ok: (ZnEntity text: 'OK')
+	^ ZnResponse ok: (ZnEntity text: '{}')
 ]
 
 { #category : #utils }
@@ -43,7 +43,7 @@ PBPharoMessageBrokerTest >> primHandle: aRequest [
 		handlerBlock value: 
 			aRequest uri asString allButFirst 
 				-> (NeoJSONReader fromString: aRequest contents)
-		] on: Exception do: [ :e | 
+		] on: Error do: [ :e | 
 			handlerException := e.
 			self errorResponse ].
 	(answer isKindOf: ZnResponse) ifFalse: [ answer := self errorResponse ].

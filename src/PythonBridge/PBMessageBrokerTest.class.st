@@ -53,8 +53,8 @@ PBMessageBrokerTest >> errorResponse [
 ]
 
 { #category : #hooks }
-PBMessageBrokerTest >> for: answerClass setCallback: aBlock [
-	^ broker addCallback: aBlock answerClass: answerClass
+PBMessageBrokerTest >> for: messageClass setCallback: aBlock [
+	^ broker addCallback: aBlock messageClass: messageClass
 ]
 
 { #category : #initialization }
@@ -107,14 +107,14 @@ PBMessageBrokerTest >> tearDown [
 PBMessageBrokerTest >> testEnqueueCommandMessage [
 	| flag msg |
 	flag := false.
-	msg := PBEnqueueMessageOld 
+	msg := PBEnqueueCommandMessage 
 				commandId: '7365'
 				statements: 'foo().cat()'
 				bindings: { #foo -> 42 . #bar -> 'zork' } asDictionary.
 	self setHandler: [ :assoc | | bindings |
-		self assert: assoc key equals: PBEnqueueMessageOld type.
+		self assert: assoc key equals: PBEnqueueCommandMessage type.
 		self assert: assoc value size equals: 4.
-		self assert: (assoc value at: 'type') equals: PBEnqueueMessageOld type.
+		self assert: (assoc value at: 'type') equals: PBEnqueueCommandMessage type.
 		self assert: (assoc value at: 'commandId') equals: '7365'.
 		self assert: (assoc value at: 'statements') equals: 'foo().cat()'.
 		bindings := assoc value at: 'bindings'.
@@ -146,29 +146,31 @@ PBMessageBrokerTest >> testErrorOnCallback [
 PBMessageBrokerTest >> testEvalAnswer [
 	| flag |
 	flag := false.
-	self for: PBEvalAnswerOld setCallback: [ :dict |
-		self assert: (dict at: #type) equals: PBEvalAnswerOld type.
-		self assert: (dict at: #value) equals: 'foobar'.
-		flag := true.
-		PBEvalAnswerOld new ].
+	self for: PBUpdatePromiseMessage setCallback: [ :msg |
+		self assert: msg type equals: PBUpdatePromiseMessage type.
+		self assert: msg value equals: 'foobar'.
+		self assert: msg promiseId equals: '4fcb36d'.
+		flag := true ].
 	self sendMessageToBroker: { 
-				#type -> PBEvalAnswerOld type.
+				#type -> PBUpdatePromiseMessage type.
+				#id -> '4fcb36d'.
 				#value -> 'foobar' } asDictionary.
 	self assert: flag
 ]
 
 { #category : #tests }
 PBMessageBrokerTest >> testIsAliveMessage [
-	| flag |
+	| flag msg |
 	flag := false.
 	self setHandler: [ :assoc |
-		self assert: assoc key equals: PBIsAliveMessageOld type.
-		self assert: assoc value associations size equals: 1.
-		self assert: assoc value associations first key equals: #type.
-		self assert: assoc value associations first value equals: PBIsAliveMessageOld type.
+		self assert: assoc key equals: PBIsAliveMessage type.
+		self assert: assoc value associations size equals: 2.
+		self assert: (assoc value at: #type) equals: PBIsAliveMessage type.
+		self assert: (assoc value at: #__sync) equals: msg syncId.
 		flag := true.
 		self answer ].
-	broker sendMessage: PBIsAliveMessageOld new.
+	msg := PBIsAliveMessage new.
+	broker sendMessage: msg.
 	self assert: flag
 ]
 

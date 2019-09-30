@@ -13,6 +13,11 @@ PBRSyncMessage class >> answerClass [
 ]
 
 { #category : #accessing }
+PBRSyncMessage class >> type [
+	^ #RSYNC
+]
+
+{ #category : #accessing }
 PBRSyncMessage >> answerClass [
 	^ self class answerClass
 ]
@@ -20,6 +25,11 @@ PBRSyncMessage >> answerClass [
 { #category : #accessing }
 PBRSyncMessage >> createAnswer [
 	^ self answerClass answerFor: self
+]
+
+{ #category : #testing }
+PBRSyncMessage >> isSync [
+	^ true
 ]
 
 { #category : #'as yet unclassified' }

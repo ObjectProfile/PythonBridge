@@ -13,6 +13,11 @@ PBSyncMessage class >> answerClass [
 ]
 
 { #category : #accessing }
+PBSyncMessage class >> type [
+	^ #SYNC
+]
+
+{ #category : #accessing }
 PBSyncMessage >> answerClass [
 	^ self class answerClass
 ]
@@ -25,7 +30,12 @@ PBSyncMessage >> createAnswer [
 { #category : #initialization }
 PBSyncMessage >> initialize [
 	super initialize.
-	syncId := PBPlatform current newRandomName asP3GIdentifier
+	syncId := PBPlatform current newRandomName
+]
+
+{ #category : #testing }
+PBSyncMessage >> isSync [
+	^ true
 ]
 
 { #category : #writing }

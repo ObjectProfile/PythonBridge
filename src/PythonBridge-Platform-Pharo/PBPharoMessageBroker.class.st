@@ -7,25 +7,11 @@ Class {
 	#category : #'PythonBridge-Platform-Pharo'
 }
 
-{ #category : #messaging }
-PBPharoMessageBroker >> decode: request [
-	^ NeoJSONReader fromString: request contents
-]
-
-{ #category : #messaging }
-PBPharoMessageBroker >> encode: aMessage [
-	^ NeoJSONWriter toString: aMessage encode
-]
-
 { #category : #private }
-PBPharoMessageBroker >> handleMessage: aDict [
-	| msgClass answerMsg |
-	msgClass := self resolveMessageFromType: (aDict at: #type).
-	(messageCallbacks includesKey: msgClass) 
-		ifFalse: [ ^ self invalidType ].
-	answerMsg := (messageCallbacks at: msgClass) value: aDict.
-	(answerMsg isKindOf: PBOldAnswer) ifFalse: [ PBCommunicationError signal ].
-	^ answerMsg
+PBPharoMessageBroker >> handleRMessage: dict [
+	| msgClass |
+	msgClass := self resolveMessageFromType: (dict at: #type).
+	^ self handle: dict reverseMessageClass: msgClass
 ]
 
 { #category : #private }
@@ -58,43 +44,49 @@ PBPharoMessageBroker >> preventTestForkedPDestroyServer [
 ]
 
 { #category : #private }
+PBPharoMessageBroker >> primSendMessage: dict [
+	| ans |
+	ans := [ ZnEasy 
+					post: self pythonUri , '/' , (dict at: #type)
+					data: (ZnEntity text: (self serializer serialize: dict)) ] on: Error do: [ :err | PBCommunicationError signal: 'Request fail' ].
+	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ].
+	^ self serializer deserialize: ans contents
+]
+
+{ #category : #private }
 PBPharoMessageBroker >> prim_handle: req [
+	"Because of the nature of HTTP, answers of sync messages are not received through this method, but as 	the answers of HTTP requests. This channel is only for RMessages."
 	req method = #POST 
-		ifTrue: [ | dict ans |
-			dict := self decode: req.
-			ans := [ self handleMessage: dict ] 
+		ifTrue: [ | dict ansDict handler |
+			dict := self serializer deserialize: req contents.
+			handler := [ self handleRMessage: dict ] 
 							on: Error 
 							do: [ :e | debugMode
 												ifTrue: [ e pass ]
 												ifFalse: [ ZnResponse serverError: e printString  ] ].
-			^ ZnResponse ok: (ZnEntity json: (self encode: ans)) ]
+			ansDict := handler shouldAnswer
+							ifTrue: [ handler answer encode ]
+							ifFalse: [ Dictionary new ].
+			^ ZnResponse ok: (ZnEntity json: (self serializer serialize: ansDict)) ]
 		ifFalse: [ 
 			^ self invalidMethod ]
 ]
 
 { #category : #messaging }
-PBPharoMessageBroker >> sendAsyncMessage: aMessage [
-	self sendSyncMessage: aMessage
+PBPharoMessageBroker >> sendAsyncMessage: msg [
+	self primSendMessage: msg encode.
 ]
 
 { #category : #messaging }
-PBPharoMessageBroker >> sendMessage: aMessage [
-	| ans |
-	ans := [ ZnEasy 
-					post: self pythonUri , '/' , aMessage type
-					data: (ZnEntity text: (self encode: aMessage)) ] on: Error do: [ :err | PBCommunicationError signal: 'Request fail' ].
-	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ].
-	^ ans contents
+PBPharoMessageBroker >> sendSyncMessage: msg [
+	| ansDict |
+	ansDict := self primSendMessage: msg encode.
+	^ msg createAnswer decode: ansDict
 ]
 
-{ #category : #messaging }
-PBPharoMessageBroker >> sendSyncMessage: aMessage [
-	| ans |
-	ans := [ ZnEasy 
-					post: self pythonUri , '/' , aMessage type
-					data: (ZnEntity text: (self encode: aMessage)) ] on: Error do: [ :err | PBCommunicationError signal: 'Request fail' ].
-	ans status = 200 ifFalse: [ PBCommunicationError signal: 'Request fail' ].
-	^ ans contents
+{ #category : #accessing }
+PBPharoMessageBroker >> serializer [
+	^ PBPlatform current serializer
 ]
 
 { #category : #accessing }

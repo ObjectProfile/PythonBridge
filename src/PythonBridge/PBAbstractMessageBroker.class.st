@@ -21,6 +21,22 @@ PBAbstractMessageBroker >> addCallback: aBlock answerClass: answerCls [
 	messageCallbacks at: answerCls put: aBlock
 ]
 
+{ #category : #messaging }
+PBAbstractMessageBroker >> addCallback: aBlock messageClass: messageClass [
+	messageCallbacks at: messageClass put: aBlock
+]
+
+{ #category : #private }
+PBAbstractMessageBroker >> handle: dict reverseMessageClass: msgClass [
+	| handler |
+	(messageCallbacks includesKey: msgClass) ifFalse: [ PBCommunicationError signal ].
+	handler := PBMessageHandler 
+						forMessage: (msgClass decodeFrom: dict) 
+						callback: (messageCallbacks at: msgClass).
+	handler handleMessage.
+	^ handler
+]
+
 { #category : #initialization }
 PBAbstractMessageBroker >> initialize [
 	super initialize.
@@ -45,7 +61,9 @@ PBAbstractMessageBroker >> pythonUri [
 
 { #category : #private }
 PBAbstractMessageBroker >> resolveMessageFromType: aType [
-	^ PBOldAnswer resolveMessageClassFromType: aType
+	^ PBAbstractMessage withAllSubclasses 
+			detect: [ :cls | cls type = aType ] 
+			ifNone: [ Error signal: 'Message ' , aType , ' not understood.' ].
 ]
 
 { #category : #messaging }
@@ -55,7 +73,9 @@ PBAbstractMessageBroker >> sendAsyncMessage: aMessage [
 
 { #category : #messaging }
 PBAbstractMessageBroker >> sendMessage: aMessage [
-	self subclassResponsibility
+	^ aMessage isSync
+		ifTrue: [ self sendSyncMessage: aMessage ]
+		ifFalse: [ self sendAsyncMessage: aMessage ]
 ]
 
 { #category : #messaging }

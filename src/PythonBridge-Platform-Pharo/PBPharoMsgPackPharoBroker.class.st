@@ -4,6 +4,13 @@ Class {
 	#category : #'PythonBridge-Platform-Pharo'
 }
 
+{ #category : #private }
+PBPharoMsgPackPharoBroker >> handleRMessage: dict [
+	| msgClass |
+	msgClass := self resolveMessageFromType: (dict at: #type).
+	^ self handle: dict messageAnswerClass: msgClass
+]
+
 { #category : #testing }
 PBPharoMsgPackPharoBroker >> isRunning [
 ]
