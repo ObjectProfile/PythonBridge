@@ -22,9 +22,7 @@ install:
   - pwd
   - 'pipenv install'
 
-jobs:
+matrix:
   include:
-    - stage: "Python Tests"
-      name: "Python Unit Tests"
-      script: pipenv run python -m unittest discover tests
-      # python: 3.7
+    - script: pipenv run python -m unittest discover tests
+      python: 3.7
