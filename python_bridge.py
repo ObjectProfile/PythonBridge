@@ -39,7 +39,7 @@ class EvalCommand:
 
 class Logger():
 	def log(self, msg):
-		print(str(msg), file=sys.stderr)
+		print(str(msg), file=sys.stderr, flush=True)
 
 class NoLogger():
 	def log(self, msg):
@@ -114,21 +114,21 @@ def enqueue_command(data):
 
 def run_bridge():
 	##### FLASK API
-	app = Flask(__name__)
-	app.use_reloader=False
+	# app = Flask(__name__)
+	# app.use_reloader=False
 
-	@app.route("/ENQUEUE", methods=["POST"])
-	def eval_expression():
-		data = request.get_json(force=True)
-		bridge_globals.globalCommandList.push_command(EvalCommand(
-										data["commandId"], 
-										data["statements"],
-										{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
-		return "OK"
+	# @app.route("/ENQUEUE", methods=["POST"])
+	# def eval_expression():
+	# 	data = request.get_json(force=True)
+	# 	bridge_globals.globalCommandList.push_command(EvalCommand(
+	# 									data["commandId"], 
+	# 									data["statements"],
+	# 									{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
+	# 	return "OK"
 
-	@app.route("/IS_ALIVE", methods=["POST"])
-	def status_endpoint():
-		return "PHARO_HOOKS RUNNING"
+	# @app.route("/IS_ALIVE", methods=["POST"])
+	# def status_endpoint():
+	# 	return "{}"
 
 	##### MAIN PROGRAM
 	ap = argparse.ArgumentParser()

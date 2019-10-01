@@ -33,17 +33,17 @@ def notify_observer(obj, commandId, observerId):
 	data["commandId"] = commandId
 	data["observerId"] = observerId
 	data["value"] = convert_to_JSON(obj)
-	rawValue = bridge_globals.msg_service.send_sync_message(data)['val']
+	rawValue = bridge_globals.msg_service.send_sync_message(data)['value']
 	return convert_from_JSON(rawValue)
 
 def notify_error(ex, command):
 	bridge_globals.logger.log("Error on command: " + str(command.command_id()))
-	bridge_globals.logger.log(str(ex))
+	bridge_globals.logger.log("Exception: " + str(ex))
 	data = {}
 	data["type"] = "ERR"
 	data["errMsg"] = str(ex)
 	data["trace"] = traceback.format_exc(100)
-	data["id"] = command.command_id()
+	data["commandId"] = command.command_id()
 	return bridge_globals.msg_service.send_sync_message(data)
 
 def bridge_inspect(obj):

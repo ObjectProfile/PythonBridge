@@ -2,6 +2,9 @@ from flask import Flask, request
 import http.client
 import json
 import threading
+import bridge_utils
+from PythonBridge import bridge_globals
+import sys
 
 class FlaskMsgService:
 
@@ -16,17 +19,17 @@ class FlaskMsgService:
         def eval_expression():
             data = request.get_json(force=True)
             feed_callback(data)
-            return "OK"
+            return "{}"
 
         @self.app.route("/IS_ALIVE", methods=["POST"])
         def status_endpoint():
-            return "PHARO_HOOKS RUNNING"
+            return "{}"
         
     def start(self):
         try:
             self.app.run(port=self.port)
         except OSError as err:
-            print(str(err))
+            bridge_globals.logger.log('Critical Error:' + str(err))
             exit(42)
     
     def start_on_thread(self):
@@ -38,11 +41,14 @@ class FlaskMsgService:
         self.send_sync_message(msg)
     
     def send_sync_message(self, msg):
+        msg['__sync'] = bridge_utils.random_str()
+        bridge_globals.logger.log("SYNC_MSG: " + json.dumps(msg))
         conn = http.client.HTTPConnection("localhost", str(self.pharo_port))
         conn.request("POST", "/" + msg["type"], json.dumps(msg), {
             "Content-type": "application/json",
             "Accept": "text/plain"})
         response =  str(conn.getresponse().read().decode())
+        bridge_globals.logger.log("SYNC_ANS: " + response)
         return json.loads(response)
 
 def build_service(port, pharo_port, feed_callback):
