@@ -3,6 +3,14 @@ os:
   - osx
   - linux
 
+smalltalk:
+  - Pharo-7.0
+  - Pharo64-7.0
+
+python:
+  - 3.6
+  - 3.7
+
 env:
   global:
     - PIPENV_VENV_IN_PROJECT=1
@@ -18,10 +26,5 @@ jobs:
   include:
     - stage: "Python Tests"
       name: "Python Unit Tests"
-      python: 3.7
       script: pipenv run python -m unittest discover tests
-    - stage: "Pharo Tests"
-      name: "Pharo Unit Tests"
-      smalltalk:
-        - Pharo-7.0
-        - Pharo64-7.0
+      # python: 3.7
