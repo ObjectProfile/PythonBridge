@@ -10,6 +10,11 @@ Class {
 }
 
 { #category : #accessing }
+PBCallbackMessage class >> answerClass [
+	^ PBCallbackAnswer
+]
+
+{ #category : #accessing }
 PBCallbackMessage class >> type [
 	^ #CALLBACK
 ]

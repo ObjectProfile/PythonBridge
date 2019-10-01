@@ -107,7 +107,8 @@ PBPharoPipenvProcess >> processArguments [
 			'run'. 
 			'python'. self pythonMainFile fullName. 
 			'--port'. self settings pythonSocketAddress port asString . 
-			'--pharo'. self settings pharoSocketAddress port asString }
+			'--pharo'. self settings pharoSocketAddress port asString .
+			'--log'}
 ]
 
 { #category : #initialization }

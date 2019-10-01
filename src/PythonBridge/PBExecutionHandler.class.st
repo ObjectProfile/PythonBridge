@@ -14,7 +14,7 @@ Class {
 { #category : #'private protocol' }
 PBExecutionHandler >> buildMessageFromCommand: command [
 	| message |
-	message := PBEnqueueMessageOld 
+	message := PBEnqueueCommandMessage 
 					commandId: command id 
 					statements: command pythonCode 
 					bindings: (command bindings asDictionary collect: [ :obj | self serialize: obj ]).
@@ -72,7 +72,7 @@ PBExecutionHandler >> notifyCallbackHandler: msg [
 		self application log: err printString.
 		self serialize: nil ].
 	^ msg createAnswer 
-		val: serialization;
+		value: serialization;
 		yourself
 ]
 
@@ -96,18 +96,6 @@ PBExecutionHandler >> notifyHandler: updatePromiseMsg [
 	self 
 		updatePromiseId: updatePromiseMsg promiseId 
 		with: (self deserialize: updatePromiseMsg value)
-]
-
-{ #category : #handlers }
-PBExecutionHandler >> notifyObserverHandler: dict [
-	| val serialization |
-	val := self 
-		signalObserver: (self getObserverAtCommandId: (dict at: #commandId) id: (dict at: #observerId)) 
-		withValue: (self deserialize: (dict at: #value)).
-	serialization := [ self serialize: val ] on: Error do: [ :err | 
-		self application log: err printString.
-		self serialize: nil ].
-	^ PBCallbackAnswerOld val: serialization
 ]
 
 { #category : #initialization }

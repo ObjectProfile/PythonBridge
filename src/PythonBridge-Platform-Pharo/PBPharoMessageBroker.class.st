@@ -56,20 +56,21 @@ PBPharoMessageBroker >> primSendMessage: dict [
 { #category : #private }
 PBPharoMessageBroker >> prim_handle: req [
 	"Because of the nature of HTTP, answers of sync messages are not received through this method, but as 	the answers of HTTP requests. This channel is only for RMessages."
-	req method = #POST 
+	^ req method = #POST 
 		ifTrue: [ | dict ansDict handler |
-			dict := self serializer deserialize: req contents.
-			handler := [ self handleRMessage: dict ] 
-							on: Error 
-							do: [ :e | debugMode
-												ifTrue: [ e pass ]
-												ifFalse: [ ZnResponse serverError: e printString  ] ].
-			ansDict := handler shouldAnswer
-							ifTrue: [ handler answer encode ]
-							ifFalse: [ Dictionary new ].
-			^ ZnResponse ok: (ZnEntity json: (self serializer serialize: ansDict)) ]
+			[ 
+				dict := self serializer deserialize: req contents.
+				handler := self handleRMessage: dict.
+				ansDict := handler shouldAnswer
+								ifTrue: [ handler answer encode ]
+								ifFalse: [ Dictionary new ].
+				^ ZnResponse ok: (ZnEntity json: (self serializer serialize: ansDict)) ] 
+			on: Error 
+			do: [ :e | debugMode
+							ifTrue: [ e pass ]
+							ifFalse: [ ZnResponse serverError: e printString  ] ] ]
 		ifFalse: [ 
-			^ self invalidMethod ]
+			self invalidMethod ]
 ]
 
 { #category : #messaging }
