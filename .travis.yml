@@ -18,11 +18,13 @@ env:
 install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pip install pipenv; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo pip install pipenv; fi
-  - ls
-  - pwd
+  - ln -s . PythonBridge
   - 'pipenv install'
 
 matrix:
+  exclude:
+    - os: osx
+      smalltalk: Pharo64-7.0
   include:
     - script: pipenv run python -m unittest discover tests
       python: 3.7
