@@ -57,7 +57,7 @@ class TestRegistry(unittest.TestCase):
 
     @classmethod
     def post(cls,dictionary):
-        response = requests.post('http://localhost:'+str(cls.server_port), data=dictionary)
+        response = requests.post('http://localhost:'+str(cls.server_port), data=json.dumps(dictionary))
         return response.json()
 
     @classmethod
@@ -93,11 +93,11 @@ class TestRegistry(unittest.TestCase):
         self.assertEqual(self.post({}), {'rr': 33})
         self.assertTrue(self.exec_flag)
 
-    # def test_read_server(self):
-    #     self.assertTrue(self.thread != None)
-    #     def assert_handle(handler):
-    #         self.assertEqual(handler.read_data(), {'ss': 44})
-    #         self.write_answer({}, handler)
-    #     TestHandler.callback = assert_handle
-    #     self.assertEqual(self.post({'ss': 44}), {})
-    #     self.assertTrue(self.exec_flag)
+    def test_read_server(self):
+        self.assertTrue(self.thread != None)
+        def assert_handle(handler):
+            self.assertEqual(handler.read_data(), {'ss': 44})
+            self.write_answer({}, handler)
+        TestHandler.callback = assert_handle
+        self.assertEqual(self.post({'ss': 44}), {})
+        self.assertTrue(self.exec_flag)
