@@ -1,10 +1,14 @@
-import flask_platform
 import unittest
+from PythonBridge import bridge_globals, flask_platform
 import threading
 from http.server import HTTPServer, BaseHTTPRequestHandler
 import requests
 import json
 import time
+
+class NoLogger():
+	def log(self, msg):
+		pass
 
 def signal_error(handler):
     raise Exception("ERROR!!!!")
@@ -49,7 +53,7 @@ class TestHandler(BaseHTTPRequestHandler):
 #     print(f"Starting httpd server on {addr}:{port}")
 #     httpd.serve_forever()
 
-class TestRegistry(unittest.TestCase):
+class TestHTTPPlatform(unittest.TestCase):
     thread = None
     msg_service = None
     server_port = 9977
@@ -57,12 +61,13 @@ class TestRegistry(unittest.TestCase):
     server = HTTPServer(('localhost',server_port), TestHandler)
 
     @classmethod
-    def post(cls,dictionary):
-        response = requests.post('http://localhost:'+str(cls.server_port), data=json.dumps(dictionary))
+    def post(cls,dictionary, port=python_port,route=''):
+        response = requests.post('http://localhost:'+str(port)+'/'+route, data=json.dumps(dictionary))
         return response.json()
 
     @classmethod
     def setUpClass(cls):
+        bridge_globals.logger = NoLogger()
         cls.start_server()
         cls.start_msg_service()
         time.sleep(0.5)
@@ -99,7 +104,7 @@ class TestRegistry(unittest.TestCase):
     def test_write_server(self):
         self.assertTrue(self.thread != None)
         TestHandler.callback = lambda handler: self.write_answer({'rr': 33}, handler)
-        self.assertEqual(self.post({}), {'rr': 33})
+        self.assertEqual(self.post({}, port=self.server_port), {'rr': 33})
         self.assertTrue(self.exec_flag)
 
     def test_read_server(self):
@@ -108,5 +113,39 @@ class TestRegistry(unittest.TestCase):
             self.assertEqual(handler.read_data(), {'ss': 44})
             self.write_answer({}, handler)
         TestHandler.callback = assert_handle
-        self.assertEqual(self.post({'ss': 44}), {})
+        self.assertEqual(self.post({'ss': 44}, port=self.server_port), {})
         self.assertTrue(self.exec_flag)
+
+    def test_send_sync_msg(self):
+        self.sync_id = None
+        def assert_handle(handler):
+            data = handler.read_data()
+            self.assertEqual(data['val'], 3)
+            self.assertEqual(data['type'], 'MSG')
+            self.sync_id = data['__sync']
+            self.write_answer({'type': 'MSG', 'foo':7, '__sync': self.sync_id}, handler)
+        TestHandler.callback = assert_handle
+        ans = self.msg_service.send_sync_message({'type': 'MSG', 'val': 3})
+        self.assertEqual({'type': 'MSG', 'foo':7, '__sync': self.sync_id}, ans)
+        self.assertTrue(self.exec_flag)
+
+    def test_send_async_msg(self):
+        def assert_handle(handler):
+            data = handler.read_data()
+            self.assertEqual(data['val'], 3)
+            self.assertEqual(data['type'], 'MSG')
+            self.write_answer({}, handler)
+        TestHandler.callback = assert_handle
+        self.msg_service.send_async_message({'type': 'MSG', 'val': 3})
+        self.assertTrue(self.exec_flag)
+
+    def test_is_alive(self):
+        self.assertEqual(self.post({'type':'IS_ALIVE'}, route='IS_ALIVE'), {})
+
+    def test_enqueue_callback(self):
+        def assert_enqueue_handle(msg):
+            self.exec_flag = True
+            self.assertEqual(msg, {'type':'ENQUEUE', 'data':'FFFFFFF'})
+        self.msg_service.feed_callback = assert_enqueue_handle
+        self.post({'type':'ENQUEUE', 'data':'FFFFFFF'}, route='ENQUEUE')
+        self.exec_flag = True

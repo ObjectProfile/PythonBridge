@@ -19,7 +19,7 @@ class FlaskMsgService:
         @self.app.route("/ENQUEUE", methods=["POST"])
         def eval_expression():
             data = request.get_json(force=True)
-            feed_callback(data)
+            self.feed_callback(data)
             return "{}"
 
         @self.app.route("/IS_ALIVE", methods=["POST"])
@@ -34,7 +34,7 @@ class FlaskMsgService:
             exit(42)
     
     def start(self):
-        self.thread = threading.Thread(target=self.start, args=())
+        self.thread = threading.Thread(target=self._start, args=())
         self.thread.daemon = True
         self.thread.start()
 

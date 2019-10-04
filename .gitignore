@@ -4,3 +4,4 @@
 .DS_Store
 Pipfile.lock
 /.vscode
+/tests/__pycache__
