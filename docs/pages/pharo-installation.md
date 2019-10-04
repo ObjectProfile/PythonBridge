@@ -1,11 +1,11 @@
 ---
 layout: default
-permalink: /pages/installation
-title: Installation
+permalink: /pages/pharo-installation
+title: Pharo Installation
 nav_order: 2
 ---
 
-# Installation
+# Pharo Installation
 {: .no_toc }
 
 ## Table of contents

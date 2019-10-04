@@ -10,14 +10,14 @@ permalink: /
 # Talk to Python from Smalltalk, the smalltalk way
 {: .fs-8 }
 
-PythonBridge gives Pharo developers the capability of interacting and reusing any Python library directly from Pharo. The communication between both instances is transparent and most of the compelxity is handled directly by the framework. We want you to use Python, but develop Smalltalk.
+PythonBridge gives Smalltalk developers the capability of interacting and reusing any Python library directly from Smalltalk. The communication between both instances is transparent and most of the compelxity is handled directly by the framework. We want you to use Python, but develop Smalltalk. Currently, the bridge is open to the public in Pharo and we are conducting a closed beta for VisualWorks users.
 {: .fs-5 .fw-300 }
 
 [Get started now](#getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/ObjectProfile/PythonBridge){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 
 ---
 
-## Getting started
+## Getting started in Pharo
 
 ### Requirements
 
@@ -29,7 +29,7 @@ To install Python3.6 follow the instructions on the [Python download webpage](ht
 
 To install Pipenv just use the following Pip instruction `pip3 install pipenv`. To verify if you have pipenv just run in a terminal `pipenv --version`, it should print something like `pipenv, version 2018.11.26`.
 
-For troubleshooting on the dependencies installation go to our [Installation page](pages/installation#troubleshooting).
+For troubleshooting on the dependencies installation go to our [Installation page](pages/pharo-installation#troubleshooting).
 
 ### Quick start: Download and install PythonBridge on a clean Pharo
 
