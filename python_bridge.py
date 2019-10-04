@@ -153,7 +153,7 @@ def run_bridge():
 	env = clean_locals_env()
 	msg_service = flask_platform.build_service(int(args["port"]), int(args["pharo"]), enqueue_command)
 	bridge_globals.msg_service = msg_service
-	msg_service.start_on_thread()
+	msg_service.start()
 
 	while True:
 		command = globalCommandList.consume_command()

@@ -39,7 +39,6 @@ class TestHandler(BaseHTTPRequestHandler):
 
     def read_data(self):
         text = self.rfile.read(int(self.headers.get('Content-Length'))).decode("utf-8")
-        print(text)
         return json.loads(text)
 
 
@@ -52,7 +51,9 @@ class TestHandler(BaseHTTPRequestHandler):
 
 class TestRegistry(unittest.TestCase):
     thread = None
+    msg_service = None
     server_port = 9977
+    python_port = 9978
     server = HTTPServer(('localhost',server_port), TestHandler)
 
     @classmethod
@@ -63,6 +64,8 @@ class TestRegistry(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.start_server()
+        cls.start_msg_service()
+        time.sleep(0.5)
 
     @classmethod
     def start_server(cls):
@@ -71,7 +74,13 @@ class TestRegistry(unittest.TestCase):
         cls.thread = threading.Thread(target=cls._start_server, args=())
         cls.thread.daemon = True
         cls.thread.start()
-        time.sleep(0.4)
+
+    @classmethod
+    def start_msg_service(cls):
+        if cls.msg_service != None:
+            return
+        cls.msg_service = flask_platform.build_service(cls.python_port,cls.server_port,signal_error)
+        cls.msg_service.start()
     
     @classmethod
     def _start_server(cls):

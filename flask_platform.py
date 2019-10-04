@@ -7,6 +7,7 @@ from PythonBridge import bridge_globals
 import sys
 
 class FlaskMsgService:
+    thread = None
 
     def __init__(self, port, pharo_port, feed_callback):
         self.port = port
@@ -25,17 +26,20 @@ class FlaskMsgService:
         def status_endpoint():
             return "{}"
         
-    def start(self):
+    def _start(self):
         try:
             self.app.run(port=self.port)
         except OSError as err:
             bridge_globals.logger.log('Critical Error:' + str(err))
             exit(42)
     
-    def start_on_thread(self):
-        thread = threading.Thread(target=self.start, args=())
-        thread.daemon = True
-        thread.start()
+    def start(self):
+        self.thread = threading.Thread(target=self.start, args=())
+        self.thread.daemon = True
+        self.thread.start()
+
+    def stop(self):
+        pass
 
     def send_async_message(self, msg):
         self.send_sync_message(msg)
