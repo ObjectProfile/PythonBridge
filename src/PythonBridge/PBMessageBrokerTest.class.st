@@ -131,13 +131,13 @@ PBMessageBrokerTest >> testEnqueueCommandMessage [
 PBMessageBrokerTest >> testErrorOnCallback [
 	| flag |
 	flag := false.
-	self for: PBEvalAnswerOld setCallback: [ :dict |
+	self for: PBRSyncMessage setCallback: [ :dict |
 		Error signal.
 		flag := true ].
 	self should: [ 
 			self sendMessageToBroker: { 
-				#type -> PBEvalAnswerOld type.
-				#value -> 'foobar' } asDictionary ]
+				#type -> PBRSyncMessage type.
+				#__sync -> 'foobar' } asDictionary ]
 		raise: PBCommunicationError.
 	self deny: flag
 ]
@@ -183,11 +183,13 @@ PBMessageBrokerTest >> testIsRunning [
 PBMessageBrokerTest >> testWrongRouteAnswer [
 	| flag |
 	flag := false.
-	self for: PBEvalAnswerOld setCallback: [ :dict |
+	self for: PBCallbackMessage setCallback: [ :dict |
 		flag := true.
 		self answer ].
 	self 
-		should: [ self sendMessageToBroker: { #type -> PBCallbackAnswerOld type } asDictionary ] 
+		should: [ self sendMessageToBroker: { 
+								#type -> PBRSyncMessage type.
+								#__sync -> 'foobar' } asDictionary ] 
 		raise: PBCommunicationError.
 	self deny: flag
 ]

@@ -17,11 +17,6 @@ PBAbstractMessageBroker class >> settings: settings [
 ]
 
 { #category : #messaging }
-PBAbstractMessageBroker >> addCallback: aBlock answerClass: answerCls [
-	messageCallbacks at: answerCls put: aBlock
-]
-
-{ #category : #messaging }
 PBAbstractMessageBroker >> addCallback: aBlock messageClass: messageClass [
 	messageCallbacks at: messageClass put: aBlock
 ]
