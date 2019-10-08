@@ -15,7 +15,7 @@ PBCommunicationHandler >> addHandler: aBlock forMessageClass: messageClass [
 { #category : #initialization }
 PBCommunicationHandler >> initializeHandler [
 	super initializeHandler.
-	messageBroker := PBPlatform current messageBrokerClass settings: self application settings
+	messageBroker := PBPlatform current messageBroker: self application settings
 ]
 
 { #category : #testing }

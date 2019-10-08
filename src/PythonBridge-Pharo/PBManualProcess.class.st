@@ -1,7 +1,7 @@
 Class {
 	#name : #PBManualProcess,
 	#superclass : #PBAbstractProcess,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-Processes'
 }
 
 { #category : #accessing }

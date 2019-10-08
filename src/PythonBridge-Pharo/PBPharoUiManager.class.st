@@ -1,7 +1,7 @@
 Class {
 	#name : #PBPharoUiManager,
 	#superclass : #PBUiManager,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-Platform'
 }
 
 { #category : #'as yet unclassified' }

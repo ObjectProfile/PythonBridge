@@ -1,7 +1,7 @@
 Class {
 	#name : #PBMsgPackSocketStreamTest,
 	#superclass : #TestCase,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
 { #category : #private }

@@ -41,7 +41,7 @@ PBMapper >> executionHandler: anObject [
 { #category : #initialization }
 PBMapper >> initialize [
 	super initialize.
-	serializerWrapper := PBPlatform current jsonSerializerClass new
+	serializerWrapper := PBPlatform current serializer
 ]
 
 { #category : #accessing }

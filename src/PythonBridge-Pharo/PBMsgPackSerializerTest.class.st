@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'serializer'
 	],
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
 { #category : #tests }

@@ -1,7 +1,7 @@
 Class {
 	#name : #PBPharoProcessTest,
 	#superclass : #PBProcessTest,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-Processes'
 }
 
 { #category : #utils }

@@ -1,7 +1,7 @@
 Class {
 	#name : #PBMsgPackSerializer,
 	#superclass : #PBAbstractSerializerWrapper,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
 { #category : #private }

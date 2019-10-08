@@ -1,6 +1,10 @@
 Class {
 	#name : #PBPlatform,
 	#superclass : #Object,
+	#instVars : [
+		'msgBrokerStrategy',
+		'processStrategy'
+	],
 	#classVars : [
 		'Current'
 	],
@@ -9,29 +13,12 @@ Class {
 
 { #category : #accessing }
 PBPlatform class >> current [
-	^ Current ifNil: [ Current := self getConcretePlatform ]
+	^ Current ifNil: [ Current := self getConcretePlatform new ]
 ]
 
 { #category : #accessing }
 PBPlatform class >> current: aPlatform [
 	Current := aPlatform
-]
-
-{ #category : #hooks }
-PBPlatform class >> defaultSettings [
-	^ PBSettings 
-		pharoSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: (7000 + 99 atRandom))
-		pythonSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: (6900 + 99 atRandom))
-]
-
-{ #category : #'as yet unclassified' }
-PBPlatform class >> ensureEnvironmentForApp: anApplication [
-	self subclassResponsibility
-]
-
-{ #category : #utils }
-PBPlatform class >> folderForApplication: application [
-	self subclassResponsibility
 ]
 
 { #category : #utils }
@@ -47,24 +34,34 @@ PBPlatform class >> getConcretePlatform [
 										ifFalse: [ next ] ] ] 
 ]
 
+{ #category : #hooks }
+PBPlatform class >> globalPythonProcessClass [
+	self subclassResponsibility
+]
+
+{ #category : #hooks }
+PBPlatform class >> httpMessageBrokerClass [
+	self subclassResponsibility
+]
+
 { #category : #testing }
 PBPlatform class >> isAbstract [
 	^ self name = 'PBPlatform' asSymbol
 ]
 
 { #category : #hooks }
-PBPlatform class >> jsonSerializerClass [
+PBPlatform class >> manualProcessClass [
 	self subclassResponsibility
 ]
 
 { #category : #hooks }
-PBPlatform class >> messageBrokerClass [
+PBPlatform class >> pipenvProcessClass [
 	self subclassResponsibility
 ]
 
-{ #category : #hooks }
-PBPlatform class >> newRandomName [
-	self subclassResponsibility
+{ #category : #accessing }
+PBPlatform class >> platform [
+	^ self current
 ]
 
 { #category : #private }
@@ -73,36 +70,98 @@ PBPlatform class >> priority [
 ]
 
 { #category : #hooks }
-PBPlatform class >> processClass [
+PBPlatform class >> socketMessageBrokerClass [
 	self subclassResponsibility
 ]
 
 { #category : #hooks }
-PBPlatform class >> serializer [
-	^ self serializerClass new
-]
-
-{ #category : #hooks }
-PBPlatform class >> serializerClass [
-	^ self jsonSerializerClass
-]
-
-{ #category : #hooks }
-PBPlatform class >> uiManager [
-	^ self uiManagerClass new
-]
-
-{ #category : #private }
 PBPlatform class >> uiManagerClass [
 	self subclassResponsibility
 ]
 
 { #category : #hooks }
-PBPlatform class >> weakRegistry [
-	^ self weakRegistryClass new
+PBPlatform class >> weakRegistryClass [
+	self subclassResponsibility
+]
+
+{ #category : #utils }
+PBPlatform >> defaultSettings [
+	^ PBSettings 
+		pharoSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: (7000 + 99 atRandom))
+		pythonSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: (6900 + 99 atRandom))
 ]
 
 { #category : #hooks }
-PBPlatform class >> weakRegistryClass [
+PBPlatform >> ensureEnvironmentForApp: anApplication [
 	self subclassResponsibility
+]
+
+{ #category : #hooks }
+PBPlatform >> folderForApplication: application [
+	self subclassResponsibility
+]
+
+{ #category : #'module creation' }
+PBPlatform >> messageBroker: settings [
+	^ self messageBrokerStrategy settings: settings
+]
+
+{ #category : #'message broker strategy' }
+PBPlatform >> messageBrokerStrategy [
+	^ msgBrokerStrategy ifNil: [ ^ self class httpMessageBrokerClass ]
+]
+
+{ #category : #'message broker strategy' }
+PBPlatform >> messageBrokerStrategy: msgBrokerCls [
+	msgBrokerStrategy := msgBrokerCls
+]
+
+{ #category : #utils }
+PBPlatform >> newRandomName [
+	self subclassResponsibility
+]
+
+{ #category : #'module creation' }
+PBPlatform >> process: application [
+	^ self processStrategy application: application
+]
+
+{ #category : #'process strategy' }
+PBPlatform >> processStrategy [
+	^ processStrategy ifNil: [ ^ self class pipenvProcessClass ]
+]
+
+{ #category : #'process strategy' }
+PBPlatform >> processStrategy: processCls [
+	processStrategy := processCls
+]
+
+{ #category : #'module creation' }
+PBPlatform >> serializer [
+	^ self messageBrokerStrategy serializerClass new
+]
+
+{ #category : #'message broker strategy' }
+PBPlatform >> setHttpMessageBroker [
+	self messageBrokerStrategy: self class httpMessageBrokerClass
+]
+
+{ #category : #'process strategy' }
+PBPlatform >> setPipenvProcess [
+	self processStrategy: self class pipenvProcessClass
+]
+
+{ #category : #'message broker strategy' }
+PBPlatform >> setSocketMessageBroker [
+	self messageBrokerStrategy: self class socketMessageBrokerClass
+]
+
+{ #category : #'module creation' }
+PBPlatform >> uiManager [
+	^ self class uiManagerClass new
+]
+
+{ #category : #'module creation' }
+PBPlatform >> weakRegistry [
+	^ self class weakRegistryClass new
 ]

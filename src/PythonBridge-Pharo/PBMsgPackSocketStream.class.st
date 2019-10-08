@@ -6,7 +6,7 @@ Class {
 		'encoder',
 		'decoder'
 	],
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
 { #category : #'instance creation' }

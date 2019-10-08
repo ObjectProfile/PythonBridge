@@ -8,7 +8,7 @@ Class {
 	#classVars : [
 		'PipenvPath'
 	],
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-Processes'
 }
 
 { #category : #initialization }
@@ -25,7 +25,7 @@ PBPharoPipenvProcess class >> pipenvPath: aString [
 
 { #category : #accessing }
 PBPharoPipenvProcess class >> platform [
-	^ PBPharoPlatform
+	^ PBPharoPlatform current
 ]
 
 { #category : #initialization }

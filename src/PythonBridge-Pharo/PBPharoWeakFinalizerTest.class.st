@@ -1,7 +1,7 @@
 Class {
 	#name : #PBPharoWeakFinalizerTest,
 	#superclass : #PBWeakFinalizerTest,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-Platform'
 }
 
 { #category : #running }

@@ -4,8 +4,13 @@ Class {
 	#instVars : [
 		'server'
 	],
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-MessageBroker'
 }
+
+{ #category : #initialization }
+PBPharoMessageBroker class >> serializerClass [
+	^ PBNeoJsonSerializer
+]
 
 { #category : #private }
 PBPharoMessageBroker >> handleRMessage: dict [

@@ -15,7 +15,7 @@ PBPythonHandler >> errorMessage [
 { #category : #initialization }
 PBPythonHandler >> initializeHandler [
 	super initializeHandler.
-	process := PBPlatform current processClass application: self application
+	process := PBPlatform current process: self application
 ]
 
 { #category : #testing }

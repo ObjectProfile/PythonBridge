@@ -1,7 +1,7 @@
 Class {
 	#name : #PBPharoMsgPackPharoBroker,
 	#superclass : #PBAbstractMessageBroker,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
 { #category : #private }

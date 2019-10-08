@@ -1,7 +1,7 @@
 Class {
 	#name : #PBPharoMessageBrokerTest,
 	#superclass : #PBMessageBrokerTest,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
 { #category : #utils }

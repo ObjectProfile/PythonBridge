@@ -1,7 +1,7 @@
 Class {
 	#name : #PBNeoJsonSerializerTest,
 	#superclass : #PBJsonSerializerTest,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
 { #category : #hooks }

@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'weakRegistry'
 	],
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-Platform'
 }
 
 { #category : #'as yet unclassified' }

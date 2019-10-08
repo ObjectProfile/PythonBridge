@@ -1,7 +1,7 @@
 Class {
 	#name : #PBNeoJsonSerializer,
 	#superclass : #PBAbstractSerializerWrapper,
-	#category : #'PythonBridge-Platform-Pharo'
+	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
 { #category : #private }
