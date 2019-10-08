@@ -1,7 +1,7 @@
 ---
 layout: default
-permalink: /pages/pharo-installation
-title: Pharo Installation
+permalink: /pages/vw-installation
+title: Visual Works Installation
 nav_order: 2
 ---
 
@@ -19,6 +19,7 @@ nav_order: 2
 PythonBridge has two kind of dependencies, the ones that are required in the VisualWorks image to launch and communicate with Python and the dependencies related to the Python environment. Keep in mind that currently we only support PythonBridge running on VisualWorks on Windows.
 
 ### VisualWorks dependencies
+{: #vwdep }
 1. SUnitToo
 1. HTTP
 1. JSONReader (Public Store)
@@ -37,10 +38,10 @@ PythonBridge has two kind of dependencies, the ones that are required in the Vis
 1. Requests
 
 ## Install Python 3.6
-We suggest to NOT use Homebrew, because we have experienced several issues handling the rest of the dependencies. Instead, we suggest using the installer provided in the Python webpage [https://www.python.org/downloads/release/python-368/](https://www.python.org/downloads/release/python-368/).
+We suggest using the installer provided in the Python webpage [https://www.python.org/downloads/release/python-368/](https://www.python.org/downloads/release/python-368/).
 
-To verify python installed correctly just run `python3 --version` and you should get `Python 3.6.8`.
-Also verify that pip has also been installed by running `pip -V` and you should get `pip 19.0.3 from ...` 
+To verify python installed correctly just run `python --version` and you should get `Python 3.6.8`.
+Also verify that pip has also been installed by running `pip -V` and you should get `pip 18.1 from ... (python 3.6)` 
 
 ## Install Pipenv
 
@@ -50,38 +51,46 @@ To verify if you have pipenv just run in a terminal `pipenv --version`, it shoul
 
 
 ## Download and Install PythonBridge
+Currently PythonBridge version for VisualWorks is on closed beta. Therefore, we required that all people or companies wishing to use PythonBridge directly request ObjectProfile a digital copy of the software. For this purpose send an email to `info@objectprofile.com`.
 
-To install PythonBridge in a Pharo6.1 or Pharo7 image run the following script in a Playground:
-```Smalltalk
-Metacello new
-    baseline: 'PythonBridge';
-    repository: 'github://ObjectProfile/PythonBridge/src';
-    load.
-``` 
+The next step is opening a VisualWorks 8.x image and install all the prerequisites detailed in [VisualWorks dependencies](#vwdep). They should be installed in that order, some of them are available directly from VW parcel manager and others need to be downloaded from Cincom Public Store.
 
-The first part of the script is responsible of downloading the PythonBridge code and loading it in the image.
+After all prerequesites are installed we can install PythonBridge itself. You should have received a zip file from ObjectProfile which includes several parcels file. The first step is to extract them in a folder. Then, by executing the following script in a workspace, you need to select the folder with the parcels and let the tool automatically install PythonBridge.
 
-If pipenv path is not found by Pharo you may need to provide the route manually. To know more about this go to the [Troubleshooting section](#troubleshooting).
-
-## Manually creating Pipenv environment
-
-If Pharo was unable to create the Pipenv you may need to do it manually. For this you must run in a terminal the following script:
-```bash
-cd /PATH/TO/ICEBERG/PYTHON_BRIDGE/REPOSITORY
-bash install_env.sh
+```smalltalk
+| dir |
+dir := Dialog requestDirectoryName: 'Choose the graphql parcels directory'.
+dir isEmpty ifTrue: [^ self].
+dir:= dir, (String with: Filename separator).
+#('VwPharoPlatform' 'P3Generator' 'PythonBridgeBundle') do: [:fn | | file |
+  file := dir, fn, '.pcl'.
+  file asFilename exists ifFalse: [self error: 'Missing parcel!', file asString].
+  Parcel loadParcelFrom: file asFilename
+ ].
 ```
 
-To remove the pipenv environment run: 
-```bash
-cd /PATH/TO/ICEBERG/PYTHON_BRIDGE/REPOSITORY
-pipenv --rm
+## Creating and referencing the Pipenv environment
+
+In order to use PythonBridge we need a working pipenv environment capable of starting a PythonProcess with all the required dependencies. To generate this environment you need to clone or download [PythonBridge git repository](https://github.com/ObjectProfile/PythonBridge).
+
+We then install the pipenv environment using our customized BAT script.
+```
+cd c:\PATH\TO\PYTHON\BRIDGE\REPOSITORY
+windows_install_env.bat
+```
+
+In VisualWorks we need to add a reference to this environment so that PythonBridge is able to locate it and use it. To do it you need to execute the following script on a workspace replacing the example path to the PythonBridge repository folder path in your system:
+```smalltalk
+PBVwPlatform folderDict 
+	at: PBApplication
+	put: 'c:\PATH\TO\PYTHON\BRIDGE\REPOSITORY' asFilename
 ```
 
 ## Test your installation
 
-We have an extensive test suite and all the tests should be green.
+<!-- We have an extensive test suite and all the tests should be green. -->
+Currently, we are working on the test infrastructure of PythonBridge so they can be run on Pharo and VW. For this reason, VW tests are currently not passing. If you want to perform a basic test of the system we recommend you to run the following example:
 
-Also we provide a Helloworld example:
 ```smalltalk
 PBApplication do: [ 
 	PBCF << (P3GBinaryOperator new
@@ -92,60 +101,13 @@ PBApplication do: [
 	PBCF send waitForValue
 	 ]
 ```
-<small>This examples should return 3.</small>
+This examples should return 3.
 
 ## Troubleshooting
 
-### Pharo is unable to find Pipenv path
-Some users have reported that Pharo was unable to find the path to Pipenv. To solve this you must find the path by yourself using the command which in a terminal:
-```bash
-which pipenv
+### Removing the pipenv environment
+In case you wish to remove the pipenv environment run: 
 ```
-Then you must set this path in PythonBridge by running the following script in a Playground:
-```smalltalk
-PBPipenvPyStrategy pipEnvPath: '/PATH/TO/PIPENV/BINARY'
+cd c:\PATH\TO\PYTHON\BRIDGE\REPOSITORY
+pipenv --rm
 ```
-
-### Executing PythonBridge in Windows
-PythonBridge uses OSSubprocess to start the python process from Pharo. OSSubprocess does not work on Windows, therefore, we can not start python from Pharo in Windows.
-
-Nevertheless, PythonBridge should work on Windows systems if the user start python manually. To do this follow these instructions:
-1. Install [Python](https://www.python.org/downloads/release/python-368/) and [Pipenv](https://pipenv.readthedocs.io/en/latest/install/#installing-pipenv).
-1. Download PythonBridge by executing the following script on a playground: 
-```
-Metacello new
-    baseline: 'PythonBridge';
-    repository: 'github://ObjectProfile/PythonBridge/src';
-    load.
-```
-1. Set the python handler strategy to manual by executing the following in a playground:
-```
-PBManualPyStrategy setAsDefault
-```
-1. In a terminal go to the folder of the repository of the project you want to run (PythonBridge, KerasBridge, ...). To know the exact location of the iceberg repository folder print the result of the following script in a playground:
-```
-PBApplication repositoryFileReference. "For the repository of PythonBridge"
-Keras repositoryFileReference. "For the repository of KerasBridge"
-```
-1. Once in the folder of the repository, create the Pipenv environment:
-```bash
-pipenv install
-```
-1. Create symbolic link to PythonBridge repository:
-```
-mklink /D PythonBridge \Path\To\PythonBridge\Repository
-```
-This should be done on all projects to reference the original PythonBridge repository folder.
-1. Start the python process by executing `pipenv run python start_bridge.py --port 7100 --pharo 7200` in a terminal.
-1. Test that the application is running normally by executing this example:
-```
-PBApplication do: [ 
- PBCF << (P3GBinaryOperator new
-                     left: 1;
-                     right: 2;
-                     operator: $+;
-                     yourself).
- PBCF send waitForValue
-  ]
-```
-To try this code snippet using KerasBridge replace `PBApplication` -> `Keras` and `PBCF` -> `KCF`.
