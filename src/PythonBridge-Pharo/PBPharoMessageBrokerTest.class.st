@@ -1,17 +1,15 @@
 Class {
 	#name : #PBPharoMessageBrokerTest,
 	#superclass : #PBMessageBrokerTest,
+	#instVars : [
+		'stubServer'
+	],
 	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
 { #category : #utils }
-PBPharoMessageBrokerTest >> answer [
-	^ ZnResponse ok: (ZnEntity text: '{}')
-]
-
-{ #category : #utils }
 PBPharoMessageBrokerTest >> answer: aDictionary [
-	^ ZnResponse ok: (ZnEntity json: (NeoJSONWriter toString: aDictionary))
+	^ aDictionary
 ]
 
 { #category : #utils }
@@ -45,9 +43,9 @@ PBPharoMessageBrokerTest >> primHandle: aRequest [
 				-> (NeoJSONReader fromString: aRequest contents)
 		] on: Error do: [ :e | 
 			handlerException := e.
-			self errorResponse ].
-	(answer isKindOf: ZnResponse) ifFalse: [ answer := self errorResponse ].
-	^ answer
+			^ self errorResponse ].
+	answer := [ PBNeoJsonSerializer new serialize: answer ] on: Error do: [ '{}' ].
+	^ ZnResponse ok: (ZnEntity json: answer)
 ]
 
 { #category : #hooks }

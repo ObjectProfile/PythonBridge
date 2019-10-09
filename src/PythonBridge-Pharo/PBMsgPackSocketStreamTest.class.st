@@ -19,9 +19,9 @@ PBMsgPackSocketStreamTest >> connectStreams: aBlock [
 		semaphore := Semaphore new.
 		[ 	clientSocket := serverSocket waitForAcceptFor: 10.
 			semaphore signal. ] forkAt: self serverPriority.
-		[	clientStream := self openConnectionToHost: #[ 127 0 0 1 ] port: self port.
+		[	clientStream := PBMsgPackUtils openConnectionToHost: #[ 127 0 0 1 ] port: self port.
 			semaphore wait.
-			[	serverStream := SocketStream on: clientSocket.
+			[	serverStream := PBMsgPackUtils primStreamFromSocket: clientSocket.
 				aBlock 
 					value: (PBMsgPackSocketStream on: serverStream) 
 					value: (PBMsgPackSocketStream on: clientStream)
@@ -38,24 +38,8 @@ PBMsgPackSocketStreamTest >> listenBacklogSize [
 ]
 
 { #category : #private }
-PBMsgPackSocketStreamTest >> openConnectionToHost: host port: port [
-	| stream |
-	stream := SocketStream openConnectionToHost: host port: port.
-	self setReferenceSocketStreamOptions: stream.
-	^ stream
-]
-
-{ #category : #private }
 PBMsgPackSocketStreamTest >> port [
 	^ 1332
-]
-
-{ #category : #private }
-PBMsgPackSocketStreamTest >> referenceSocketStreamOn: socket [
-	| stream |
-	stream := SocketStream on: socket.
-	self setReferenceSocketStreamOptions: stream.
-	^ stream
 ]
 
 { #category : #private }
@@ -79,22 +63,12 @@ PBMsgPackSocketStreamTest >> serverSocketOn: port [
 	| socket |
 	(socket := Socket newTCP)
 		setOption: 'TCP_NODELAY' value: 1;
-		setOption: 'SO_SNDBUF' value: self socketBufferSize;
-		setOption: 'SO_RCVBUF' value: self socketBufferSize .
-	socket listenOn: port backlogSize: self listenBacklogSize.
+		setOption: 'SO_SNDBUF' value: PBMsgPackUtils socketBufferSize;
+		setOption: 'SO_RCVBUF' value: PBMsgPackUtils socketBufferSize .
+	socket listenOn: port backlogSize: PBMsgPackUtils listenBacklogSize.
 	socket isValid
 		ifFalse: [ self error: 'Cannot create socket on port ', port printString ].
 	^ socket
-]
-
-{ #category : #private }
-PBMsgPackSocketStreamTest >> setReferenceSocketStreamOptions: stream [
-	stream
-		binary;
-		shouldSignal: true;
-		autoFlush: false;
-		bufferSize: self socketBufferSize;
-		timeout: self socketStreamTimeout
 ]
 
 { #category : #private }
@@ -132,6 +106,11 @@ PBMsgPackSocketStreamTest >> testByteArray [
 { #category : #private }
 PBMsgPackSocketStreamTest >> testConnect [
 	self connectStreams: [ :serverStream :clientStream | ]
+]
+
+{ #category : #private }
+PBMsgPackSocketStreamTest >> testDictionary [
+	self assertSerialize: { #foo -> #(#err 4). 4 -> 16} asDictionary
 ]
 
 { #category : #private }

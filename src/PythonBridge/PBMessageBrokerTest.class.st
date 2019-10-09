@@ -5,8 +5,7 @@ Class {
 		'broker',
 		'handlerBlock',
 		'handlerException',
-		'settings',
-		'stubServer'
+		'settings'
 	],
 	#category : #'PythonBridge-Platform'
 }
@@ -14,11 +13,6 @@ Class {
 { #category : #testing }
 PBMessageBrokerTest class >> isAbstract [
 	^ self == PBMessageBrokerTest
-]
-
-{ #category : #accessing }
-PBMessageBrokerTest >> answer [
-	self subclassResponsibility
 ]
 
 { #category : #accessing }
@@ -121,8 +115,7 @@ PBMessageBrokerTest >> testEnqueueCommandMessage [
 		self assert: bindings size equals: 2.
 		self assert: (bindings at: 'foo') equals: 42.
 		self assert: (bindings at: 'bar') equals: 'zork'.
-		flag := true.
-		self answer ].
+		flag := true ].
 	broker sendMessage: msg.
 	self assert: flag
 ]
@@ -131,7 +124,7 @@ PBMessageBrokerTest >> testEnqueueCommandMessage [
 PBMessageBrokerTest >> testErrorOnCallback [
 	| flag |
 	flag := false.
-	self for: PBRSyncMessage setCallback: [ :dict |
+	self for: PBRSyncMessage setCallback: [ :msg |
 		Error signal.
 		flag := true ].
 	self should: [ 
@@ -167,8 +160,7 @@ PBMessageBrokerTest >> testIsAliveMessage [
 		self assert: assoc value associations size equals: 2.
 		self assert: (assoc value at: #type) equals: PBIsAliveMessage type.
 		self assert: (assoc value at: #__sync) equals: msg syncId.
-		flag := true.
-		self answer ].
+		flag := true ].
 	msg := PBIsAliveMessage new.
 	broker sendMessage: msg.
 	self assert: flag
@@ -180,12 +172,42 @@ PBMessageBrokerTest >> testIsRunning [
 ]
 
 { #category : #tests }
+PBMessageBrokerTest >> testRSyncMessage [
+	| flag ans rans |
+	flag := false.
+	self for: PBRSyncMessage setCallback: [ :msg |
+		flag := true.
+		rans := msg createAnswer ].
+	ans := self sendMessageToBroker: { 
+				#type -> PBRSyncMessage type.
+				#__sync -> 'foobar' } asDictionary.
+	self assert: flag.
+	self assert: ans equals: { #type -> #RSYNC. #__sync -> rans syncId } asDictionary
+]
+
+{ #category : #tests }
+PBMessageBrokerTest >> testSyncMessage [
+	| flag msg ans |
+	flag := false.
+	self setHandler: [ :assoc |
+		self assert: assoc key equals: PBSyncMessage type.
+		self assert: assoc value associations size equals: 2.
+		self assert: (assoc value at: #type) equals: PBSyncMessage type.
+		self assert: (assoc value at: #__sync) equals: msg syncId.
+		flag := true.
+		self answer: { #type -> PBSyncMessage type . #__sync -> msg syncId } asDictionary ].
+	msg := PBSyncMessage new.
+	ans := broker sendMessage: msg.
+	self assert: ans message equals: msg.
+	self assert: flag
+]
+
+{ #category : #tests }
 PBMessageBrokerTest >> testWrongRouteAnswer [
 	| flag |
 	flag := false.
 	self for: PBCallbackMessage setCallback: [ :dict |
-		flag := true.
-		self answer ].
+		flag := true ].
 	self 
 		should: [ self sendMessageToBroker: { 
 								#type -> PBRSyncMessage type.

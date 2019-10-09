@@ -25,7 +25,11 @@ PBMsgPackSocketStream >> atEnd [
 
 { #category : #streaming }
 PBMsgPackSocketStream >> close [
-	^ socketStream close
+	| ans |
+	ans := socketStream close.
+	30 timesRepeat: [ encoderSemaphore signal ].
+	30 timesRepeat: [ decoderSemaphore signal ].
+	^ ans
 ]
 
 { #category : #streaming }
@@ -78,8 +82,8 @@ PBMsgPackSocketStream >> setSocketStreamOptions: stream [
 		binary;
 		shouldSignal: true;
 		autoFlush: false;
-		bufferSize: self socketBufferSize;
-		timeout: self socketStreamTimeout
+		bufferSize: PBMsgPackUtils socketBufferSize;
+		timeout: PBMsgPackUtils socketStreamTimeout
 ]
 
 { #category : #private }
