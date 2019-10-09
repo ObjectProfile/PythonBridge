@@ -60,7 +60,7 @@ PBMsgPackSocketStreamTest >> referenceSocketStreamOn: socket [
 
 { #category : #private }
 PBMsgPackSocketStreamTest >> serverPriority [
-	^ Processor userBackgroundPriority
+	^ Processor lowIOPriority
 ]
 
 { #category : #private }

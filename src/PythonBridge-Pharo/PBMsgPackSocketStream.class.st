@@ -4,7 +4,9 @@ Class {
 	#instVars : [
 		'socketStream',
 		'encoder',
-		'decoder'
+		'decoder',
+		'decoderSemaphore',
+		'encoderSemaphore'
 	],
 	#category : #'PythonBridge-Pharo-MessageBroker'
 }
@@ -18,7 +20,7 @@ PBMsgPackSocketStream class >> on: socketStream [
 
 { #category : #streaming }
 PBMsgPackSocketStream >> atEnd [
-	^ decoder atEnd
+	^ decoderSemaphore critical: [ decoder atEnd ]
 ]
 
 { #category : #streaming }
@@ -29,6 +31,13 @@ PBMsgPackSocketStream >> close [
 { #category : #streaming }
 PBMsgPackSocketStream >> flush [
 	^ socketStream flush
+]
+
+{ #category : #initialization }
+PBMsgPackSocketStream >> initialize [
+	super initialize.
+	decoderSemaphore := Semaphore forMutualExclusion.
+	encoderSemaphore := Semaphore forMutualExclusion.
 ]
 
 { #category : #streaming }
@@ -43,14 +52,15 @@ PBMsgPackSocketStream >> isStream [
 
 { #category : #streaming }
 PBMsgPackSocketStream >> next [
-	^ decoder next
+	^ decoderSemaphore critical: [ decoder next ]
 ]
 
 { #category : #streaming }
 PBMsgPackSocketStream >> nextPut: anObject [
 	| result |
-	result := encoder nextPut: anObject.
-	socketStream flush.
+	result := encoderSemaphore critical: [ 
+		encoder nextPut: anObject.
+		socketStream flush ].
 	^ result
 ]
 
