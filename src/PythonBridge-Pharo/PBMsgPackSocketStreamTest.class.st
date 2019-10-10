@@ -119,6 +119,16 @@ PBMsgPackSocketStreamTest >> testInteger [
 ]
 
 { #category : #private }
+PBMsgPackSocketStreamTest >> testLargerString [
+	self assertSerialize: 'pb6f6l7aqhz80ksi8i90e5iexer'
+]
+
+{ #category : #private }
+PBMsgPackSocketStreamTest >> testLargerStringRaw [
+	self assertSerialize: 'pb6f6l7aqhz80ksi8i90e5iexer'
+]
+
+{ #category : #private }
 PBMsgPackSocketStreamTest >> testString [
 	self assertSerialize: 'FooBarZork'
 ]

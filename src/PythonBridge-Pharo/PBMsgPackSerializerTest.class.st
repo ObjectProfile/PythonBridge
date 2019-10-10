@@ -34,6 +34,11 @@ PBMsgPackSerializerTest >> testDeserializeByteArray [
 ]
 
 { #category : #tests }
+PBMsgPackSerializerTest >> testDeserializeLargeString [
+	self assertDeserialize: #[187 112 98 54 102 54 108 55 97 113 104 122 56 48 107 115 105 56 105 57 48 101 53 105 101 120 101 114] equals: 'pb6f6l7aqhz80ksi8i90e5iexer'
+]
+
+{ #category : #tests }
 PBMsgPackSerializerTest >> testDeserializeNestedArray [
 	self assertDeserialize: #[146 33 146 163 102 111 111 163 98 97 114] equals: #(33 #('foo' 'bar'))
 ]
@@ -44,6 +49,16 @@ PBMsgPackSerializerTest >> testDeserializeNil [
 ]
 
 { #category : #tests }
+PBMsgPackSerializerTest >> testSerializeLargeString [
+	self assertSerialize: 'pb6f6l7aqhz80ksi8i90e5iexer' equals: #[218 0 27 112 98 54 102 54 108 55 97 113 104 122 56 48 107 115 105 56 105 57 48 101 53 105 101 120 101 114]
+]
+
+{ #category : #tests }
 PBMsgPackSerializerTest >> testSerializeNestedArrays [
 	self assertSerialize: #(33 #('foo' 'bar')) equals: #[146 33 146 163 102 111 111 163 98 97 114]
+]
+
+{ #category : #tests }
+PBMsgPackSerializerTest >> testSmallInt [
+	self assertSerialize: 33 equals: #[ 33 ]
 ]
