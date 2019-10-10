@@ -72,6 +72,16 @@ PBMessageBrokerTest >> sendMessageToBroker: dict [
 	self subclassResponsibility
 ]
 
+{ #category : #utils }
+PBMessageBrokerTest >> sendMessageToBroker: dict answerBlock: aBlock [
+	self subclassResponsibility
+]
+
+{ #category : #utils }
+PBMessageBrokerTest >> sendMessageToBroker: dict answerEquals: ansDict [
+	self sendMessageToBroker: dict answerBlock: [ :ans | self assert: ans equals: ansDict ]
+]
+
 { #category : #acessing }
 PBMessageBrokerTest >> setHandler: aBlock [
 	handlerBlock := aBlock
@@ -172,17 +182,48 @@ PBMessageBrokerTest >> testIsRunning [
 ]
 
 { #category : #tests }
+PBMessageBrokerTest >> testRMessageWithParams [
+	| flag |
+	flag := false.
+	self for: PBCallbackMessage setCallback: [ :msg |
+		flag := true.
+		self assert: msg type equals: PBCallbackMessage type.
+		self assert: msg commandId equals: 10.
+		self assert: msg observerId equals: 'foo'.
+		self assert: msg value equals: 'lalala'.
+		self assert: msg syncId equals: 'zork'.
+		msg createAnswer
+			value: 13;
+			yourself ].
+	self 
+		sendMessageToBroker: { 
+			#type -> PBCallbackMessage type.
+			#commandId -> 10.
+			#observerId -> 'foo'.
+			#value -> 'lalala'.
+			#__sync -> 'zork' } asDictionary
+		answerEquals: { 
+			#type -> PBCallbackMessage type.
+			#value -> 13.
+			#__sync -> 'zork' } asDictionary.
+	self assert: flag.
+]
+
+{ #category : #tests }
 PBMessageBrokerTest >> testRSyncMessage [
-	| flag ans rans |
+	| flag |
 	flag := false.
 	self for: PBRSyncMessage setCallback: [ :msg |
 		flag := true.
-		rans := msg createAnswer ].
-	ans := self sendMessageToBroker: { 
-				#type -> PBRSyncMessage type.
-				#__sync -> 'foobar' } asDictionary.
+		msg createAnswer ].
+	self 
+		sendMessageToBroker: { 
+			#type -> PBRSyncMessage type.
+			#__sync -> 'foobar' } asDictionary
+		answerEquals: { 
+			#type -> PBRSyncMessage type.
+			#__sync -> 'foobar' } asDictionary.
 	self assert: flag.
-	self assert: ans equals: { #type -> #RSYNC. #__sync -> rans syncId } asDictionary
 ]
 
 { #category : #tests }

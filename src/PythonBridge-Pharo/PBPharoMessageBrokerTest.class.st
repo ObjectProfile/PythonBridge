@@ -50,12 +50,17 @@ PBPharoMessageBrokerTest >> primHandle: aRequest [
 
 { #category : #hooks }
 PBPharoMessageBrokerTest >> sendMessageToBroker: dict [
+	self sendMessageToBroker: dict answerEquals: Dictionary new
+]
+
+{ #category : #hooks }
+PBPharoMessageBrokerTest >> sendMessageToBroker: dict answerBlock: aBlock [
 	| ans |
 	ans := ZnEasy 
 				post: self brokerUri , '/' , (dict at: #type)
 				data: (ZnEntity json: (NeoJSONWriter toString: dict)).
 	ans status = 200 ifFalse: [ PBCommunicationError signal: ans status asString ].
-	^ self decodeAnswer: ans contents
+	aBlock value: (self decodeAnswer: ans contents)
 ]
 
 { #category : #running }
