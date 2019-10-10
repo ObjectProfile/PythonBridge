@@ -63,6 +63,11 @@ PBPharoMessageBrokerTest >> sendMessageToBroker: dict answerBlock: aBlock [
 	aBlock value: (self decodeAnswer: ans contents)
 ]
 
+{ #category : #utils }
+PBPharoMessageBrokerTest >> sleepAWhile [
+	"With HTTP there is no need to sleep."
+]
+
 { #category : #running }
 PBPharoMessageBrokerTest >> stopStubServer [
 	stubServer ifNotNil: [ stubServer stop ]

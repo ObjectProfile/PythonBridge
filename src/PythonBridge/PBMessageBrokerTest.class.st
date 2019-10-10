@@ -20,18 +20,18 @@ PBMessageBrokerTest >> answer: aDictionary [
 	self subclassResponsibility
 ]
 
-{ #category : #acessing }
+{ #category : #utils }
+PBMessageBrokerTest >> assertCommunicationError: aBlock [
+	self should: aBlock raise: PBCommunicationError
+]
+
+{ #category : #accessing }
 PBMessageBrokerTest >> brokerUri [
 	^ 'http://' , settings pharoSocketAddress printAddress
 ]
 
 { #category : #initialization }
 PBMessageBrokerTest >> buildAndStartStubServer [
-	self subclassResponsibility
-]
-
-{ #category : #utils }
-PBMessageBrokerTest >> decodeAnswer: jsonText [
 	self subclassResponsibility
 ]
 
@@ -62,7 +62,7 @@ PBMessageBrokerTest >> messageBrokerClass [
 	self subclassResponsibility
 ]
 
-{ #category : #acessing }
+{ #category : #accessing }
 PBMessageBrokerTest >> pythonUri [
 	^ 'http://' , settings pythonSocketAddress printAddress
 ]
@@ -79,10 +79,15 @@ PBMessageBrokerTest >> sendMessageToBroker: dict answerBlock: aBlock [
 
 { #category : #utils }
 PBMessageBrokerTest >> sendMessageToBroker: dict answerEquals: ansDict [
-	self sendMessageToBroker: dict answerBlock: [ :ans | self assert: ans equals: ansDict ]
+	| flag |
+	flag := false.
+	self sendMessageToBroker: dict answerBlock: [ :ansAssoc | 
+		flag := true.
+		self assert: ansAssoc value equals: ansDict ].
+	self assert: flag
 ]
 
-{ #category : #acessing }
+{ #category : #accessing }
 PBMessageBrokerTest >> setHandler: aBlock [
 	handlerBlock := aBlock
 ]
@@ -93,7 +98,14 @@ PBMessageBrokerTest >> setUp [
 	settings := self defaultSettings.
 	broker := self messageBrokerClass settings: settings.
 	broker start.
-	self buildAndStartStubServer
+	self buildAndStartStubServer.
+	self sleepAWhile
+]
+
+{ #category : #utils }
+PBMessageBrokerTest >> sleepAWhile [
+	"Sleeping for a while so the async message has a chance to perform a change."
+	self subclassResponsibility
 ]
 
 { #category : #running }
@@ -127,6 +139,7 @@ PBMessageBrokerTest >> testEnqueueCommandMessage [
 		self assert: (bindings at: 'bar') equals: 'zork'.
 		flag := true ].
 	broker sendMessage: msg.
+	self sleepAWhile.
 	self assert: flag
 ]
 
@@ -137,11 +150,12 @@ PBMessageBrokerTest >> testErrorOnCallback [
 	self for: PBRSyncMessage setCallback: [ :msg |
 		Error signal.
 		flag := true ].
-	self should: [ 
-			self sendMessageToBroker: { 
-				#type -> PBRSyncMessage type.
-				#__sync -> 'foobar' } asDictionary ]
-		raise: PBCommunicationError.
+	self assertCommunicationError: [ 
+			self 
+				sendMessageToBroker: { 
+					#type -> PBRSyncMessage type.
+					#__sync -> 'foobar' } asDictionary
+				answerBlock: [  ] ].
 	self deny: flag
 ]
 
@@ -170,7 +184,8 @@ PBMessageBrokerTest >> testIsAliveMessage [
 		self assert: assoc value associations size equals: 2.
 		self assert: (assoc value at: #type) equals: PBIsAliveMessage type.
 		self assert: (assoc value at: #__sync) equals: msg syncId.
-		flag := true ].
+		flag := true.
+		self answer: { #type -> PBIsAliveMessage type. #__sync -> msg syncId } asDictionary ].
 	msg := PBIsAliveMessage new.
 	broker sendMessage: msg.
 	self assert: flag
@@ -249,10 +264,8 @@ PBMessageBrokerTest >> testWrongRouteAnswer [
 	flag := false.
 	self for: PBCallbackMessage setCallback: [ :dict |
 		flag := true ].
-	self 
-		should: [ self sendMessageToBroker: { 
+	self assertCommunicationError:  [ self sendMessageToBroker: { 
 								#type -> PBRSyncMessage type.
-								#__sync -> 'foobar' } asDictionary ] 
-		raise: PBCommunicationError.
+								#__sync -> 'foobar' } asDictionary ].
 	self deny: flag
 ]

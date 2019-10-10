@@ -21,7 +21,7 @@ PBPharoPlatform class >> priority [
 
 { #category : #hooks }
 PBPharoPlatform class >> socketMessageBrokerClass [
-	^ PBPharoMsgPackPharoBroker
+	^ PBMsgPackPharoBroker
 ]
 
 { #category : #private }
