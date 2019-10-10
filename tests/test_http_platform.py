@@ -21,13 +21,6 @@ class TestHandler(BaseHTTPRequestHandler):
         self.send_header("Content-type", "application/json")
         self.end_headers()
 
-    # def _html(self, message):
-    #     """This just generates an HTML document that includes `message`
-    #     in the body. Override, or re-write this do do more interesting stuff.
-    #     """
-    #     content = f"<html><body><h1>{message}</h1></body></html>"
-    #     return content.encode("utf8")  # NOTE: must return a bytes object!
-
     def do_GET(self):
         self._set_headers()
         self.wfile.write('<html><body><h1>LALALA</h1></body></html>'.encode("utf8"))
@@ -44,14 +37,6 @@ class TestHandler(BaseHTTPRequestHandler):
     def read_data(self):
         text = self.rfile.read(int(self.headers.get('Content-Length'))).decode("utf-8")
         return json.loads(text)
-
-
-# def run(server_class=HTTPServer, handler_class=S, addr="localhost", port=8000):
-#     server_address = (addr, port)
-#     httpd = server_class(server_address, handler_class)
-
-#     print(f"Starting httpd server on {addr}:{port}")
-#     httpd.serve_forever()
 
 class TestHTTPPlatform(unittest.TestCase):
     thread = None
