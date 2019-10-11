@@ -3,6 +3,7 @@ import socket
 import _thread
 import threading
 import time
+import stoppable_thread
 from uuid import uuid1
 
 # Messages supported by this sockets must be Dictionaries. This is because we use special key __sync to know if it is 
@@ -15,22 +16,28 @@ class MsgPackSocket:
         self.client = None
         self.async_handler = async_handler
         self.packer = msgpack.Packer()
+        self.unpacker = msgpack.Unpacker()
         self.sync_table = {}
 
     def async_handler(async_handler):
         self.async_handler = async_handler
 
-    def start(self):
-        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.client.connect(('localhost', self.port))
-        unpacker = msgpack.Unpacker()
-        while True:
+    def prim_handle(self):
+        try:
             data = self.client.recv(2048)
-            unpacker.feed(data)
+            self.unpacker.feed(data)
             for msg in unpacker:
                 self.async_handler(msg)
+        except OSError:
+            self.thread.stop()
+
+    def setup_func(self):
+        self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client.connect(('localhost', self.port))
 
     def stop(self):
+        if self.thread is not None:
+            self.thread.stop()
         if self.client is not None:
             self.client.close()
     
@@ -50,9 +57,12 @@ class MsgPackSocket:
         else:
             self.async_handler(msg)
     
-    def start_on_thread(self):
-        _thread.start_new_thread(self.start, tuple())
-        time.sleep(.1)
+    def start(self):
+        self.thread = stoppable_thread.StoppableThread(
+            loop_func= self.prim_handle,
+            setup_func= self.setup_func)
+        self.thread.start()
+        time.sleep(.05)
 
     def send_async_message(self, msg):
         self.client.send(self.packer.pack(msg))

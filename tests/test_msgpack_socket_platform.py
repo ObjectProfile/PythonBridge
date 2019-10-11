@@ -1,0 +1,64 @@
+import unittest
+import socket
+import threading
+import time
+from msgpack_socket_platform import *
+import stoppable_thread
+
+TEST_PORT = 7777
+
+def do_nothing(msg):
+    pass
+
+class TestMsgPackSocket(unittest.TestCase):
+
+    def setUp(self):
+        self.start_stub_server()
+        self.msg_service = MsgPackSocket(TEST_PORT, do_nothing)
+        self.msg_service.start()
+
+    def tearDown(self):
+        self.thread.stop()
+        self.msg_service.stop()
+        self.server_client.close()
+        self.server_sock.close()
+        self.thread.join()
+
+    def start_stub_server(self):
+         # Run a server to listen for a connection and then close it
+        self.server_sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # SOL_SOCKET and SOREUSEADDR allow kernel to reuse socket and allow us to rapidly create and destroy sockets
+        self.server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        self.server_sock.bind(('127.0.0.1', TEST_PORT))
+        self.server_sock.listen(1)
+        self.server_handler = self.echo_server
+        self.unpacker = msgpack.Unpacker()
+        self.packer = msgpack.Packer()
+        self.thread = stoppable_thread.StoppableThread(
+            loop_func= self.prim_handle,
+            setup_func= self.setup_func)
+        self.thread.start()
+
+    def setup_func(self):
+        self.server_client, _ = self.server_sock.accept()
+    
+    def prim_handle(self):
+        try:
+            data = self.server_client.recv(2048)
+            self.unpacker.feed(data)
+            for msg in self.unpacker:
+                self.server_handler(msg)
+        except OSError:
+            self.thread.stop()
+    
+    def prim_send_msg(self, msg):
+        self.server_client.send(self.packer.pack(msg))
+
+    def echo_server(self, msg):
+        self.prim_send_msg(msg)
+
+    def test_connect(self):
+        self.assertIsNotNone(self.server_client)
+        self.assertIsNotNone(self.msg_service.client)
+
+    
