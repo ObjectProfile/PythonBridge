@@ -26,10 +26,11 @@ matrix:
   exclude:
     - os: osx
       smalltalk: Pharo64-7.0
-  # include:
-  #   - script: pipenv run python -m unittest discover tests
-  #     os: linux
-  #     python: 3.7
+  include:
     - script: pipenv run python -m unittest discover tests
       os: osx
       python: 3.7
+    # - script: pipenv run python -m unittest discover tests
+    #   os: linux
+    #   python: 3.7
+ 

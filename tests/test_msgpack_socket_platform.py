@@ -9,7 +9,7 @@ import stoppable_thread
 TEST_PORT = 7777
 
 def wait_a_little():
-    time.sleep(.15)
+    time.sleep(.05)
 
 def do_nothing(msg):
     pass
@@ -65,7 +65,8 @@ class TestMsgPackSocket(unittest.TestCase):
     def test_send_async_msg(self):
         flag = False
         def handler(msg):
-            self.assertEqual(msg,{'type': 'FOO', 'val': 33})
+            nonlocal flag
+            self.assertEqual(msg,{b'type': b'FOO', b'val': 33})
             flag = True
         self.server_handler = handler
         self.msg_service.send_async_message({'type': 'FOO', 'val': 33})
