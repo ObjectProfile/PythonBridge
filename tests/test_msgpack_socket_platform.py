@@ -2,10 +2,14 @@ import unittest
 import socket
 import threading
 import time
-from msgpack_socket_platform import *
+import msgpack
+import msgpack_socket_platform
 import stoppable_thread
 
 TEST_PORT = 7777
+
+def wait_a_little():
+    time.sleep(.15)
 
 def do_nothing(msg):
     pass
@@ -14,7 +18,7 @@ class TestMsgPackSocket(unittest.TestCase):
 
     def setUp(self):
         self.start_stub_server()
-        self.msg_service = MsgPackSocket(TEST_PORT, do_nothing)
+        self.msg_service = msgpack_socket_platform.MsgPackSocketPlatform(TEST_PORT, do_nothing)
         self.msg_service.start()
 
     def tearDown(self):
@@ -31,7 +35,7 @@ class TestMsgPackSocket(unittest.TestCase):
         self.server_sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self.server_sock.bind(('127.0.0.1', TEST_PORT))
         self.server_sock.listen(1)
-        self.server_handler = self.echo_server
+        self.server_handler = do_nothing
         self.unpacker = msgpack.Unpacker()
         self.packer = msgpack.Packer()
         self.thread = stoppable_thread.StoppableThread(
@@ -54,11 +58,16 @@ class TestMsgPackSocket(unittest.TestCase):
     def prim_send_msg(self, msg):
         self.server_client.send(self.packer.pack(msg))
 
-    def echo_server(self, msg):
-        self.prim_send_msg(msg)
-
     def test_connect(self):
         self.assertIsNotNone(self.server_client)
         self.assertIsNotNone(self.msg_service.client)
 
-    
+    def test_send_async_msg(self):
+        flag = False
+        def handler(msg):
+            self.assertEqual(msg,{'type': 'FOO', 'val': 33})
+            flag = True
+        self.server_handler = handler
+        self.msg_service.send_async_message({'type': 'FOO', 'val': 33})
+        wait_a_little()
+        self.assertTrue(flag)

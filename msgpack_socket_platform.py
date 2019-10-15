@@ -9,7 +9,7 @@ from uuid import uuid1
 # Messages supported by this sockets must be Dictionaries. This is because we use special key __sync to know if it is 
 # a synchronized message or not. If it is we hook a semaphore to that id under the __sync key and after we receive the 
 # value we store there the return message and signal the semaphore.
-class MsgPackSocket:
+class MsgPackSocketPlatform:
 
     def __init__(self, port, async_handler):
         self.port = port
@@ -62,7 +62,7 @@ class MsgPackSocket:
             loop_func= self.prim_handle,
             setup_func= self.setup_func)
         self.thread.start()
-        time.sleep(.05)
+        time.sleep(.1)
 
     def send_async_message(self, msg):
         self.client.send(self.packer.pack(msg))
