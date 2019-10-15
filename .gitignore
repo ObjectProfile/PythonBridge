@@ -5,3 +5,4 @@
 Pipfile.lock
 /.vscode
 /tests/__pycache__
+*.code-workspace
