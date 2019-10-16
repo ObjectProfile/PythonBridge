@@ -96,18 +96,6 @@ def mark_message_as_sync(msg):
     msg['__sync'] = sync_id
     return sync_id
 
-# This is not optimals since we have no way of identifying if we are dealing with a bytearray or a string...
-# Also, according to Python docs, larger strings > 256 chars are not bytes, but bytearray.
-# def bin2text(msg):
-#     return msg
-    # if type(msg) == list:
-    #     return [bin2text(k) for k in msg]
-    # if type(msg) == dict:
-    #     return {bin2text(k): bin2text(v) for k, v in msg.items()}
-    # if type(msg) == bytes:
-    #     return msg.decode("utf-8")
-    # return msg
-
 def build_service(port, pharo_port, feed_callback):
     service = MsgPackSocketPlatform(pharo_port)
     service.set_handler('ENQUEUE',feed_callback)
