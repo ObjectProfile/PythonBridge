@@ -14,8 +14,8 @@ class MsgPackSocketPlatform:
     def __init__(self, port):
         self.port = port
         self.client = None
-        self.packer = msgpack.Packer()
-        self.unpacker = msgpack.Unpacker()
+        self.unpacker = msgpack.Unpacker(raw=False)
+        self.packer = msgpack.Packer(use_bin_type=True)
         self.sync_table = {}
         self.async_handlers = {}
 
@@ -38,7 +38,6 @@ class MsgPackSocketPlatform:
     def stop(self):
         if self.thread is not None:
             self.thread.stop()
-            self.thread = None
         if self.client is not None:
             self.client.close()
             self.client = None
@@ -53,7 +52,7 @@ class MsgPackSocketPlatform:
         return self.client != None
     
     def prim_handle_msg(self, raw_msg):
-        msg = bin2text(raw_msg)
+        msg = raw_msg
         msg_type = msg['type'] 
         if msg_type in self.async_handlers:
             self.async_handlers[msg['type']](msg)
@@ -97,11 +96,19 @@ def mark_message_as_sync(msg):
     msg['__sync'] = sync_id
     return sync_id
 
-def bin2text(msg):
-    if type(msg) == list:
-        return [bin2text(k) for k in msg]
-    if type(msg) == dict:
-        return {bin2text(k): bin2text(v) for k, v in msg.items()}
-    if type(msg) == bytes:
-        return msg.decode("utf-8")
-    return msg
+# This is not optimals since we have no way of identifying if we are dealing with a bytearray or a string...
+# Also, according to Python docs, larger strings > 256 chars are not bytes, but bytearray.
+# def bin2text(msg):
+#     return msg
+    # if type(msg) == list:
+    #     return [bin2text(k) for k in msg]
+    # if type(msg) == dict:
+    #     return {bin2text(k): bin2text(v) for k, v in msg.items()}
+    # if type(msg) == bytes:
+    #     return msg.decode("utf-8")
+    # return msg
+
+def build_service(port, pharo_port, feed_callback):
+    service = MsgPackSocketPlatform(pharo_port)
+    service.set_handler('ENQUEUE',feed_callback)
+    return service

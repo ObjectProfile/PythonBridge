@@ -8,7 +8,7 @@ verify_ssl = true
 [packages]
 flask = "*"
 requests = "*"
-msgpack-python = "*"
+msgpack = "*"
 
 [requires]
 python_version = "3"

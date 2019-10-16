@@ -4,7 +4,6 @@ import threading
 import time
 import msgpack
 import msgpack_socket_platform
-from msgpack_socket_platform import bin2text
 import stoppable_thread
 
 TEST_PORT = 7777
@@ -14,28 +13,6 @@ def wait_a_little():
 
 def do_nothing(msg):
     pass
-
-class TestMsgPackBin2Text(unittest.TestCase):
-    def test_simple_dict(self):
-        msg = {b'type': b'FOO', b'val': 33}
-        self.assertEqual(
-            bin2text(msg),
-            {'type': 'FOO', 'val': 33})
-    
-    def test_arr(self):
-        arr = [33, b'foo', b'bar', []]
-        self.assertEqual(
-            bin2text(arr),
-            [33, 'foo', 'bar', []])
-
-    def test_bin(self):
-        self.assertEqual(bin2text(b'foo'),'foo')
-
-    def test_composed_dict(self):
-        msg = {b'type': b'FOO', b'val': [b'33']}
-        self.assertEqual(
-            bin2text(msg),
-            {'type': 'FOO', 'val': ['33']})
 
 class TestMsgPackSocket(unittest.TestCase):
 
@@ -59,8 +36,8 @@ class TestMsgPackSocket(unittest.TestCase):
         self.server_sock.bind(('127.0.0.1', TEST_PORT))
         self.server_sock.listen(1)
         self.server_handler = do_nothing
-        self.unpacker = msgpack.Unpacker()
-        self.packer = msgpack.Packer()
+        self.unpacker = msgpack.Unpacker(raw=False)
+        self.packer = msgpack.Packer(use_bin_type=True)
         self.thread = stoppable_thread.StoppableThread(
             loop_func= self.prim_handle,
             setup_func= self.setup_func)
@@ -74,7 +51,7 @@ class TestMsgPackSocket(unittest.TestCase):
             data = self.server_client.recv(2048)
             self.unpacker.feed(data)
             for msg in self.unpacker:
-                self.server_handler(bin2text(msg))
+                self.server_handler(msg)
         except OSError:
             self.thread.stop()
     
