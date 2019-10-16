@@ -4,6 +4,7 @@ import threading
 import time
 import msgpack
 import msgpack_socket_platform
+from msgpack_socket_platform import bin2text
 import stoppable_thread
 
 TEST_PORT = 7777
@@ -13,6 +14,28 @@ def wait_a_little():
 
 def do_nothing(msg):
     pass
+
+class TestMsgPackBin2Text(unittest.TestCase):
+    def test_simple_dict(self):
+        msg = {b'type': b'FOO', b'val': 33}
+        self.assertEqual(
+            bin2text(msg),
+            {'type': 'FOO', 'val': 33})
+    
+    def test_arr(self):
+        arr = [33, b'foo', b'bar', []]
+        self.assertEqual(
+            bin2text(arr),
+            [33, 'foo', 'bar', []])
+
+    def test_bin(self):
+        self.assertEqual(bin2text(b'foo'),'foo')
+
+    def test_composed_dict(self):
+        msg = {b'type': b'FOO', b'val': [b'33']}
+        self.assertEqual(
+            bin2text(msg),
+            {'type': 'FOO', 'val': ['33']})
 
 class TestMsgPackSocket(unittest.TestCase):
 
@@ -51,7 +74,7 @@ class TestMsgPackSocket(unittest.TestCase):
             data = self.server_client.recv(2048)
             self.unpacker.feed(data)
             for msg in self.unpacker:
-                self.server_handler(msg)
+                self.server_handler(bin2text(msg))
         except OSError:
             self.thread.stop()
     
@@ -66,9 +89,24 @@ class TestMsgPackSocket(unittest.TestCase):
         flag = False
         def handler(msg):
             nonlocal flag
-            self.assertEqual(msg,{b'type': b'FOO', b'val': 33})
+            self.assertEqual(msg,{'type': 'FOO', 'val': 33})
             flag = True
         self.server_handler = handler
         self.msg_service.send_async_message({'type': 'FOO', 'val': 33})
         wait_a_little()
+        self.assertTrue(flag)
+
+    def test_send_sync_msg(self):
+        flag = False
+        sync_id = None
+        def handler(msg):
+            nonlocal flag
+            nonlocal sync_id
+            sync_id = msg['__sync']
+            self.assertEqual(msg,{'type': 'FOO', 'val': 33, '__sync': sync_id})
+            self.prim_send_msg({'type': 'FOO', 'val': 42, '__sync': sync_id})
+            flag = True
+        self.server_handler = handler
+        ans = self.msg_service.send_sync_message({'type': 'FOO', 'val': 33})
+        self.assertEqual(ans, {'type': 'FOO', 'val': 42, '__sync': sync_id})
         self.assertTrue(flag)
