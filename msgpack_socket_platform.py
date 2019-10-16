@@ -38,8 +38,10 @@ class MsgPackSocketPlatform:
     def stop(self):
         if self.thread is not None:
             self.thread.stop()
+            self.thread = None
         if self.client is not None:
             self.client.close()
+            self.client = None
 
     def send_answer(self, msg, answer):
         if answer['type'] != msg['type']:
@@ -47,12 +49,8 @@ class MsgPackSocketPlatform:
         answer['__sync'] = msg['__sync']
         self.send_async_message(answer)
     
-    # def is_running(self):
-    #     try:
-    #         self.client.send(bytearray(0))
-    #         return True
-    #     except socket.error:
-    #         return False
+    def is_running(self):
+        return self.client != None
     
     def prim_handle_msg(self, raw_msg):
         msg = bin2text(raw_msg)

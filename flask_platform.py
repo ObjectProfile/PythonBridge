@@ -7,9 +7,9 @@ from PythonBridge import bridge_globals
 import sys
 
 class FlaskMsgService:
-    thread = None
 
     def __init__(self, port, pharo_port, feed_callback):
+        self.thread = None
         self.port = port
         self.pharo_port = pharo_port
         self.feed_callback = feed_callback
@@ -37,6 +37,9 @@ class FlaskMsgService:
         self.thread = threading.Thread(target=self._start, args=())
         self.thread.daemon = True
         self.thread.start()
+
+    def is_running(self):
+        return self.thread != None
 
     def stop(self):
         pass
