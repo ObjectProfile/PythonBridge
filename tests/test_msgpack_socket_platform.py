@@ -41,7 +41,7 @@ class TestMsgPackSocket(unittest.TestCase):
 
     def setUp(self):
         self.start_stub_server()
-        self.msg_service = msgpack_socket_platform.MsgPackSocketPlatform(TEST_PORT, do_nothing)
+        self.msg_service = msgpack_socket_platform.MsgPackSocketPlatform(TEST_PORT)
         self.msg_service.start()
 
     def tearDown(self):
@@ -109,4 +109,15 @@ class TestMsgPackSocket(unittest.TestCase):
         self.server_handler = handler
         ans = self.msg_service.send_sync_message({'type': 'FOO', 'val': 33})
         self.assertEqual(ans, {'type': 'FOO', 'val': 42, '__sync': sync_id})
+        self.assertTrue(flag)
+
+    def test_handle_async(self):
+        flag = False
+        def handler(msg):
+            nonlocal flag
+            self.assertEqual(msg,{'type': 'FOO', 'val': 33})
+            flag = True
+        self.msg_service.set_handler('FOO',handler)
+        self.prim_send_msg({'type': 'FOO', 'val': 33})
+        wait_a_little()
         self.assertTrue(flag)

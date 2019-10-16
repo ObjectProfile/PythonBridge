@@ -11,25 +11,23 @@ from uuid import uuid1
 # value we store there the return message and signal the semaphore.
 class MsgPackSocketPlatform:
 
-    def __init__(self, port, async_handler):
+    def __init__(self, port):
         self.port = port
         self.client = None
         self.packer = msgpack.Packer()
         self.unpacker = msgpack.Unpacker()
         self.sync_table = {}
-        self.async_handler = self.set_handler(async_handler)
+        self.async_handlers = {}
 
-    def set_handler(self, async_handler):
-        self.async_handler = lambda this, msg: async_handler(msg)
+    def set_handler(self, msg_type, async_handler):
+        self.async_handlers[msg_type] = async_handler
 
     def prim_handle(self):
         try:
             data = self.client.recv(2048)
-            print('FOOOO')
             self.unpacker.feed(data)
             for msg in self.unpacker:
-                print(msg)
-                self.handle_async_msg(msg)
+                self.prim_handle_msg(msg)
         except OSError:
             self.thread.stop()
 
@@ -42,6 +40,12 @@ class MsgPackSocketPlatform:
             self.thread.stop()
         if self.client is not None:
             self.client.close()
+
+    def send_answer(self, msg, answer):
+        if answer['type'] == msg['type']:
+            raise Exception('Type mismatch')
+        answer['__sync'] = msg['__sync']
+        self.send_async_message(msg)
     
     # def is_running(self):
     #     try:
@@ -50,7 +54,7 @@ class MsgPackSocketPlatform:
     #     except socket.error:
     #         return False
     
-    def handle_async_msg(self, raw_msg):
+    def prim_handle_msg(self, raw_msg):
         msg = bin2text(raw_msg)
         if is_sync_msg(msg):
             sync_id = message_sync_id(msg)
@@ -58,7 +62,7 @@ class MsgPackSocketPlatform:
             self.sync_table[sync_id] = msg
             semaphore.release()
         else:
-            self.async_handler(self,msg)
+            self.async_handlers[msg['type']](msg)
     
     def start(self):
         self.thread = stoppable_thread.StoppableThread(
