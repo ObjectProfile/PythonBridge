@@ -121,3 +121,22 @@ class TestMsgPackSocket(unittest.TestCase):
         self.prim_send_msg({'type': 'FOO', 'val': 33})
         wait_a_little()
         self.assertTrue(flag)
+
+    def test_handle_sync(self):
+        flag1 = False
+        flag2 = False
+        def service_handler(msg):
+            nonlocal flag1
+            self.assertEqual(msg,{'type': 'FOO', '__sync': 'abcde12345', 'val': 33})
+            flag1 = True
+            self.msg_service.send_answer(msg, {'type': 'FOO', 'val': 42})
+        self.msg_service.set_handler('FOO',service_handler)
+        def test_handler(msg):
+            nonlocal flag2
+            self.assertEqual(msg,{'type': 'FOO', '__sync': 'abcde12345', 'val': 42})
+            flag2 = True
+        self.server_handler = test_handler
+        self.prim_send_msg({'type': 'FOO', '__sync': 'abcde12345', 'val': 33})
+        wait_a_little()
+        self.assertTrue(flag1)
+        self.assertTrue(flag2)

@@ -42,10 +42,10 @@ class MsgPackSocketPlatform:
             self.client.close()
 
     def send_answer(self, msg, answer):
-        if answer['type'] == msg['type']:
+        if answer['type'] != msg['type']:
             raise Exception('Type mismatch')
         answer['__sync'] = msg['__sync']
-        self.send_async_message(msg)
+        self.send_async_message(answer)
     
     # def is_running(self):
     #     try:
@@ -56,13 +56,17 @@ class MsgPackSocketPlatform:
     
     def prim_handle_msg(self, raw_msg):
         msg = bin2text(raw_msg)
-        if is_sync_msg(msg):
+        msg_type = msg['type'] 
+        if msg_type in self.async_handlers:
+            self.async_handlers[msg['type']](msg)
+        elif is_sync_msg(msg):
             sync_id = message_sync_id(msg)
             semaphore = self.sync_table[sync_id]
             self.sync_table[sync_id] = msg
             semaphore.release()
         else:
-            self.async_handlers[msg['type']](msg)
+            raise Exception('Message couldn''t be handled')
+        
     
     def start(self):
         self.thread = stoppable_thread.StoppableThread(
