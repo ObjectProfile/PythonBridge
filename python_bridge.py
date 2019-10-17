@@ -105,31 +105,16 @@ class PythonCommandList:
 def clean_locals_env():
 	return locals()
 
+def deserialize(text):
+	return bridge_globals.msg_service.serializer.deserialize(text)
+
 def enqueue_command(data):
 	bridge_globals.globalCommandList.push_command(EvalCommand(
 										data["commandId"], 
 										data["statements"],
-										{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
+										{k: deserialize(v) for k, v in data["bindings"].items()}))
 
 def run_bridge():
-	##### FLASK API
-	# app = Flask(__name__)
-	# app.use_reloader=False
-
-	# @app.route("/ENQUEUE", methods=["POST"])
-	# def eval_expression():
-	# 	data = request.get_json(force=True)
-	# 	bridge_globals.globalCommandList.push_command(EvalCommand(
-	# 									data["commandId"], 
-	# 									data["statements"],
-	# 									{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
-	# 	return "OK"
-
-	# @app.route("/IS_ALIVE", methods=["POST"])
-	# def status_endpoint():
-	# 	return "{}"
-
-	##### MAIN PROGRAM
 	ap = argparse.ArgumentParser()
 	ap.add_argument("-p", "--port", required=False,
 		help="port to be used for receiving instructions")
@@ -165,7 +150,7 @@ def run_bridge():
 		raise Exception("Invalid communication strategy.")
 	bridge_globals.msg_service = msg_service
 	msg_service.start()
-
+	bridge_globals.logger.log("PYTHON: Start consuming commands")
 	while True:
 		command = globalCommandList.consume_command()
 		bridge_globals.logger.log("PYTHON: Executing command " + command.command_id())

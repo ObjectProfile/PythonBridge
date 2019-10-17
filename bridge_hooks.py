@@ -6,13 +6,12 @@ import json
 import sys
 import traceback
 from PythonBridge import bridge_globals
-from PythonBridge import bridge_encoder
 
-def convert_to_JSON(obj):
-	return json.dumps(obj, cls=bridge_encoder.BridgeEncoder)
+def serialize(obj):
+	return bridge_globals.msg_service.serializer.serialize(obj)
 
-def convert_from_JSON(text):
-	return json.loads(text)
+def deserialize(text):
+	return bridge_globals.msg_service.serializer.deserialize(text)
 
 def observer(commandId, observerId):
 	return lambda obj: notify_observer(obj, commandId, observerId)
@@ -23,7 +22,7 @@ def notify(obj, notificationId):
 	data = {}
 	data["type"] = "EVAL"
 	data["id"] = notificationId
-	data["value"] = convert_to_JSON(obj)
+	data["value"] = serialize(obj)
 	bridge_globals.msg_service.send_async_message(data)
 
 def notify_observer(obj, commandId, observerId):
@@ -32,9 +31,9 @@ def notify_observer(obj, commandId, observerId):
 	data["type"] = "CALLBACK"
 	data["commandId"] = commandId
 	data["observerId"] = observerId
-	data["value"] = convert_to_JSON(obj)
+	data["value"] = serialize(obj)
 	rawValue = bridge_globals.msg_service.send_sync_message(data)['value']
-	return convert_from_JSON(rawValue)
+	return deserialize(rawValue)
 
 def notify_error(ex, command):
 	bridge_globals.logger.log("Error on command: " + str(command.command_id()))

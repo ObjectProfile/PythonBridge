@@ -3,6 +3,7 @@ import socket
 import _thread
 import threading
 import time
+from PythonBridge import bridge_globals
 import stoppable_thread
 from uuid import uuid1
 
@@ -30,6 +31,8 @@ class MsgPackSocketPlatform:
                 self.prim_handle_msg(msg)
         except OSError:
             self.thread.stop()
+        except Exception as err:
+            bridge_globals.logger.log("ERROR message: " + str(err))
 
     def setup_func(self):
         self.client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -62,6 +65,7 @@ class MsgPackSocketPlatform:
             self.sync_table[sync_id] = msg
             semaphore.release()
         else:
+            bridge_globals.logger.log("Error! Msg couldnt be handled")
             raise Exception('Message couldn''t be handled')
         
     
@@ -99,4 +103,5 @@ def mark_message_as_sync(msg):
 def build_service(port, pharo_port, feed_callback):
     service = MsgPackSocketPlatform(pharo_port)
     service.set_handler('ENQUEUE',feed_callback)
+    service.set_handler('IS_ALIVE', lambda msg: service.send_answer(msg, {'type': 'IS_ALIVE'}))
     return service

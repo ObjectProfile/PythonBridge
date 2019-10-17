@@ -3,12 +3,13 @@ import http.client
 import json
 import threading
 import bridge_utils
-from PythonBridge import bridge_globals
+from PythonBridge import bridge_globals, json_encoder
 import sys
 
 class FlaskMsgService:
 
     def __init__(self, port, pharo_port, feed_callback):
+        self.serializer = json_encoder.JsonSerializer()
         self.thread = None
         self.port = port
         self.pharo_port = pharo_port
