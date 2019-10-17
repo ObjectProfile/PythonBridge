@@ -108,6 +108,7 @@ PBPharoPipenvProcess >> processArguments [
 			'python'. self pythonMainFile fullName. 
 			'--port'. self settings pythonSocketAddress port asString . 
 			'--pharo'. self settings pharoSocketAddress port asString .
+			'--method'. PBPlatform current messageBrokerStrategy pythonMethodArg.
 			'--log'}
 ]
 
@@ -123,7 +124,7 @@ PBPharoPipenvProcess >> setDefaultEnvironmentVariables [
 { #category : #'start-stop' }
 PBPharoPipenvProcess >> start [
 	process := self newProcess.
-	process run
+	process run.
 ]
 
 { #category : #'start-stop' }

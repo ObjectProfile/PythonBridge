@@ -1,5 +1,5 @@
 Class {
-	#name : #PBPharoMessageBroker,
+	#name : #PBHttpMessageBroker,
 	#superclass : #PBAbstractMessageBroker,
 	#instVars : [
 		'server'
@@ -7,39 +7,44 @@ Class {
 	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
-{ #category : #initialization }
-PBPharoMessageBroker class >> serializerClass [
+{ #category : #accessing }
+PBHttpMessageBroker class >> pythonMethodArg [
+	^ 'http'
+]
+
+{ #category : #accessing }
+PBHttpMessageBroker class >> serializerClass [
 	^ PBNeoJsonSerializer
 ]
 
 { #category : #private }
-PBPharoMessageBroker >> handleRMessage: dict [
+PBHttpMessageBroker >> handleRMessage: dict [
 	| msgClass |
 	msgClass := self resolveMessageFromType: (dict at: #type).
 	^ self handle: dict reverseMessageClass: msgClass
 ]
 
 { #category : #private }
-PBPharoMessageBroker >> invalidMethod [
+PBHttpMessageBroker >> invalidMethod [
 	^ (ZnResponse statusLine: ZnStatusLine badRequest)
 		entity: (ZnEntity text: 'Bad method');
 		yourself
 ]
 
 { #category : #private }
-PBPharoMessageBroker >> invalidType [
+PBHttpMessageBroker >> invalidType [
 	^ (ZnResponse statusLine: ZnStatusLine notFound)
 		entity: (ZnEntity text: 'Invalid type');
 		yourself
 ]
 
 { #category : #testing }
-PBPharoMessageBroker >> isRunning [
+PBHttpMessageBroker >> isRunning [
 	^ server notNil
 ]
 
 { #category : #private }
-PBPharoMessageBroker >> preventTestForkedPDestroyServer [
+PBHttpMessageBroker >> preventTestForkedPDestroyServer [
 	| env |
 	env := CurrentExecutionEnvironment value.
 	(env isKindOf: TestExecutionEnvironment) ifTrue: [ 
@@ -49,7 +54,7 @@ PBPharoMessageBroker >> preventTestForkedPDestroyServer [
 ]
 
 { #category : #private }
-PBPharoMessageBroker >> primSendMessage: dict [
+PBHttpMessageBroker >> primSendMessage: dict [
 	| ans |
 	ans := [ ZnEasy 
 					post: self pythonUri , '/' , (dict at: #type)
@@ -59,7 +64,7 @@ PBPharoMessageBroker >> primSendMessage: dict [
 ]
 
 { #category : #private }
-PBPharoMessageBroker >> prim_handle: req [
+PBHttpMessageBroker >> prim_handle: req [
 	"Because of the nature of HTTP, answers of sync messages are not received through this method, but as 	the answers of HTTP requests. This channel is only for RMessages."
 	^ req method = #POST 
 		ifTrue: [ | dict ansDict handler |
@@ -79,30 +84,30 @@ PBPharoMessageBroker >> prim_handle: req [
 ]
 
 { #category : #messaging }
-PBPharoMessageBroker >> sendAsyncMessage: msg [
+PBHttpMessageBroker >> sendAsyncMessage: msg [
 	self primSendMessage: msg encode.
 ]
 
 { #category : #messaging }
-PBPharoMessageBroker >> sendSyncMessage: msg [
+PBHttpMessageBroker >> sendSyncMessage: msg [
 	| ansDict |
 	ansDict := self primSendMessage: msg encode.
 	^ msg createAnswer decode: ansDict
 ]
 
 { #category : #accessing }
-PBPharoMessageBroker >> serializer [
+PBHttpMessageBroker >> serializer [
 	^ PBPlatform current serializer
 ]
 
 { #category : #accessing }
-PBPharoMessageBroker >> setDebugMode [
+PBHttpMessageBroker >> setDebugMode [
 	super setDebugMode.
 	server ifNotNil: [ server debugMode: true ]
 ]
 
 { #category : #'start-stop' }
-PBPharoMessageBroker >> start [
+PBHttpMessageBroker >> start [
 	server := ZnServer on: self port.
 	server debugMode: debugMode.
 	server start.
@@ -115,6 +120,6 @@ PBPharoMessageBroker >> start [
 ]
 
 { #category : #'start-stop' }
-PBPharoMessageBroker >> stop [
+PBHttpMessageBroker >> stop [
 	server ifNotNil: [ server stop ]
 ]

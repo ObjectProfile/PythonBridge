@@ -1,5 +1,5 @@
 Class {
-	#name : #PBPharoMessageBrokerTest,
+	#name : #PBHttpMessageBrokerTest,
 	#superclass : #PBMessageBrokerTest,
 	#instVars : [
 		'stubServer'
@@ -8,34 +8,34 @@ Class {
 }
 
 { #category : #utils }
-PBPharoMessageBrokerTest >> answer: aDictionary [
+PBHttpMessageBrokerTest >> answer: aDictionary [
 	^ aDictionary
 ]
 
 { #category : #utils }
-PBPharoMessageBrokerTest >> buildAndStartStubServer [
+PBHttpMessageBrokerTest >> buildAndStartStubServer [
 	stubServer := ZnServer on: settings pythonSocketAddress port.
 	stubServer start.
 	stubServer onRequestRespond: [ :req | self primHandle: req ]
 ]
 
 { #category : #utils }
-PBPharoMessageBrokerTest >> decodeAnswer: jsonText [
+PBHttpMessageBrokerTest >> decodeAnswer: jsonText [
 	^ NeoJSONReader fromString: jsonText
 ]
 
 { #category : #utils }
-PBPharoMessageBrokerTest >> errorResponse [
+PBHttpMessageBrokerTest >> errorResponse [
 	^ ZnResponse serverError: 'ERROR'
 ]
 
 { #category : #hooks }
-PBPharoMessageBrokerTest >> messageBrokerClass [
-	^ PBPharoMessageBroker
+PBHttpMessageBrokerTest >> messageBrokerClass [
+	^ PBHttpMessageBroker
 ]
 
 { #category : #private }
-PBPharoMessageBrokerTest >> primHandle: aRequest [
+PBHttpMessageBrokerTest >> primHandle: aRequest [
 	| answer |
 	answer := [
 		handlerBlock value: 
@@ -49,12 +49,12 @@ PBPharoMessageBrokerTest >> primHandle: aRequest [
 ]
 
 { #category : #hooks }
-PBPharoMessageBrokerTest >> sendMessageToBroker: dict [
+PBHttpMessageBrokerTest >> sendMessageToBroker: dict [
 	self sendMessageToBroker: dict answerEquals: Dictionary new
 ]
 
 { #category : #hooks }
-PBPharoMessageBrokerTest >> sendMessageToBroker: dict answerBlock: aBlock [
+PBHttpMessageBrokerTest >> sendMessageToBroker: dict answerBlock: aBlock [
 	| ans |
 	ans := ZnEasy 
 				post: self brokerUri , '/' , (dict at: #type)
@@ -64,11 +64,11 @@ PBPharoMessageBrokerTest >> sendMessageToBroker: dict answerBlock: aBlock [
 ]
 
 { #category : #utils }
-PBPharoMessageBrokerTest >> sleepAWhile [
+PBHttpMessageBrokerTest >> sleepAWhile [
 	"With HTTP there is no need to sleep."
 ]
 
 { #category : #running }
-PBPharoMessageBrokerTest >> stopStubServer [
+PBHttpMessageBrokerTest >> stopStubServer [
 	stubServer ifNotNil: [ stubServer stop ]
 ]

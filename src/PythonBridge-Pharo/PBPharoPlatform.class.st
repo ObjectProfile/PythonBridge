@@ -6,7 +6,7 @@ Class {
 
 { #category : #hooks }
 PBPharoPlatform class >> httpMessageBrokerClass [
-	^ PBPharoMessageBroker
+	^ PBHttpMessageBroker
 ]
 
 { #category : #hooks }

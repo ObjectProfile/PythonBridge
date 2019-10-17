@@ -10,6 +10,16 @@ Class {
 	#category : #'PythonBridge-Pharo-MessageBroker'
 }
 
+{ #category : #accessing }
+PBMsgPackPharoBroker class >> pythonMethodArg [
+	^ 'msgpack'
+]
+
+{ #category : #accessing }
+PBMsgPackPharoBroker class >> serializerClass [
+	^ PBMsgPackSerializer
+]
+
 { #category : #private }
 PBMsgPackPharoBroker >> handleAnswerMessage: dict [
 	| assoc message semaphore |
@@ -45,6 +55,7 @@ PBMsgPackPharoBroker >> primHandle: dict [
 
 { #category : #private }
 PBMsgPackPharoBroker >> primSendMessage: dict [
+	msgStream ifNil: [ PBCommunicationError signal ].
 	msgStream nextPut: dict
 ]
 

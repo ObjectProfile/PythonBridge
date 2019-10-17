@@ -20,10 +20,15 @@ PBCommunicationHandler >> initializeHandler [
 
 { #category : #testing }
 PBCommunicationHandler >> isPythonReady [
-	[ self sendMessage: PBIsAliveMessage new ] 
-		on: PBCommunicationError 
-		do: [ :e | ^ false ].
-	^ true
+	| semaphore ans |
+	semaphore := Semaphore new.
+	[ ans := [self sendMessage: PBIsAliveMessage new.
+				true ] 
+					on: PBCommunicationError 
+					do: [ :e | false ].
+	semaphore signal ] forkAt: Processor lowIOPriority.
+	semaphore waitTimeoutMSecs: 100.
+	^ ans notNil and: ans
 ]
 
 { #category : #adding }

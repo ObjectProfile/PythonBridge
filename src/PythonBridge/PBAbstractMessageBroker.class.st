@@ -9,6 +9,16 @@ Class {
 	#category : #'PythonBridge-Platform'
 }
 
+{ #category : #accessing }
+PBAbstractMessageBroker class >> pythonMethodArg [
+	self subclassResponsibility
+]
+
+{ #category : #accessing }
+PBAbstractMessageBroker class >> serializerClass [
+	self subclassResponsibility
+]
+
 { #category : #'as yet unclassified' }
 PBAbstractMessageBroker class >> settings: settings [
 	^ self new
