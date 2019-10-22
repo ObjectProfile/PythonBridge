@@ -42,6 +42,16 @@ PBMsgPackPharoBroker >> isRunning [
 ]
 
 { #category : #private }
+PBMsgPackPharoBroker >> preventTestForkedPDestroyServer [
+	| env |
+	env := CurrentExecutionEnvironment value.
+	(env isKindOf: TestExecutionEnvironment) ifTrue: [ 
+		env forkedProcesses
+			remove: handlerThread 
+			ifAbsent: [  ] ]
+]
+
+{ #category : #private }
 PBMsgPackPharoBroker >> primHandle: dict [
 	| msgClass |
 	msgClass := self resolveMessageFromType: (dict at: #type).
@@ -111,6 +121,7 @@ PBMsgPackPharoBroker >> start [
 		msgStream := PBMsgPackSocketStream on: (SocketStream on: bindSocket).
 		[ true ] whileTrue: [ 
 			self primHandle: msgStream next ] ] forkAt: Processor lowIOPriority.
+	self preventTestForkedPDestroyServer
 ]
 
 { #category : #'start-stop' }
