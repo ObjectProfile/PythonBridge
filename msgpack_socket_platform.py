@@ -5,6 +5,7 @@ import threading
 import time
 from PythonBridge import bridge_globals
 import stoppable_thread
+import msgpack_serializer
 from uuid import uuid1
 
 # Messages supported by this sockets must be Dictionaries. This is because we use special key __sync to know if it is 
@@ -15,6 +16,7 @@ class MsgPackSocketPlatform:
     def __init__(self, port):
         self.port = port
         self.client = None
+        self.serializer = msgpack_serializer.MsgPackSerializer()
         self.unpacker = msgpack.Unpacker(raw=False)
         self.packer = msgpack.Packer(use_bin_type=True)
         self.sync_table = {}
