@@ -96,11 +96,6 @@ PBHttpMessageBroker >> sendSyncMessage: msg [
 ]
 
 { #category : #accessing }
-PBHttpMessageBroker >> serializer [
-	^ PBPlatform current serializer
-]
-
-{ #category : #accessing }
 PBHttpMessageBroker >> setDebugMode [
 	super setDebugMode.
 	server ifNotNil: [ server debugMode: true ]

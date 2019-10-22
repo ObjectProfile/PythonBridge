@@ -109,7 +109,7 @@ PBPharoPipenvProcess >> processArguments [
 			'--port'. self settings pythonSocketAddress port asString . 
 			'--pharo'. self settings pharoSocketAddress port asString .
 			'--method'. PBPlatform current messageBrokerStrategy pythonMethodArg.
-			'--log'}
+			"'--log'"}
 ]
 
 { #category : #initialization }

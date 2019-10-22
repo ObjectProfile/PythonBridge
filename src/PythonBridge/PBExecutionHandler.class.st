@@ -55,6 +55,11 @@ PBExecutionHandler >> initializeHandler [
 		addHandler: [ :msg | self notifyCallbackHandler: msg ] forMessageClass: PBCallbackMessage
 ]
 
+{ #category : #'private protocol' }
+PBExecutionHandler >> mapperFactory [
+	^ mapperFactory
+]
+
 { #category : #'as yet unclassified' }
 PBExecutionHandler >> newCommandFactory [
 	^ PBCommandFactory new

@@ -53,3 +53,8 @@ PBMapper >> mappings [
 PBMapper >> mappings: anObject [
 	mappings := anObject
 ]
+
+{ #category : #accessing }
+PBMapper >> serializerWrapper: anObject [
+	serializerWrapper := anObject
+]

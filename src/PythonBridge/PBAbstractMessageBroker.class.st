@@ -15,6 +15,11 @@ PBAbstractMessageBroker class >> pythonMethodArg [
 ]
 
 { #category : #accessing }
+PBAbstractMessageBroker class >> serializer [
+	^ self serializerClass new
+]
+
+{ #category : #accessing }
 PBAbstractMessageBroker class >> serializerClass [
 	self subclassResponsibility
 ]
@@ -86,6 +91,11 @@ PBAbstractMessageBroker >> sendMessage: aMessage [
 { #category : #messaging }
 PBAbstractMessageBroker >> sendSyncMessage: aMessage [
 	self subclassResponsibility
+]
+
+{ #category : #accessing }
+PBAbstractMessageBroker >> serializer [
+	^ self class serializer
 ]
 
 { #category : #accessing }

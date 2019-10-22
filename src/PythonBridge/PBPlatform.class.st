@@ -136,9 +136,9 @@ PBPlatform >> processStrategy: processCls [
 	processStrategy := processCls
 ]
 
-{ #category : #'module creation' }
+{ #category : #'accessing modules' }
 PBPlatform >> serializer [
-	^ self messageBrokerStrategy serializerClass new
+	^ self messageBrokerStrategy serializer
 ]
 
 { #category : #'message broker strategy' }
