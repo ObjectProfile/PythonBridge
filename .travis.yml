@@ -30,7 +30,7 @@ matrix:
     - script: pipenv run python -m unittest discover tests
       os: osx
       python: 3.7
-    - script: pipenv run python -m unittest discover tests
-      os: linux
-      python: 3.7
+    # - script: pipenv run python -m unittest discover tests
+    #   os: linux
+    #   python: 3.7
  
