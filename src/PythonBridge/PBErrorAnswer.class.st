@@ -1,23 +1,11 @@
 Class {
 	#name : #PBErrorAnswer,
-	#superclass : #PBAnswer,
+	#superclass : #PBRAnswer,
 	#instVars : [
 		'handlingAction'
 	],
 	#category : #'PythonBridge-Platform-Messages'
 }
-
-{ #category : #'as yet unclassified' }
-PBErrorAnswer class >> handlingAction: action [
-	^ self new
-		handlingAction: action;
-		yourself
-]
-
-{ #category : #accessing }
-PBErrorAnswer class >> type [
-	^ 'ERR'
-]
 
 { #category : #accessing }
 PBErrorAnswer >> handlingAction [
@@ -31,5 +19,6 @@ PBErrorAnswer >> handlingAction: anObject [
 
 { #category : #encoding }
 PBErrorAnswer >> privateEncode: dict [
-	dict addAll: handlingAction encodeAsDictionary
+	super privateEncode: dict.
+	dict at: #action put: handlingAction encodeAsDictionary
 ]

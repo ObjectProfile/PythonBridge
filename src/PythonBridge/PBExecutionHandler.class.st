@@ -14,7 +14,7 @@ Class {
 { #category : #'private protocol' }
 PBExecutionHandler >> buildMessageFromCommand: command [
 	| message |
-	message := PBEnqueueMessage 
+	message := PBEnqueueCommandMessage 
 					commandId: command id 
 					statements: command pythonCode 
 					bindings: (command bindings asDictionary collect: [ :obj | self serialize: obj ]).
@@ -50,9 +50,14 @@ PBExecutionHandler >> initialize [
 { #category : #initialization }
 PBExecutionHandler >> initializeHandler [
 	self communicationHandler
-		addHandler: [ :dict | self notifyHandler: dict ] forAnswerCls: PBEvalAnswer;
-		addHandler: [ :dict | self notifyErrorHandler: dict ] forAnswerCls: PBErrorAnswer;
-		addHandler: [ :dict | self notifyObserverHandler: dict ] forAnswerCls: PBCallbackAnswer.
+		addHandler: [ :msg | self notifyHandler: msg ] forMessageClass: PBUpdatePromiseMessage;
+		addHandler: [ :msg | self notifyErrorHandler: msg ] forMessageClass: PBErrorMessage;
+		addHandler: [ :msg | self notifyCallbackHandler: msg ] forMessageClass: PBCallbackMessage
+]
+
+{ #category : #'private protocol' }
+PBExecutionHandler >> mapperFactory [
+	^ mapperFactory
 ]
 
 { #category : #'as yet unclassified' }
@@ -63,38 +68,39 @@ PBExecutionHandler >> newCommandFactory [
 ]
 
 { #category : #handlers }
-PBExecutionHandler >> notifyErrorHandler: dict [
-	| error |
-	error := PBPythonError new
-					application: self application;
-					command: (commandQueue getCommand: (dict at: #id));
-					errorMessage: (dict at: #errMsg);
-					trace: (dict at: #trace);
-					yourself.
-	self safeTriggerDebugger: error.
-	^ PBErrorAnswer handlingAction: error proceedAction
-]
-
-{ #category : #handlers }
-PBExecutionHandler >> notifyHandler: dict [
-	dict
-		at: #id
-		ifPresent:
-			[ :id | self updatePromiseId: id with: (self deserialize: (dict at: #value)) ]
-		ifAbsent: [ self application log: (PBErrorLog message: 'Notify for missing promise.') ].
-	^ PBEvalAnswer new
-]
-
-{ #category : #handlers }
-PBExecutionHandler >> notifyObserverHandler: dict [
+PBExecutionHandler >> notifyCallbackHandler: msg [
 	| val serialization |
 	val := self 
-		signalObserver: (self getObserverAtCommandId: (dict at: #commandId) id: (dict at: #observerId)) 
-		withValue: (self deserialize: (dict at: #value)).
+		signalObserver: (self getObserverAtCommandId: msg commandId id: msg observerId) 
+		withValue: (self deserialize: msg value).
 	serialization := [ self serialize: val ] on: Error do: [ :err | 
 		self application log: err printString.
 		self serialize: nil ].
-	^ PBCallbackAnswer val: serialization
+	^ msg createAnswer 
+		value: serialization;
+		yourself
+]
+
+{ #category : #handlers }
+PBExecutionHandler >> notifyErrorHandler: errorMsg [
+	| error |
+	error := PBPythonError new
+					application: self application;
+					command: (commandQueue getCommand: errorMsg commandId);
+					errorMessage: errorMsg errorMessage;
+					trace: errorMsg trace;
+					yourself.
+	self safeTriggerDebugger: error.
+	^ errorMsg createAnswer 
+			handlingAction: error proceedAction;
+			yourself
+]
+
+{ #category : #handlers }
+PBExecutionHandler >> notifyHandler: updatePromiseMsg [
+	self 
+		updatePromiseId: updatePromiseMsg promiseId 
+		with: (self deserialize: updatePromiseMsg value)
 ]
 
 { #category : #initialization }

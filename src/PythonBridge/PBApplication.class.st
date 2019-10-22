@@ -210,6 +210,7 @@ PBApplication >> registerObject: aPythonObject [
 
 { #category : #instructions }
 PBApplication >> send: aCommand [
+	self isRunning ifFalse: [ Error signal: 'Bridge not running.' ].
 	^ executionHandler sendCommand: aCommand
 ]
 

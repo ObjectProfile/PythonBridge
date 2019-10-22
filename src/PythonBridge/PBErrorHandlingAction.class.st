@@ -13,8 +13,3 @@ PBErrorHandlingAction >> actionSymbol [
 PBErrorHandlingAction >> encodeAsDictionary [
 	^ { #action -> self actionSymbol } asDictionary
 ]
-
-{ #category : #'as yet unclassified' }
-PBErrorHandlingAction >> encodedAsDictionary [
-	^ { #action -> self actionSymbol } asDictionary
-]

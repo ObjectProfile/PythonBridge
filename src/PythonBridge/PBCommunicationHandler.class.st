@@ -8,22 +8,27 @@ Class {
 }
 
 { #category : #adding }
-PBCommunicationHandler >> addHandler: aBlock forAnswerCls: answerCls [
-	^ messageBroker addCallback: aBlock answerClass: answerCls
+PBCommunicationHandler >> addHandler: aBlock forMessageClass: messageClass [
+	^ messageBroker addCallback: aBlock messageClass: messageClass
 ]
 
 { #category : #initialization }
 PBCommunicationHandler >> initializeHandler [
 	super initializeHandler.
-	messageBroker := PBPlatform current messageBrokerClass settings: self application settings
+	messageBroker := PBPlatform current messageBroker: self application settings
 ]
 
 { #category : #testing }
 PBCommunicationHandler >> isPythonReady [
-	[ self sendMessage: PBIsAliveMessage new ] 
-		on: PBCommunicationError 
-		do: [ :e | ^ false ].
-	^ true
+	| semaphore ans |
+	semaphore := Semaphore new.
+	[ ans := [self sendMessage: PBIsAliveMessage new.
+				true ] 
+					on: PBCommunicationError 
+					do: [ :e | false ].
+	semaphore signal ] forkAt: Processor lowIOPriority.
+	semaphore waitTimeoutMSecs: 100.
+	^ ans notNil and: ans
 ]
 
 { #category : #adding }

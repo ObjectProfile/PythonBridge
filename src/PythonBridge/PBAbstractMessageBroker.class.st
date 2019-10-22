@@ -9,6 +9,21 @@ Class {
 	#category : #'PythonBridge-Platform'
 }
 
+{ #category : #accessing }
+PBAbstractMessageBroker class >> pythonMethodArg [
+	self subclassResponsibility
+]
+
+{ #category : #accessing }
+PBAbstractMessageBroker class >> serializer [
+	^ self serializerClass new
+]
+
+{ #category : #accessing }
+PBAbstractMessageBroker class >> serializerClass [
+	self subclassResponsibility
+]
+
 { #category : #'as yet unclassified' }
 PBAbstractMessageBroker class >> settings: settings [
 	^ self new
@@ -17,8 +32,19 @@ PBAbstractMessageBroker class >> settings: settings [
 ]
 
 { #category : #messaging }
-PBAbstractMessageBroker >> addCallback: aBlock answerClass: answerCls [
-	messageCallbacks at: answerCls put: aBlock
+PBAbstractMessageBroker >> addCallback: aBlock messageClass: messageClass [
+	messageCallbacks at: messageClass put: aBlock
+]
+
+{ #category : #private }
+PBAbstractMessageBroker >> handle: dict reverseMessageClass: msgClass [
+	| handler |
+	(messageCallbacks includesKey: msgClass) ifFalse: [ PBCommunicationError signal ].
+	handler := PBMessageHandler 
+						forMessage: (msgClass decodeFrom: dict) 
+						callback: (messageCallbacks at: msgClass).
+	handler handleMessage.
+	^ handler
 ]
 
 { #category : #initialization }
@@ -45,12 +71,31 @@ PBAbstractMessageBroker >> pythonUri [
 
 { #category : #private }
 PBAbstractMessageBroker >> resolveMessageFromType: aType [
-	^ PBAnswer resolveMessageClassFromType: aType
+	^ PBAbstractMessage withAllSubclasses 
+			detect: [ :cls | cls type = aType ] 
+			ifNone: [ Error signal: 'Message ' , aType , ' not understood.' ].
+]
+
+{ #category : #messaging }
+PBAbstractMessageBroker >> sendAsyncMessage: aMessage [
+	self subclassResponsibility
 ]
 
 { #category : #messaging }
 PBAbstractMessageBroker >> sendMessage: aMessage [
+	^ aMessage isSync
+		ifTrue: [ self sendSyncMessage: aMessage ]
+		ifFalse: [ self sendAsyncMessage: aMessage ]
+]
+
+{ #category : #messaging }
+PBAbstractMessageBroker >> sendSyncMessage: aMessage [
 	self subclassResponsibility
+]
+
+{ #category : #accessing }
+PBAbstractMessageBroker >> serializer [
+	^ self class serializer
 ]
 
 { #category : #accessing }

@@ -10,6 +10,8 @@ Class {
 { #category : #tests }
 PBSerializeTest >> serializer [
 	^ mapper serializer
+			serializerWrapper: PBPlatform current class httpMessageBrokerClass serializer;
+			yourself
 ]
 
 { #category : #tests }

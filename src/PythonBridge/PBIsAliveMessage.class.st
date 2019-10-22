@@ -1,15 +1,15 @@
 Class {
 	#name : #PBIsAliveMessage,
-	#superclass : #PBMessage,
+	#superclass : #PBSyncMessage,
 	#category : #'PythonBridge-Platform-Messages'
 }
 
 { #category : #accessing }
-PBIsAliveMessage class >> type [
-	^ 'IS_ALIVE'
+PBIsAliveMessage class >> answerClass [
+	^ PBAnswer
 ]
 
-{ #category : #encoding }
-PBIsAliveMessage >> privateEncode: dict [
-	
+{ #category : #accessing }
+PBIsAliveMessage class >> type [
+	^ #IS_ALIVE
 ]

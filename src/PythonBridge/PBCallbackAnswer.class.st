@@ -1,35 +1,24 @@
 Class {
 	#name : #PBCallbackAnswer,
-	#superclass : #PBAnswer,
+	#superclass : #PBRAnswer,
 	#instVars : [
-		'val'
+		'value'
 	],
 	#category : #'PythonBridge-Platform-Messages'
 }
 
-{ #category : #accessing }
-PBCallbackAnswer class >> type [
-	^ 'CALLBACK'
-]
-
-{ #category : #accessing }
-PBCallbackAnswer class >> val: aValue [
-	^ self new
-		val: aValue;
-		yourself
-]
-
 { #category : #encoding }
 PBCallbackAnswer >> privateEncode: dict [
-	dict at: #val put: val
+	super privateEncode: dict.
+	dict at: #value put: value
 ]
 
 { #category : #accessing }
-PBCallbackAnswer >> val [
-	^ val
+PBCallbackAnswer >> value [
+	^ value
 ]
 
 { #category : #accessing }
-PBCallbackAnswer >> val: anObject [
-	val := anObject
+PBCallbackAnswer >> value: anObject [
+	value := anObject
 ]

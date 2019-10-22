@@ -1,17 +1,4 @@
 language: smalltalk
-
-python:
-  - '3.6'
-env:
-  global:
-    - PIPENV_VENV_IN_PROJECT=1
-install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pip install pipenv; fi
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo pip install pipenv; fi
-  - ls
-  - pwd
-  - 'pipenv install'
-  
 os:
   - osx
   - linux
@@ -19,3 +6,31 @@ os:
 smalltalk:
   - Pharo-7.0
   - Pharo64-7.0
+  - Pharo64-8.0
+
+python:
+  - 3.6
+  - 3.7
+
+env:
+  global:
+    - PIPENV_VENV_IN_PROJECT=1
+
+install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pip install pipenv; fi
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then sudo pip install pipenv; fi
+  - ln -s . PythonBridge
+  - 'pipenv install'
+
+matrix:
+  exclude:
+    - os: osx
+      smalltalk: Pharo64-7.0
+  include:
+    - script: pipenv run python -m unittest discover tests
+      os: osx
+      python: 3.7
+    # - script: pipenv run python -m unittest discover tests
+    #   os: linux
+    #   python: 3.7
+ 

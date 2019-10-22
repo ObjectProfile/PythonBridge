@@ -20,6 +20,8 @@ PBDeserializeTest >> deserialize: anObject [
 { #category : #running }
 PBDeserializeTest >> deserializer [
 	^ mapper deserializer
+			serializerWrapper: PBPlatform current class httpMessageBrokerClass serializer;
+			yourself
 ]
 
 { #category : #running }

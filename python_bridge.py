@@ -1,9 +1,7 @@
-import flask_platform
 import argparse
 import threading
-import json
 import sys
-from PythonBridge import bridge_globals, bridge_hooks
+from PythonBridge import bridge_globals, bridge_hooks, flask_platform, msgpack_socket_platform
 from PythonBridge.bridge_hooks import *
 from PythonBridge.object_registry import registry
 
@@ -39,7 +37,7 @@ class EvalCommand:
 
 class Logger():
 	def log(self, msg):
-		print(str(msg), file=sys.stderr)
+		print(str(msg), file=sys.stderr, flush=True)
 
 class NoLogger():
 	def log(self, msg):
@@ -106,36 +104,23 @@ class PythonCommandList:
 def clean_locals_env():
 	return locals()
 
+def deserialize(text):
+	return bridge_globals.msg_service.serializer.deserialize(text)
+
 def enqueue_command(data):
 	bridge_globals.globalCommandList.push_command(EvalCommand(
 										data["commandId"], 
 										data["statements"],
-										{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
+										{k: deserialize(v) for k, v in data["bindings"].items()}))
 
 def run_bridge():
-	##### FLASK API
-	app = Flask(__name__)
-	app.use_reloader=False
-
-	@app.route("/ENQUEUE", methods=["POST"])
-	def eval_expression():
-		data = request.get_json(force=True)
-		bridge_globals.globalCommandList.push_command(EvalCommand(
-										data["commandId"], 
-										data["statements"],
-										{k: convert_from_JSON(v) for k, v in data["bindings"].items()}))
-		return "OK"
-
-	@app.route("/IS_ALIVE", methods=["POST"])
-	def status_endpoint():
-		return "PHARO_HOOKS RUNNING"
-
-	##### MAIN PROGRAM
 	ap = argparse.ArgumentParser()
-	ap.add_argument("-p", "--port", required=True,
+	ap.add_argument("-p", "--port", required=False,
 		help="port to be used for receiving instructions")
 	ap.add_argument("-o", "--pharo", required=True,
 		help="port to be used for sending notifications back to pharo")
+	ap.add_argument("-m", "--method", required=False,
+		help="identifier for communication protocol strategy http or msgpack")
 	ap.add_argument("--log", required=False, const=True, nargs="?",
     	help="enable logging")
 	args = vars(ap.parse_args())
@@ -151,10 +136,20 @@ def run_bridge():
 	bridge_globals.globalCommandList = PythonCommandList()
 	globalCommandList = bridge_globals.globalCommandList
 	env = clean_locals_env()
-	msg_service = flask_platform.build_service(int(args["port"]), int(args["pharo"]), enqueue_command)
+	msg_service = None 
+	if args["port"] == None:
+		args["port"] = '0'
+	if args["method"] == None:
+		args["method"] = 'http'
+	if args["method"] == 'http':
+		msg_service = flask_platform.build_service(int(args["port"]), int(args["pharo"]), enqueue_command)
+	elif args["method"] == 'msgpack':
+		msg_service = msgpack_socket_platform.build_service(int(args["port"]), int(args["pharo"]), enqueue_command)
+	else:
+		raise Exception("Invalid communication strategy.")
 	bridge_globals.msg_service = msg_service
-	msg_service.start_on_thread()
-
+	msg_service.start()
+	bridge_globals.logger.log("PYTHON: Start consuming commands")
 	while True:
 		command = globalCommandList.consume_command()
 		bridge_globals.logger.log("PYTHON: Executing command " + command.command_id())
