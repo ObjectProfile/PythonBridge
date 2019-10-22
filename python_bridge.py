@@ -1,6 +1,5 @@
 import argparse
 import threading
-import json
 import sys
 from PythonBridge import bridge_globals, bridge_hooks, flask_platform, msgpack_socket_platform
 from PythonBridge.bridge_hooks import *

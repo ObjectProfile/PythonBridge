@@ -2,7 +2,6 @@ from flask import Flask, request
 import http.client
 import argparse
 import threading
-import json
 import sys
 import traceback
 from PythonBridge import bridge_globals
