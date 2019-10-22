@@ -84,6 +84,11 @@ PBPlatform class >> weakRegistryClass [
 	self subclassResponsibility
 ]
 
+{ #category : #'message broker strategy' }
+PBPlatform >> defaultMessageBrokerClass [
+	^ self class httpMessageBrokerClass
+]
+
 { #category : #utils }
 PBPlatform >> defaultSettings [
 	^ PBSettings 
@@ -108,7 +113,7 @@ PBPlatform >> messageBroker: settings [
 
 { #category : #'message broker strategy' }
 PBPlatform >> messageBrokerStrategy [
-	^ msgBrokerStrategy ifNil: [ ^ self class httpMessageBrokerClass ]
+	^ msgBrokerStrategy ifNil: [ ^ self defaultMessageBrokerClass ]
 ]
 
 { #category : #'message broker strategy' }

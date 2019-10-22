@@ -46,6 +46,11 @@ PBPharoPlatform >> createSymlinkFor: originalFile on: targetFile [
 				runAndWaitOnExitDo: [ :command | ^ self ].
 ]
 
+{ #category : #'message broker strategy' }
+PBPharoPlatform >> defaultMessageBrokerClass [
+	^ self class socketMessageBrokerClass
+]
+
 { #category : #hooks }
 PBPharoPlatform >> ensureApplicationSymlinks: application [
 	| appFolder |
