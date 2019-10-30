@@ -3,9 +3,7 @@ import socket
 import _thread
 import threading
 import time
-from PythonBridge import bridge_globals
-import stoppable_thread
-import msgpack_serializer
+from PythonBridge import bridge_globals, stoppable_thread, msgpack_serializer
 from uuid import uuid1
 
 # Messages supported by this sockets must be Dictionaries. This is because we use special key __sync to know if it is 
