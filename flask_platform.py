@@ -2,8 +2,7 @@ from flask import Flask, request
 import http.client
 import json
 import threading
-import bridge_utils
-from PythonBridge import bridge_globals, json_encoder
+from PythonBridge import bridge_globals, json_encoder, bridge_utils
 import sys
 import logging
 

@@ -142,8 +142,10 @@ def run_bridge():
 	if args["method"] == None:
 		args["method"] = 'http'
 	if args["method"] == 'http':
+		from PythonBridge import flask_platform
 		msg_service = flask_platform.build_service(int(args["port"]), int(args["pharo"]), enqueue_command)
 	elif args["method"] == 'msgpack':
+		from PythonBridge import msgpack_socket_platform
 		msg_service = msgpack_socket_platform.build_service(int(args["port"]), int(args["pharo"]), enqueue_command)
 	else:
 		raise Exception("Invalid communication strategy.")
