@@ -6,7 +6,7 @@ Class {
 
 { #category : #building }
 GTPythonVariablesBrowser >> basicVariableNodesFor: anObject in: aCollection [
-	(anObject isKindOf: PBProxyObject) 
+	(anObject isKindOf: PBObject) 
 		ifFalse: [ ^ super basicVariableNodesFor: anObject in: aCollection ].
 	anObject application commandFactory << (#bridge_inspect callWith: { anObject }).
 	anObject application commandFactory sendAndWait associationsDo: [ :assoc |
