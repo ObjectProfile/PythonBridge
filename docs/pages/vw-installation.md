@@ -86,6 +86,13 @@ PBVwPlatform folderDict
 	put: 'c:\PATH\TO\PYTHON\BRIDGE\REPOSITORY' asFilename
 ```
 
+Then we need to create a symbolic link from the project repository folder to the base PythonBridge repository folder. In other words, this is a symbolic link to `.`, but this is important for extensions of PythonBridge that need a reference to the base code.
+
+To create the link you need to execute the following in a shell with ADMINISTRATOR privileges:
+```
+mklink /D PythonBridge .
+```
+
 ## Test your installation
 
 <!-- We have an extensive test suite and all the tests should be green. -->
