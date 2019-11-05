@@ -38,7 +38,7 @@ PythonBridge has two kind of dependencies, the ones that are required in the Vis
 1. Requests
 
 ## Install Python 3.6
-We suggest using the installer provided in the Python webpage [https://www.python.org/downloads/release/python-368/](https://www.python.org/downloads/release/python-368/).
+We suggest using the installer provided in the Python webpage [https://www.python.org/downloads/release/python-368/](https://www.python.org/downloads/release/python-368/). Follow the instructions in the installer and do not forget to put Python on the PATH (This step should be performed by the installer).
 
 To verify python installed correctly just run `python --version` and you should get `Python 3.6.8`.
 Also verify that pip has also been installed by running `pip -V` and you should get `pip 18.1 from ... (python 3.6)` 
@@ -59,7 +59,7 @@ After all prerequesites are installed we can install PythonBridge itself. You sh
 
 ```smalltalk
 | dir |
-dir := Dialog requestDirectoryName: 'Choose the graphql parcels directory'.
+dir := Dialog requestDirectoryName: 'Choose the PythonBridge parcels directory'.
 dir isEmpty ifTrue: [^ self].
 dir:= dir, (String with: Filename separator).
 #('VwPharoPlatform' 'P3Generator' 'PythonBridgeBundle') do: [:fn | | file |
@@ -104,6 +104,11 @@ PBApplication do: [
 This examples should return 3.
 
 ## Troubleshooting
+
+### Python or Pip are installed but are not found
+The most common reason for Windows to not be able to find Python is that Python folder are not appended to the PATH.
+
+To ensure Python is in the PATH go to System Properties -> Advanced -> Environment Variables and check the 'PATH' environment varible. You should see two Python entries, one for the base directory and another one for the 'scripts' directory.
 
 ### Removing the pipenv environment
 In case you wish to remove the pipenv environment run: 
