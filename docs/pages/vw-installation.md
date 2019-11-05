@@ -53,16 +53,14 @@ To verify if you have pipenv just run in a terminal `pipenv --version`, it shoul
 ## Download and Install PythonBridge
 Currently PythonBridge version for VisualWorks is on closed beta. Therefore, we required that all people or companies wishing to use PythonBridge directly request ObjectProfile a digital copy of the software. For this purpose send an email to `info@objectprofile.com`.
 
-The next step is opening a VisualWorks 8.x image and install all the prerequisites detailed in [VisualWorks dependencies](#vwdep). They should be installed in that order, some of them are available directly from VW parcel manager and others need to be downloaded from Cincom Public Store.
-
-After all prerequesites are installed we can install PythonBridge itself. You should have received a zip file from ObjectProfile which includes several parcels file. The first step is to extract them in a folder. Then, by executing the following script in a workspace, you need to select the folder with the parcels and let the tool automatically install PythonBridge.
+ You should have received a zip file from ObjectProfile which includes several parcels file. The first step is to extract them in a folder. Then, by executing the following script in a workspace, you need to select the folder with the parcels and let the tool automatically install PythonBridge.
 
 ```smalltalk
 | dir |
 dir := Dialog requestDirectoryName: 'Choose the PythonBridge parcels directory'.
 dir isEmpty ifTrue: [^ self].
 dir:= dir, (String with: Filename separator).
-#('VwPharoPlatform' 'P3Generator' 'PythonBridgeBundle') do: [:fn | | file |
+#('JSONReader' 'Sport' 'Swazoo' 'VwPharoPlatform' 'P3Generator' 'PythonBridgeBundle') do: [:fn | | file |
   file := dir, fn, '.pcl'.
   file asFilename exists ifFalse: [self error: 'Missing parcel!', file asString].
   Parcel loadParcelFrom: file asFilename
