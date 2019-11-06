@@ -32,8 +32,8 @@ SocketStream >> uint16: anInteger [
 
 	(anInteger < 0 or: [ anInteger >= 16r10000 ])
 		ifTrue: [ self error: 'outside unsigned 16-bit integer range' ].
-	self nextPut: (anInteger byteAt: 2).
-	self nextPut: (anInteger byteAt: 1)
+	self nextPut: (anInteger digitAt: 2).
+	self nextPut: (anInteger digitAt: 1)
 ]
 
 { #category : #'*PythonBridge-Pharo' }
