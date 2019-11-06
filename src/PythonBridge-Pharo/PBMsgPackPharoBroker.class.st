@@ -118,9 +118,13 @@ PBMsgPackPharoBroker >> start [
 	serverSocket := self serverSocketOn: self port.
 	handlerThread := [	| bindSocket |	
 		bindSocket := serverSocket waitForAcceptFor: 10.
-		msgStream := PBMsgPackSocketStream on: (SocketStream on: bindSocket).
-		[ true ] whileTrue: [ 
-			self primHandle: msgStream next ] ] forkAt: Processor lowIOPriority.
+		bindSocket ifNil: [ bindSocket := serverSocket waitForAcceptFor: 10 ].
+		bindSocket ifNotNil: [ 
+			msgStream := PBMsgPackSocketStream on: (SocketStream on: bindSocket).
+			[ [ true ] whileTrue: [ 
+				self primHandle: msgStream next ] ] 
+					on: ConnectionClosed 
+					do: [ :err | "Do nothing." ] ] ] forkAt: Processor lowIOPriority.
 	self preventTestForkedPDestroyServer
 ]
 
@@ -128,5 +132,5 @@ PBMsgPackPharoBroker >> start [
 PBMsgPackPharoBroker >> stop [
 	handlerThread ifNotNil: [ handlerThread terminate ].
 	msgStream ifNotNil: [ msgStream close ].
-	serverSocket ifNotNil: [ serverSocket close ]
+	serverSocket ifNotNil: [ serverSocket closeAndDestroy ]
 ]

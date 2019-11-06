@@ -26,7 +26,7 @@ PBMsgPackSocketStream >> atEnd [
 { #category : #streaming }
 PBMsgPackSocketStream >> close [
 	| ans |
-	ans := socketStream socket ifNotNil: #close.
+	ans := socketStream socket ifNotNil: #closeAndDestroy.
 	30 timesRepeat: [ encoderSemaphore signal ].
 	30 timesRepeat: [ decoderSemaphore signal ].
 	^ ans
