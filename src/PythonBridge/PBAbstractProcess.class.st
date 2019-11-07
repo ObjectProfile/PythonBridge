@@ -67,6 +67,12 @@ PBAbstractProcess >> errorMessage [
 	self subclassResponsibility
 ]
 
+{ #category : #initialization }
+PBAbstractProcess >> initialize [
+	super initialize.
+	debugMode := false
+]
+
 { #category : #testing }
 PBAbstractProcess >> isRunning [
 	self subclassResponsibility
