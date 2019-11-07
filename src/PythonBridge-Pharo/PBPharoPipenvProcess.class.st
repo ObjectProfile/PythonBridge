@@ -103,13 +103,20 @@ PBPharoPipenvProcess >> process [
 
 { #category : #private }
 PBPharoPipenvProcess >> processArguments [
-	^ { 
-			'run'. 
-			'python'. self pythonMainFile fullName. 
-			'--port'. self settings pythonSocketAddress port asString . 
-			'--pharo'. self settings pharoSocketAddress port asString .
-			'--method'. PBPlatform current messageBrokerStrategy pythonMethodArg.
-			"'--log'"}
+	| args |
+	args := OrderedCollection new.
+	args
+		add: 'run';
+		add: 'python';
+		add: self pythonMainFile fullName;
+		add: '--port';
+		add: self settings pythonSocketAddress port asString;
+		add: '--pharo';
+		add: self settings pharoSocketAddress port asString;
+		add: '--method';
+		add: PBPlatform current messageBrokerStrategy pythonMethodArg.
+	self debugMode ifTrue: [ args add: '--log' ].
+	^ args
 ]
 
 { #category : #initialization }

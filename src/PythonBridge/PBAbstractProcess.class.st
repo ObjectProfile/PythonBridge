@@ -3,6 +3,7 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'pythonMainFile',
+		'debugMode',
 		'settings',
 		'workingDirectory'
 	],
@@ -13,7 +14,7 @@ Class {
 PBAbstractProcess class >> application: application [
 	^ self 
 		settings: application settings 
-		workingDirectory: (PBPlatform current folderForApplication: application)
+		application: application
 ]
 
 { #category : #accessing }
@@ -23,7 +24,10 @@ PBAbstractProcess class >> platform [
 
 { #category : #accessing }
 PBAbstractProcess class >> settings: settings application: application [
-	^ self settings: settings workingDirectory: (PBPlatform current folderForApplication: application)
+	^ self 
+		settings: settings 
+		workingDirectory: (PBPlatform current folderForApplication: application)
+		debugMode: application class debugMode
 ]
 
 { #category : #accessing }
@@ -34,9 +38,28 @@ PBAbstractProcess class >> settings: settings workingDirectory: fileRef [
 		yourself
 ]
 
+{ #category : #accessing }
+PBAbstractProcess class >> settings: settings workingDirectory: fileRef debugMode: flag [
+	^ self new
+		settings: settings;
+		workingDirectory: fileRef;
+		debugMode: flag;
+		yourself
+]
+
 { #category : #hooks }
 PBAbstractProcess class >> workingDirectory [
 	^ self platform folderForApplication: PBApplication
+]
+
+{ #category : #accessing }
+PBAbstractProcess >> debugMode [
+	^ debugMode
+]
+
+{ #category : #accessing }
+PBAbstractProcess >> debugMode: anObject [
+	debugMode := anObject
 ]
 
 { #category : #accessing }
