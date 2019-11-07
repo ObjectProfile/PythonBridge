@@ -21,6 +21,11 @@ PBMsgPackPharoBroker class >> serializerClass [
 ]
 
 { #category : #private }
+PBMsgPackPharoBroker >> _primHandle: dict [
+	^ [ self primHandle: dict ] ifCurtailed: [ ^ self ]
+]
+
+{ #category : #private }
 PBMsgPackPharoBroker >> handleAnswerMessage: dict [
 	| assoc message semaphore |
 	assoc := syncRegistry at: (dict at: #__sync).
@@ -122,7 +127,7 @@ PBMsgPackPharoBroker >> start [
 		bindSocket ifNotNil: [ 
 			msgStream := PBMsgPackSocketStream on: (SocketStream on: bindSocket).
 			[ [ true ] whileTrue: [ 
-				self primHandle: msgStream next ] ] 
+				self _primHandle: msgStream next ] ] 
 					on: ConnectionClosed 
 					do: [ :err | "Do nothing." ] ] ] forkAt: Processor lowIOPriority.
 	self preventTestForkedPDestroyServer
