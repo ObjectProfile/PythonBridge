@@ -137,6 +137,8 @@ PBPharoPipenvProcess >> start [
 { #category : #'start-stop' }
 PBPharoPipenvProcess >> stop [
 	process ifNil: [ ^ self ].
-	process isRunning ifTrue: [ process terminate ].
+	[process queryExitStatus ifNil: [ process terminate ]] 
+		on: Error 
+		do: [ :e | "Do nothing."].
 	process closeAndCleanStreams
 ]
