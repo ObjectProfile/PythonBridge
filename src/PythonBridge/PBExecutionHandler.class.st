@@ -137,9 +137,12 @@ PBExecutionHandler >> registerPromiseForCommand: aCommand [
 
 { #category : #'as yet unclassified' }
 PBExecutionHandler >> safeTriggerDebugger: error [
-	[ self triggerDebugger: error ] 
-		ifCurtailed: [ 
-			^ error proceedAction: error defaultProceedAction ]
+	| sem |
+	sem := Semaphore new.
+	[ [ self triggerDebugger: error ] ensure: [ sem signal ] ]
+		on: PBPythonError fork: [ :e | PBPlatform current uiManager spawnDebuggerOnException: e ].
+	sem wait.
+	^ error proceedAction: error defaultProceedAction
 ]
 
 { #category : #'private protocol' }
