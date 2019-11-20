@@ -6,7 +6,8 @@ Class {
 
 { #category : #'as yet unclassified' }
 PBPharoUiManager >> notify: aString [
-	Warning signal: aString
+	Transcript show: aString asString.
+	super notify: aString asString.
 ]
 
 { #category : #hooks }

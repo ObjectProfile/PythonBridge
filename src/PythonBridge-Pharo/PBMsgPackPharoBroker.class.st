@@ -22,7 +22,8 @@ PBMsgPackPharoBroker class >> serializerClass [
 
 { #category : #private }
 PBMsgPackPharoBroker >> _primHandle: dict [
-	^ [ self primHandle: dict ] ifCurtailed: [ ^ self ]
+	"Remove ifCurtailed: [ ^ self ]"
+	^ self primHandle: dict
 ]
 
 { #category : #private }
@@ -128,14 +129,15 @@ PBMsgPackPharoBroker >> start [
 			msgStream := PBMsgPackSocketStream on: (SocketStream on: bindSocket).
 			[ [ true ] whileTrue: [ 
 				self _primHandle: msgStream next ] ] 
-					on: ConnectionClosed 
-					do: [ :err | "Do nothing." ] ] ] forkAt: Processor lowIOPriority.
+					on: Error 
+					do: [ :err | PBPlatform current uiManager notify: err printString ] ] 
+		] forkAt: Processor lowIOPriority.
 	self preventTestForkedPDestroyServer
 ]
 
 { #category : #'start-stop' }
 PBMsgPackPharoBroker >> stop [
-	handlerThread ifNotNil: [ handlerThread terminate ].
 	msgStream ifNotNil: [ msgStream close ].
-	serverSocket ifNotNil: [ serverSocket closeAndDestroy ]
+	serverSocket ifNotNil: [ serverSocket closeAndDestroy ].
+	handlerThread ifNotNil: [ handlerThread terminate ].
 ]
