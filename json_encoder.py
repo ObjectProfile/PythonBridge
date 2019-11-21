@@ -2,18 +2,19 @@ import json
 import io
 from PythonBridge.object_registry import registry
 
+mapper = {}
+
+def addMapping(key_type, mapping_function):
+    mapper[key_type] = mapping_function
+
 class JsonEncoder(json.JSONEncoder):
     def __init__(self, *args, **kwargs):
         json.JSONEncoder.__init__(self, *args, **kwargs)
-        self.mapper = self.default_mapper()
-
-    def default_mapper(self):
-        d = {}
-        return d
+        self.mapper = mapper
 
     def default(self, obj):
         if type(obj) in self.mapper:
-            return mapper[type(obj)](obj)
+            return self.mapper[type(obj)](obj)
         return {
             '__pyclass__': type(obj).__name__,
             '__pyid__': registry().register(obj)

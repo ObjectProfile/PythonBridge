@@ -29,6 +29,9 @@ class FlaskMsgService:
         def status_endpoint():
             return "{}"
         
+    def addMapping(self, key_type, mapping_function):
+        json_encoder.JsonSerializer.addMapping(key_type, mapping_function)
+
     def _start(self):
         try:
             self.app.run(port=self.port)

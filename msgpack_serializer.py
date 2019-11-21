@@ -12,20 +12,23 @@ primitive_types = [
     memoryview,
     bytearray]
 
+mapper = {}
+
+def addMapping(key_type, mapping_function):
+    mapper[key_type] = mapping_function
+
 class MsgPackSerializer:
     def __init__(self):
         self.primitive_types = primitive_types
-        self.mapper = self.default_mapper()
 
-    def default_mapper(self):
-        d = {}
-        return d
+    def mapper(self):
+        return mapper
     
     def default(self, obj):
         if type(obj) in self.primitive_types:
             return obj
-        if type(obj) in self.mapper:
-            return mapper[type(obj)](obj)
+        if type(obj) in self.mapper():
+            return self.mapper()[type(obj)](obj)
         return {
             '__pyclass__': type(obj).__name__,
             '__pyid__': registry().register(obj)

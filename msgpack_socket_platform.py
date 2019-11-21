@@ -19,6 +19,9 @@ class MsgPackSocketPlatform:
         self.packer = msgpack.Packer(use_bin_type=True)
         self.sync_table = {}
         self.async_handlers = {}
+    
+    def addMapping(self, key_type, mapping_function):
+        msgpack_serializer.addMapping(key_type, mapping_function)
 
     def set_handler(self, msg_type, async_handler):
         self.async_handlers[msg_type] = async_handler
