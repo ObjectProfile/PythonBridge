@@ -117,6 +117,13 @@ PBApplication class >> uniqueInstance: anObject [
 	uniqueInstance := anObject
 ]
 
+{ #category : #utils }
+PBApplication >> addMapping: pythonType to: pythonFunction [
+	self commandFactory 
+		send: (#bridge_globals asP3GI => #msg_service => #addMapping 
+						callWith: (Array with: pythonType with: pythonFunction))
+]
+
 { #category : #accessing }
 PBApplication >> commandFactory [
 	^ PBCF
