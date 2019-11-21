@@ -67,8 +67,8 @@ PBObject >> basicCreateObjectExpr: anExpression [
 	pythonVariable := varName.
 	self application commandFactory << (
 		self registerIdPyExpression: anExpression).
-	self registerObject
-	
+	self registerObject.
+	self application commandFactory send.
 ]
 
 { #category : #'as yet unclassified' }
