@@ -71,7 +71,7 @@ PBAbstractMessageBroker >> pythonUri [
 
 { #category : #private }
 PBAbstractMessageBroker >> resolveMessageFromType: aType [
-	^ PBAbstractMessage withAllSubclasses 
+	^ PBAbstractMessage allSubclasses 
 			detect: [ :cls | cls type = aType ] 
 			ifNone: [ Error signal: 'Message ' , aType , ' not understood.' ].
 ]
