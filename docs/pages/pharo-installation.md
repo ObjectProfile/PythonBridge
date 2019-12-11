@@ -151,3 +151,13 @@ PBApplication do: [
   ]
 ```
 To try this code snippet using KerasBridge replace `PBApplication` -> `Keras` and `PBCF` -> `KCF`.
+
+## Changing communication protocol
+By default, the communication protocol for the bridge is MessagePack through native sockets. To manage which protocol to use we run:
+```
+PBPlatform current setSocketMessageBroker. "Set MessagePack over socket protocol"
+```
+or
+```
+PBPlatform current setHttpMessageBroker. "Set JSON over HTTP protocol"
+```
