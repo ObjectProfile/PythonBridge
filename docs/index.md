@@ -15,7 +15,7 @@ PythonBridge gives Smalltalk developers the capability of interacting and reusin
 
 [Get started now](#getting-started){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 } [View it on GitHub](https://github.com/ObjectProfile/PythonBridge){: .btn .btn-green .fs-5 .mb-4 .mb-md-0 }
 
-<iframe width="420" height="315" src="https://youtu.be/uKSHUVZs75k" frameborder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/uKSHUVZs75k" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
 ---
 
