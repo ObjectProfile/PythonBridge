@@ -5,6 +5,7 @@ import threading
 from PythonBridge import bridge_globals, json_encoder, bridge_utils
 import sys
 import logging
+import requests
 
 class FlaskMsgService:
 
@@ -18,6 +19,8 @@ class FlaskMsgService:
         self.feed_callback = feed_callback
         self.app = Flask('PythonBridge')
         self.app.use_reloader=False
+        self.session = requests.Session()
+        self.session.trust_env = True
 
         @self.app.route("/ENQUEUE", methods=["POST"])
         def eval_expression():
@@ -56,11 +59,11 @@ class FlaskMsgService:
     def send_sync_message(self, msg):
         msg['__sync'] = bridge_utils.random_str()
         bridge_globals.logger.log("SYNC_MSG: " + json.dumps(msg))
-        conn = http.client.HTTPConnection("localhost", str(self.pharo_port))
-        conn.request("POST", "/" + msg["type"], json.dumps(msg), {
-            "Content-type": "application/json",
-            "Accept": "text/plain"})
-        response =  str(conn.getresponse().read().decode())
+        response = self.session.post(
+            'http://localhost:' + str(self.pharo_port) + '/' + msg['type'], 
+            data=json.dumps(msg),
+            headers={'content-type': 'application/json'}, 
+            allow_redirects=True).content.decode('utf-8')
         bridge_globals.logger.log("SYNC_ANS: " + response)
         return json.loads(response)
 

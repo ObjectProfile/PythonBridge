@@ -3,6 +3,7 @@ import socket
 import _thread
 import threading
 import time
+import sys
 from PythonBridge import bridge_globals, stoppable_thread, msgpack_serializer
 from uuid import uuid1
 
@@ -28,12 +29,20 @@ class MsgPackSocketPlatform:
 
     def prim_handle(self):
         try:
+            bridge_globals.logger.log("loop func")
             data = self.client.recv(2048)
-            self.unpacker.feed(data)
-            for msg in self.unpacker:
-                self.prim_handle_msg(msg)
+            if len(data) == 0:
+                time.sleep(0.005)
+            else:
+                self.unpacker.feed(data)
+                for msg in self.unpacker:
+                    bridge_globals.logger.log("prim handle message")
+                    self.prim_handle_msg(msg)
         except OSError:
-            self.thread.stop()
+            bridge_globals.logger.log("OSError: " + str(err))
+            self.stop()
+            sys.exit()
+            exit(-1)
         except Exception as err:
             bridge_globals.logger.log("ERROR message: " + str(err))
 

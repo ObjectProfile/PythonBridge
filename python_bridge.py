@@ -127,10 +127,8 @@ def run_bridge():
 
 	bridge_globals.pharoPort = args["pharo"]
 	if args["log"]:
-		print("YES LOG")
 		bridge_globals.logger = Logger()
 	else:
-		print("NO LOG")
 		bridge_globals.logger = NoLogger()
 	bridge_globals.pyPort = args["port"]
 	bridge_globals.globalCommandList = PythonCommandList()
