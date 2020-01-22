@@ -252,7 +252,7 @@ PBApplication >> waitInitialization [
 		self isPythonReady 
 				ifTrue: [ ^ self ]
 				ifFalse: [ (Delay forMilliseconds: 500) wait ] ].
-	Error signal: 'Python application initialization failed!'
+	Error signal: 'Python application initialization failed! You should try to manually install the Pipenv environment. Have a look at the section "Manually creating Pipenv environment" in https://objectprofile.github.io/PythonBridge/pages/pharo-installation'.
 	"
 	Print the result of executing the following line:
 	
