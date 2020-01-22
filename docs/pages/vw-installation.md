@@ -60,7 +60,7 @@ Currently PythonBridge version for VisualWorks is on closed beta. Therefore, we 
 dir := Dialog requestDirectoryName: 'Choose the PythonBridge parcels directory'.
 dir isEmpty ifTrue: [^ self].
 dir:= dir, (String with: Filename separator).
-#('JSONReader' 'Sport' 'Swazoo' 'VwPharoPlatform' 'P3Generator' 'PythonBridgeBundle') do: [:fn | | file |
+#('HTTP' 'JSONReader' 'Sport' 'Swazoo' 'MessagePack-All' 'VwPharoPlatform' 'P3Generator' 'PythonBridge-VwExtensions' 'PythonBridge' 'PythonBridge-VwPlatform' 'PythonBridge-VwMsgPack') do: [:fn | | file |
   file := dir, fn, '.pcl'.
   file asFilename exists ifFalse: [self error: 'Missing parcel!', file asString].
   Parcel loadParcelFrom: file asFilename
