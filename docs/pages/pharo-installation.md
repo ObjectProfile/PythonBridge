@@ -42,7 +42,7 @@ We suggest using `sudo apt-get install python3.6`, this should avoid most of the
 ### OSX
 We suggest to NOT use Homebrew, because we have experienced several issues handling the rest of the dependencies. Instead, we suggest using the installer provided in the Python webpage [https://www.python.org/downloads/release/python-368/](https://www.python.org/downloads/release/python-368/).
 
-To verify python installed correctly just run `python3 --version` and you should get `Python 3.6.8`. 
+To verify python installed correctly just run `python3 --version` and you should get `Python 3.6.8`. If you have a more recent version, then it is all fine.
 
 ## Install Pipenv
 
