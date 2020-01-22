@@ -105,7 +105,12 @@ which pipenv
 ```
 Then you must set this path in PythonBridge by running the following script in a Playground:
 ```smalltalk
-PBPipenvPyStrategy pipEnvPath: '/PATH/TO/PIPENV/BINARY'
+PBPharoPipenvProcess pipenvPath: '/PATH/TO/PIPENV/BINARY'
+```
+
+An example of this command could be:
+```Smalltalk
+PBPharoPipenvProcess pipenvPath: '/Library/Frameworks/Python.framework/Versions/3.7/bin/pipenv'
 ```
 
 ### Executing PythonBridge in Windows
