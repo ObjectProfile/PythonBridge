@@ -23,6 +23,8 @@ Depending on the internet connection, the script could take a couple of minutes 
 
 A more in depth guide is present on the official website of this project https://objectprofile.github.io/PythonBridge/.
 
+[Video installation for VisualWorks](https://vimeo.com/401190276)
+
 # Simple test
 
 Evaluating the following code in a playground should return `3`:
