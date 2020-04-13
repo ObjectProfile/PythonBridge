@@ -91,6 +91,10 @@ To create the link you need to execute the following in a shell with ADMINISTRAT
 mklink /D PythonBridge .
 ```
 
+## Update the path of Pipenv
+The method `PBVwProcess>>start` contains a hardcoded path to `pipenv.exe`. Update it to the correct path.
+
+
 ## Test your installation
 
 <!-- We have an extensive test suite and all the tests should be green. -->
