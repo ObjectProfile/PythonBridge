@@ -124,7 +124,7 @@ PBApplication do: [
 	 ].
 ```
 
-Printing this expression will give:
+Printing this expression will result in:
 ```Python
 [[ 0  1  2  3  4]
  [ 5  6  7  8  9]
