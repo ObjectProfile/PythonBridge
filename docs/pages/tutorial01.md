@@ -1,6 +1,6 @@
-# Tutorial
+# Tutorial: Using OpenCV from Smalltalk
 
-This tutorial is a gentle introduction to using PythonBridge. It is written for Pharo, however, it works equally well for VisualWorks.
+This tutorial is a gentle introduction to using PythonBridge using OpenCV. It is written for Pharo, however, it works equally well for VisualWorks.
 
 The tutorial assumes that you have PythonBridge correctly installed in your Smalltalk environment and have Python and Pipenv installed. If this is not the case, then you should follow the instruction given in https://objectprofile.github.io/PythonBridge/
 
@@ -37,3 +37,32 @@ opencv-python = "*"
 python_version = "3"
 ```
 
+You should then update your pipenv environment. To do so, you should simply execute the `pipenv update` expression. You should see something like:
+
+```
+➜  PythonBridge git:(master) ✗ pipenv update
+Running $ pipenv lock then $ pipenv sync.
+Locking [dev-packages] dependencies…
+Locking [packages] dependencies…
+✔ Success! 
+Updated Pipfile.lock (bc0ce1)!
+Installing dependencies from Pipfile.lock (bc0ce1)…
+  🐍   ▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉▉ 14/14 — 00:00:10
+To activate this project's virtualenv, run pipenv shell.
+Alternatively, run a command inside the virtualenv with pipenv run.
+All dependencies are now up-to-date!
+```
+
+You can now close your terminal and stay within the confortable world of Smalltalk. We will not have to use the terminal anymore.
+
+## Your first OpenCV script
+
+We will first do some scripting to illustrate the essence of PythonBridge. We will then move into defining a proper application, without having the exposition to Python.
+
+This tutorial is highly inspired from the [OpenCV online tutorial](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_gui/py_image_display/py_image_display.html).
+
+```Smalltalk
+PBApplication start.
+ref := 'c:\Users\infan\Pictures\pic.png' asFilename.
+PBCF sendAndWait: #cv2 asP3GI import.
+```
