@@ -35,7 +35,8 @@ opencv-python = "*"
 python_version = "3"
 ```
 
-You should then update your pipenv environment. To do so, you should simply execute the `pipenv update` expression. You should see something like:
+Note that you should leave the packages `flask`, `requests`, `msgpack` as they are used by the PythonBridge itself to operate.
+Now that we edited the `Pipenv` file, you should then update your pipenv environment. To do so, simply execute the `pipenv update` expression. You should see something like:
 
 ```
 ➜  PythonBridge git:(master) ✗ pipenv update
