@@ -1,8 +1,6 @@
 # Tutorial: Using OpenCV from Smalltalk
 
-This tutorial is a gentle introduction to using PythonBridge using OpenCV. It is written for Pharo, however, it works equally well for VisualWorks.
-
-The tutorial assumes that you have PythonBridge correctly installed in your Smalltalk environment and have Python and Pipenv installed. If this is not the case, then you should follow the instruction given in https://objectprofile.github.io/PythonBridge/
+This tutorial is a gentle introduction to PythonBridge. We use OpenCV as the running example. The tutorial assumes that you have PythonBridge correctly installed in your Smalltalk environment and have Python and Pipenv installed. If this is not the case, then you should follow the instruction given in https://objectprofile.github.io/PythonBridge/
 
 ## How do I know if Python and Pipenv are correctly installed?
 If you have PythonBridge installed, and you do not know if you Python environment is correctly setup, the easy way to check this is evaluate the following expression:
