@@ -65,7 +65,7 @@ PythonBridge needs to launch a Python virtual machine and establish a communicat
 PBApplication start.
 ```
 
-Starting the Python vm may take a few seconds in some cases. The python code we will execute is the following:
+Starting the Python Virtual Machine (VM) may take a few seconds in some cases. The python code we will execute is the following:
 
 ```Python
 import cv2
@@ -89,7 +89,7 @@ ref := '/Users/alexandrebergel/Desktop/iss.jpg'.
 img := PBCF sendAndWait: (#cv2 asP3GI => #imread callWith: (Array with: filename)).
 ```
 
-If you print (in Smalltalk), the variable `img` you should see `a ndarray (Proxy)`. OpenCV handle the picture as a numpy structure. Within Smalltalk, we only see a proxy as the image is living within the Python World. Note that we are using the `sendAndWait:` instruction as we wait for the completion of the Python import.
+If you print (in Smalltalk), the variable `img` you should see `a ndarray (Proxy)`. OpenCV handles the picture as a numpy structure. Within Smalltalk, we only see a proxy since the image is living within the Python World. Note that we are using the `sendAndWait:` instruction as we wait for the completion of the Python import.
 
 We can now open the image using:
 
@@ -106,7 +106,7 @@ We can now close the Python connection:
 PBApplication stop.
 ```
 
-In theory, there should not be a need to shutdown the Python VM, however, due to a limitation of OpenCV in the way it handles the windows, it is simpler to do so.
+In theory, we should not need to shutdown the Python VM, however, due to a limitation of OpenCV in the way it handles the windows, it is simpler to do so.
 
 ## Applying transformation to an image
 
@@ -130,7 +130,7 @@ PBApplication stop.
 
 ## Turning your script into an application
 
-Obviously, you do not wish to directly face the Python scripting instruction. You can easily turn the script into a small class, titled `ImageViewer`:
+Obviously, you do not wish to directly face the Python scripting instruction. You can easily turn the script into a small class, titled `ImageViewer`, to completely hide the Python instructions:
 
 ```Smalltalk
 Object subclass: #ImageViewer
@@ -156,9 +156,9 @@ ImageViewer>>show
 	PBCF send: (#cv2 asP3GI => #imshow callWith: (Array with: 'image' with: img)).
 	PBCF send: (#cv2 asP3GI => #waitKey callWith: (Array with: 0)).
 	PBCF send: (#cv2 asP3GI => #destroyAllWindows callWith: (Array new)).
-	```
+```
  
- And to close the image:
+And to close the image:
 ```Smalltalk
 ImageViewer>>delete
 	PBApplication stop
