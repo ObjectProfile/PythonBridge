@@ -59,10 +59,121 @@ You can now close your terminal and stay within the confortable world of Smallta
 
 We will first do some scripting to illustrate the essence of PythonBridge. We will then move into defining a proper application, without having the exposition to Python.
 
-This tutorial is highly inspired from the [OpenCV online tutorial](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_gui/py_image_display/py_image_display.html).
+This tutorial will simply open an image using OpenCV. It is highly inspired from the [OpenCV online tutorial](https://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_gui/py_image_display/py_image_display.html).
+
+PythonBridge needs to launch a Python virtual machine and establish a communication channel to it. This is simply done using: 
+```Smalltalk
+PBApplication start.
+```
+
+Starting the Python vm may take a few seconds in some cases. The python code we will execute is the following:
+
+```Python
+import cv2
+img = cv2.imread('/Users/alexandrebergel/Desktop/iss.jpg',0)
+cv2.imshow('image',img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+```
+
+I am here assuming spectacular picture from the [ISS](https://www.esa.int/Science_Exploration/Human_and_Robotic_Exploration/International_Space_Station/Where_is_the_International_Space_Station) is available on my desktop, under the name `iss.jpg`.
+
+We first need to import OpenCV, using: 
+```Smalltalk
+PBCF sendAndWait: #cv2 asP3GI import.
+```
+
+We load the picture using OpenCV:
+
+```Smalltalk
+ref := '/Users/alexandrebergel/Desktop/iss.jpg'.
+img := PBCF sendAndWait: (#cv2 asP3GI => #imread callWith: (Array with: filename)).
+```
+
+If you print (in Smalltalk), the variable `img` you should see `a ndarray (Proxy)`. OpenCV handle the picture as a numpy structure. Within Smalltalk, we only see a proxy as the image is living within the Python World. Note that we are using the `sendAndWait:` instruction as we wait for the completion of the Python import.
+
+We can now open the image using:
+
+```Smalltalk
+PBCF send: (#cv2 asP3GI => #imshow callWith: (Array with: 'image' with: img)).
+PBCF send: (#cv2 asP3GI => #waitKey callWith: (Array with: 0)).
+PBCF send: (#cv2 asP3GI => #destroyAllWindows callWith: (Array new)).
+```
+
+Note that we simply use `send:` to send the Python commands, as there is no need to wait for their completion.
+
+We can now close the Python connection:
+```Smalltalk
+PBApplication stop.
+```
+
+In theory, there should not be a need to shutdown the Python VM, however, due to a limitation of OpenCV in the way it handles the windows, it is simpler to do so.
+
+## Applying transformation to an image
+
+We can apply the OpenCV `cvtColor` [operation](https://docs.opencv.org/2.4/modules/imgproc/doc/miscellaneous_transformations.html#cvtcolor). We will turn a colored picture into gray using an adequate [transformation](https://docs.opencv.org/master/de/d25/imgproc_color_conversions.html#color_convert_rgb_gray).
+
+The complete script is:
 
 ```Smalltalk
 PBApplication start.
-ref := 'c:\Users\infan\Pictures\pic.png' asFilename.
+filename := '/Users/alexandrebergel/Desktop/iss.jpg'.
 PBCF sendAndWait: #cv2 asP3GI import.
+img := PBCF sendAndWait: (#cv2 asP3GI => #imread callWith: (Array with: filename)).
+gray := PBCF sendAndWait: (#cv2 asP3GI => #cvtColor callWith: (Array with: img with: #cv2 asP3GI => #COLOR_BGR2GRAY)).
+
+PBCF send: (#cv2 asP3GI => #imshow callWith: (Array with: 'image' with: gray)).
+PBCF send: (#cv2 asP3GI => #waitKey callWith: (Array with: 0)).
+PBCF send: (#cv2 asP3GI => #destroyAllWindows callWith: (Array new)).
+
+PBApplication stop.
 ```
+
+## Turning your script into an application
+
+Obviously, you do not wish to directly face the Python scripting instruction. You can easily turn the script into a small class, titled `ImageViewer`:
+
+```Smalltalk
+Object subclass: #ImageViewer
+	instanceVariableNames: 'filename'
+	classVariableNames: ''
+	package: 'OpenCVExample'
+```
+
+An accessor to set the image filename:
+```Smalltalk
+ImageViewer>>filename: aString
+ filename := aString
+```
+
+The `show` methods to display the image:
+
+```Smalltalk
+ImageViewer>>show
+	| img |
+	PBApplication start.
+	PBCF sendAndWait: #cv2 asP3GI import.
+	img := PBCF sendAndWait: (#cv2 asP3GI => #imread callWith: (Array with: filename)).
+	PBCF send: (#cv2 asP3GI => #imshow callWith: (Array with: 'image' with: img)).
+	PBCF send: (#cv2 asP3GI => #waitKey callWith: (Array with: 0)).
+	PBCF send: (#cv2 asP3GI => #destroyAllWindows callWith: (Array new)).
+	```
+ 
+ And to close the image:
+```Smalltalk
+ImageViewer>>delete
+	PBApplication stop
+```
+ 
+You can now simply execute the following Smalltalk script, line by line:
+```Smalltalk
+v := ImageViewer new filename: '/Users/alexandrebergel/Desktop/iss.jpg'.
+v show.
+v delete
+```
+
+## What have we seen?
+
+This short tutorial covers the basic functionalities of our bridge. We used an external Python modules within Smalltalk, and called a few Python functions within Pharo. We then wrapped our application into Smalltalk code to completely hide the Python code construction.
+
+Have fun!
