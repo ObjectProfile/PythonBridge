@@ -1,7 +1,7 @@
 ---
 layout: default
-permalink: /pages/vw-installation
-title: Visual Works Installation
+permalink: /pages/tutorial01
+title: Tutorial: Using OpenCV from Smalltalk
 nav_order: 3
 ---
 
