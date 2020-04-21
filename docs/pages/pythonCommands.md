@@ -119,7 +119,7 @@ PBApplication do: [
     
     "The variable s points to a Smalltalk wrapper of the Python object"
     "We simply execute the Python expression str(s) to obtain a string that represents the numpy object"
-	PBCF << (P3GCall target: #str asP3GI positionalArguments: { s }). 
+	PBCF << (P3GCall target: #str asP3GI positionalArguments: (Array with: s )). 
 	PBCF send waitForValue.
 	 ].
 ```
