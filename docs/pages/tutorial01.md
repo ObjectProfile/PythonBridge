@@ -1,4 +1,18 @@
+---
+layout: default
+permalink: /pages/vw-installation
+title: Visual Works Installation
+nav_order: 3
+---
+
 # Tutorial: Using OpenCV from Smalltalk
+{: .no_toc }
+
+## Table of contents
+{: .no_toc .text-delta }
+
+1. TOC
+{:toc}
 
 This tutorial is a gentle introduction to PythonBridge. We use OpenCV as the running example. The tutorial assumes that you have PythonBridge correctly installed in your Smalltalk environment and have Python and Pipenv installed. If this is not the case, then you should follow the instruction given in https://objectprofile.github.io/PythonBridge/
 
