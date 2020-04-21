@@ -2,7 +2,7 @@
 layout: default
 permalink: /pages/tutorial01
 title: Tutorial: Using OpenCV from Smalltalk
-nav_order: 3
+nav_order: 5
 ---
 
 # Tutorial: Using OpenCV from Smalltalk
