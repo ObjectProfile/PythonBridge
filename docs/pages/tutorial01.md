@@ -14,7 +14,7 @@ nav_order: 3
 1. TOC
 {:toc}
 
-This tutorial is a gentle introduction to PythonBridge. We use OpenCV as the running example. The tutorial assumes that you have PythonBridge correctly installed in your Smalltalk environment and have Python and Pipenv installed. If this is not the case, then you should follow the instruction given in https://objectprofile.github.io/PythonBridge/
+This tutorial is a gentle introduction to PythonBridge. We use OpenCV as the running example. The tutorial assumes that you have PythonBridge correctly installed in your Smalltalk environment and have Python and Pipenv installed. If this is not the case, then you should follow the instruction given in [https://objectprofile.github.io/PythonBridge/](https://objectprofile.github.io/PythonBridge/).
 
 <iframe width="560" height="315" src="https://vimeo.com/409987849" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
 
