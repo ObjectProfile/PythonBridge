@@ -25,6 +25,7 @@ BaselineOfPythonBridge >> baseline: spec [
 			spec
 				package: 'PythonBridge' with: [ spec requires: #('OSSubprocess' 'Python3Generator') ];
 				package: 'PythonBridge-Pharo' with: [ spec requires: #('PythonBridge' 'MessagePack') ];
-				package: 'PythonBridge-Bootstrap' with: [ spec requires: 'PythonBridge' ].
+				package: 'PythonBridge-Bootstrap' with: [ spec requires: 'PythonBridge' ];
+				package: 'PythonPlayground' with: [ spec requires: 'PythonBridge' ].
 			 ]
 ]

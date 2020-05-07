@@ -26,6 +26,8 @@ matrix:
   exclude:
     - os: osx
       smalltalk: Pharo64-7.0
+  allow_failures:
+    - smalltalk: Pharo-7.0
   include:
     - script: pipenv run python -m unittest discover tests
       os: osx
