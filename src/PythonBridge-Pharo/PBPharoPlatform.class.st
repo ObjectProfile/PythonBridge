@@ -56,9 +56,9 @@ PBPharoPlatform >> ensureApplicationSymlinks: application [
 	| appFolder |
 
 	appFolder := self runtimeFolderForApplication: application.
-	appFolder exists ifFalse:
-		[ self ensureFolderSymlinkFor: appFolder.
-		self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder ]
+	appFolder exists ifTrue: [ ^ self ].
+	self ensureFolderSymlinkFor: (self folderForApplication: application).
+	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder.
 ]
 
 { #category : #private }
