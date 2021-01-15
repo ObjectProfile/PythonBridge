@@ -61,7 +61,7 @@ PBApplication class >> platform [
 
 { #category : #'python hooks file' }
 PBApplication class >> repositoryFileReference [
-	^ self platform folderForApplication: self
+	^ self platform runtimeFolderForApplication: self
 ]
 
 { #category : #instructions }
@@ -71,6 +71,13 @@ PBApplication class >> resetUniqueInstance [
 			on: Error 
 			do: [ PBPlatform current uiManager inform: 'Error on reseting unique instance.' ]. ].
 	uniqueInstance := nil
+]
+
+{ #category : #accessing }
+PBApplication class >> runtimeDirectory [
+	"This is the directory basename where the runtime files are located"
+
+	^ 'PythonBridge'
 ]
 
 { #category : #instructions }
@@ -213,6 +220,13 @@ PBApplication >> processHandler [
 { #category : #'as yet unclassified' }
 PBApplication >> registerObject: aPythonObject [
 	self executionHandler registerObject: aPythonObject
+]
+
+{ #category : #accessing }
+PBApplication >> runtimeDirectory [
+	"This is the directory basename where the runtime files are located"
+
+	^ self class runtimeDirectory
 ]
 
 { #category : #instructions }

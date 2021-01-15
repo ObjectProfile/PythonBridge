@@ -26,7 +26,7 @@ PBAbstractProcess class >> platform [
 PBAbstractProcess class >> settings: settings application: application [
 	^ self 
 		settings: settings 
-		workingDirectory: (PBPlatform current folderForApplication: application)
+		workingDirectory: (PBPlatform current runtimeFolderForApplication: application)
 		debugMode: application class debugMode
 ]
 
@@ -49,7 +49,7 @@ PBAbstractProcess class >> settings: settings workingDirectory: fileRef debugMod
 
 { #category : #hooks }
 PBAbstractProcess class >> workingDirectory [
-	^ self platform folderForApplication: PBApplication
+	^ self platform runtimeFolderForApplication: PBApplication
 ]
 
 { #category : #accessing }

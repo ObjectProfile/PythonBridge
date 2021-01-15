@@ -54,12 +54,14 @@ PBPharoPlatform >> defaultMessageBrokerClass [
 { #category : #hooks }
 PBPharoPlatform >> ensureApplicationSymlinks: application [
 	| appFolder |
-	appFolder := self folderForApplication: application.
-	self ensureFolderSymlinkFor: appFolder.
-	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder
+
+	appFolder := self runtimeFolderForApplication: application.
+	appFolder exists ifFalse:
+		[ self ensureFolderSymlinkFor: appFolder.
+		self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder ]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 PBPharoPlatform >> ensureEnvironmentForApp: anApplication [
 	self ensureApplicationSymlinks: anApplication.
 	self installEnvironmentForApp: anApplication.
@@ -99,7 +101,7 @@ PBPharoPlatform >> forceInstallEnvironmentForApp: application [
 				command: '/bin/bash';
 				addAllEnvVariablesFromParentWithoutOverride;
 				arguments: (Array 
-					with: ((self folderForApplication: application) / 'install_env.sh') fullName);
+					with: ((self runtimeFolderForApplication: application) / 'install_env.sh') fullName);
 				terminateOnShutdown;
 				runAndWait.
 	(proc exitStatus = 0 or: [ proc exitStatus < -1000 or: [ proc exitStatus > SmallInteger maxVal ] ]) ifFalse: [ 
@@ -109,7 +111,7 @@ PBPharoPlatform >> forceInstallEnvironmentForApp: application [
 { #category : #utils }
 PBPharoPlatform >> installEnvironmentForApp: application [
 	| folder |
-	folder := self folderForApplication: application.
+	folder := self runtimeFolderForApplication: application.
 	(folder / '.venv') exists ifFalse: [ 
 		self forceInstallEnvironmentForApp: application ]
 ]
@@ -117,6 +119,20 @@ PBPharoPlatform >> installEnvironmentForApp: application [
 { #category : #hooks }
 PBPharoPlatform >> newRandomName [
 	^ 'pb' , UUID new asString36
+]
+
+{ #category : #accessing }
+PBPharoPlatform >> runtimeFolder [
+	"Answer the directory where the PythonBridge runtime files are located"
+
+	^ FileLocator imageDirectory / 'PythonBridge'
+]
+
+{ #category : #accessing }
+PBPharoPlatform >> runtimeFolderForApplication: application [
+	"Answer the directory where the PythonBridge runtime files are located"
+
+	^ FileLocator imageDirectory / application runtimeDirectory
 ]
 
 { #category : #private }
