@@ -3,7 +3,9 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'pharoSocketAddress',
-		'pythonSocketAddress'
+		'pythonSocketAddress',
+		'pipenvPath',
+		'workingDirectory'
 	],
 	#category : #'PythonBridge-Platform'
 }
@@ -27,6 +29,19 @@ PBSettings >> pharoSocketAddress: anObject [
 ]
 
 { #category : #accessing }
+PBSettings >> pipenvPath [
+	^ pipenvPath
+]
+
+{ #category : #accessing }
+PBSettings >> pipenvPath: aFileReference [
+
+	pipenvPath := aFileReference
+	pipenvPath ifNil: [ ^ self ].
+	self assert: [ pipenvPath exists ].
+]
+
+{ #category : #accessing }
 PBSettings >> pythonSocketAddress [
 	^ pythonSocketAddress
 ]
@@ -34,4 +49,17 @@ PBSettings >> pythonSocketAddress [
 { #category : #accessing }
 PBSettings >> pythonSocketAddress: anObject [
 	pythonSocketAddress := anObject
+]
+
+{ #category : #accessing }
+PBSettings >> workingDirectory [
+	^ workingDirectory
+]
+
+{ #category : #accessing }
+PBSettings >> workingDirectory: aFileReference [
+
+	workingDirectory := aFileReference.
+	workingDirectory ifNil: [ ^ self ].
+	self assert: [ workingDirectory exists ].
 ]
