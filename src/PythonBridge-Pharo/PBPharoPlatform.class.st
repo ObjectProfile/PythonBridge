@@ -81,16 +81,6 @@ PBPharoPlatform >> ensureApplicationDirectory: application [
 	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder.
 ]
 
-{ #category : #hooks }
-PBPharoPlatform >> ensureApplicationSymlinks: application [
-	| appFolder |
-
-	appFolder := self runtimeFolderForApplication: application.
-	(appFolder / 'PythonBridge') exists ifTrue: [ ^ self ].
-	self ensureFolderSymlinkFor: (self folderForApplication: application).
-	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder.
-]
-
 { #category : #private }
 PBPharoPlatform >> ensureEnvironmentForApp: anApplication [
 
