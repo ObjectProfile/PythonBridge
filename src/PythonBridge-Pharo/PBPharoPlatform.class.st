@@ -40,7 +40,7 @@ PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 	| srcDir |
 
 	srcDir := FileLocator imageDirectory / 'PythonBridge'.
-	srcDir exists ifFalse: 
+	(srcDir exists and: [ srcDir ~= appFolder ]) ifFalse: 
 		[ srcDir := self folderForApplication: application ].
 	srcDir exists ifFalse: 
 		[ self error: 'Unable to locate PythonBridge runtime files' ].
@@ -76,6 +76,7 @@ PBPharoPlatform >> ensureApplicationDirectory: application [
 
 	appFolder := self runtimeFolderForApplication: application.
 	(appFolder / 'PythonBridge') exists ifTrue: [ ^ self ].
+	appFolder ensureCreateDirectory.
 	self copyApplicationTo: appFolder application: application.
 	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder.
 ]
