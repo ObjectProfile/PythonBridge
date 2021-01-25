@@ -38,3 +38,9 @@ PBPythonHandler >> start [
 PBPythonHandler >> stop [
 	^ process stop
 ]
+
+{ #category : #accessing }
+PBPythonHandler >> workingDirectory: aFileReference [
+
+	process workingDirectory: aFileReference
+]

@@ -34,6 +34,25 @@ PBPharoPlatform class >> weakRegistryClass [
 	^ PBPharoWeakRegistry
 ]
 
+{ #category : #private }
+PBPharoPlatform >> copyApplicationTo: appFolder application: application [
+	"Copy the PythonBridge runtime environment to the specified folder"
+	| srcDir |
+
+	srcDir := FileLocator imageDirectory / 'PythonBridge'.
+	srcDir exists ifFalse: 
+		[ srcDir := self folderForApplication: application ].
+	srcDir exists ifFalse: 
+		[ self error: 'Unable to locate PythonBridge runtime files' ].
+	srcDir children do: [ :child |
+		"#copyAllTo: doesn't handle symbolic links.
+		This makes assumptions about the folder structure to avoid copying the symlink.
+		Don't copy symlinks for now and create it later"
+		child isSymlink ifFalse:
+			[ child copyAllTo: appFolder / child basename ] ].
+
+]
+
 { #category : #'private - symlinks' }
 PBPharoPlatform >> createSymlinkFor: originalFile on: targetFile [
 	OSSUnixSubprocess new
@@ -52,18 +71,29 @@ PBPharoPlatform >> defaultMessageBrokerClass [
 ]
 
 { #category : #hooks }
+PBPharoPlatform >> ensureApplicationDirectory: application [
+	| appFolder |
+
+	appFolder := self runtimeFolderForApplication: application.
+	(appFolder / 'PythonBridge') exists ifTrue: [ ^ self ].
+	self copyApplicationTo: appFolder application: application.
+	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder.
+]
+
+{ #category : #hooks }
 PBPharoPlatform >> ensureApplicationSymlinks: application [
 	| appFolder |
 
 	appFolder := self runtimeFolderForApplication: application.
-	appFolder exists ifTrue: [ ^ self ].
+	(appFolder / 'PythonBridge') exists ifTrue: [ ^ self ].
 	self ensureFolderSymlinkFor: (self folderForApplication: application).
 	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder.
 ]
 
 { #category : #private }
 PBPharoPlatform >> ensureEnvironmentForApp: anApplication [
-	self ensureApplicationSymlinks: anApplication.
+
+	self ensureApplicationDirectory: anApplication.
 	self installEnvironmentForApp: anApplication.
 ]
 
@@ -80,7 +110,7 @@ PBPharoPlatform >> ensurePBridge: pbridgeFolder symlinkIn: aFolder [
 	| symlinkRef |
 	symlinkRef := aFolder / 'PythonBridge'.
 	symlinkRef exists ifFalse: [ 
-		self createSymlinkFor: pbridgeFolder on: symlinkRef ].
+		self createSymlinkFor: aFolder on: symlinkRef ].
 ]
 
 { #category : #utils }
@@ -137,7 +167,8 @@ PBPharoPlatform >> runtimeFolder [
 PBPharoPlatform >> runtimeFolderForApplication: application [
 	"Answer the directory where the PythonBridge runtime files are located"
 
-	^ FileLocator imageDirectory / application runtimeDirectory
+	^ application settings workingDirectory ifNil:
+		[ FileLocator imageDirectory / application runtimeDirectory ]
 ]
 
 { #category : #private }

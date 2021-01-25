@@ -67,19 +67,20 @@ PBCommandQueue >> finishCommand: aCommand [
 { #category : #accessing }
 PBCommandQueue >> finishCommandId: id [
 	| commandIndex |
-	self currentCommand ifNotNil: [ :command |
-		command id = id 
-			ifTrue: [ 
-				self cleanIndex: currentIndex.
-				currentIndex := currentIndex + 1.
-				^ true ] ].
-	commandIndex := innerCollection detectIndex: [ :command | command id = id ].
-	commandIndex > currentIndex 
-		ifTrue: [ 
-			currentIndex := commandIndex + 1.
-			self log: (PBErrorLog message: 'Out of sync command queue. Pharo is delayed.') ]
-		ifFalse: [ 
-			self log: (PBErrorLog message: 'Out of sync command queue. Python is delayed.') ].
+	self currentCommand
+		ifNotNil: [ :command | 
+			command id = id
+				ifTrue: [ self cleanIndex: currentIndex.
+					currentIndex := currentIndex + 1.
+					^ true ] ].
+	commandIndex := innerCollection
+		detectIndex: [ :command | command id = id ].
+	commandIndex > currentIndex
+		ifTrue: [ currentIndex := commandIndex + 1.
+			self
+				trace: (PBErrorLog message: 'Out of sync command queue. Pharo is delayed.') ]
+		ifFalse: [ self
+				log: (PBErrorLog message: 'Out of sync command queue. Python is delayed.') ].
 	self cleanIndex: commandIndex.
 	^ false
 ]
