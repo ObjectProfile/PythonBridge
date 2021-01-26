@@ -37,19 +37,34 @@ PBPharoPlatform class >> weakRegistryClass [
 { #category : #private }
 PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 	"Copy the PythonBridge runtime environment to the specified folder"
-	| srcDir |
+	| srcDir cpCommand proc pbSymLink |
 
 	srcDir := FileLocator imageDirectory / 'PythonBridge'.
 	(srcDir exists and: [ srcDir ~= appFolder ]) ifFalse: 
 		[ srcDir := self folderForApplication: application ].
 	srcDir exists ifFalse: 
 		[ self error: 'Unable to locate PythonBridge runtime files' ].
-	srcDir children do: [ :child |
-		"#copyAllTo: doesn't handle symbolic links.
-		This makes assumptions about the folder structure to avoid copying the symlink.
-		Don't copy symlinks for now and create it later"
-		child isSymlink ifFalse:
-			[ child copyAllTo: appFolder / child basename ] ].
+
+	"Copy the runtime directory"
+	cpCommand := String streamContents: [ :stream |
+		stream
+			<< 'cp -ar ';
+			<< srcDir fullName;
+			<< '/* ';
+			<< appFolder fullName;
+			<< '/' ].
+	proc := OSSUnixSubprocess new 
+		shellCommand: cpCommand;
+		runAndWait.
+	proc isSuccess ifFalse:
+		[ self error: 'Unable to install PythonBridge runtime' ].
+	"Remove the existing symlink, which probably points to the source folder.
+	FileReference>>delete doesn't handle symbolic links, so use the lower layer"
+	pbSymLink := (appFolder / 'PythonBridge') resolve.
+	pbSymLink exists ifTrue: 
+		[ pbSymLink isSymlink 
+			ifTrue: [ self removeFile: pbSymLink ]
+			ifFalse: [ self error: 'PythonBridge should be a symbolic link' ] ].
 
 ]
 
@@ -146,6 +161,20 @@ PBPharoPlatform >> installEnvironmentForApp: application [
 { #category : #hooks }
 PBPharoPlatform >> newRandomName [
 	^ 'pb' , UUID new asString36
+]
+
+{ #category : #'private - symlinks' }
+PBPharoPlatform >> removeFile: aFileReference [
+	"Use the OS rm command to remove the specified file.
+	Required since the file system primitive doesn't seem to handle symbolic links"
+	| proc |
+
+	proc := OSSUnixSubprocess new
+		command: 'rm';
+		arguments: { aFileReference fullName };
+		runAndWait.
+	proc isSuccess ifFalse: 
+		[ self error: 'Unable to remove: ', aFileReference fullName ]
 ]
 
 { #category : #accessing }
