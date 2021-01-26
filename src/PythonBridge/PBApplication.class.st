@@ -91,6 +91,7 @@ PBApplication class >> start [
 	self isRunning ifTrue: [ Error signal: 'Keras already running.' ].
 	self stop.
 	uniqueInstance := self new.
+	PBCF reset.
 	uniqueInstance commandFactory reset.
 	uniqueInstance start
 ]
@@ -248,10 +249,9 @@ PBApplication >> settings: anObject [
 { #category : #accessing }
 PBApplication >> start [
 	self handlers do: #start.
-	self commandFactory reset.
 	self waitInitialization.
 	self postInitialization.
-	self commandFactory send.
+	self newCommandFactory send.
 ]
 
 { #category : #'as yet unclassified' }
