@@ -36,7 +36,7 @@ PBSettings >> pipenvPath [
 { #category : #accessing }
 PBSettings >> pipenvPath: aFileReference [
 
-	pipenvPath := aFileReference
+	pipenvPath := aFileReference.
 	pipenvPath ifNil: [ ^ self ].
 	self assert: [ pipenvPath exists ].
 ]
