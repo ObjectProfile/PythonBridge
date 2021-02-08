@@ -30,14 +30,17 @@ PBPharoPipenvProcess class >> platform [
 
 { #category : #initialization }
 PBPharoPipenvProcess class >> resolvePipenvPath [
-	^ (OSSUnixSubprocess new
+	| path |
+
+	(OSSUnixSubprocess new
 				command: '/usr/bin/which';
-				arguments: (Array with: 'pipenv');
+				arguments: (Array with: 'pipenvno');
 				addAllEnvVariablesFromParentWithoutOverride;
 				redirectStdout;
 				terminateOnShutdown;
-				runAndWaitOnExitDo: [ :command :outString | ^ outString trim ]) 
-					ifEmpty: [ self signalPipenvNotFound ]
+				runAndWaitOnExitDo: [ :command :outString | path := outString trim ]).
+	path ifEmpty: [ self signalPipenvNotFound ].
+	^ path
 ]
 
 { #category : #initialization }
