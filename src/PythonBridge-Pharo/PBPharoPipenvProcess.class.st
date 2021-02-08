@@ -34,7 +34,7 @@ PBPharoPipenvProcess class >> resolvePipenvPath [
 
 	(OSSUnixSubprocess new
 				command: '/usr/bin/which';
-				arguments: (Array with: 'pipenvno');
+				arguments: (Array with: 'pipenv');
 				addAllEnvVariablesFromParentWithoutOverride;
 				redirectStdout;
 				terminateOnShutdown;
