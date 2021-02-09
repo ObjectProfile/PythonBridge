@@ -80,7 +80,7 @@ PBCommandQueue >> finishCommandId: id [
 			self
 				trace: (PBErrorLog message: 'Out of sync command queue. Pharo is delayed.') ]
 		ifFalse: [ self
-				log: (PBErrorLog message: 'Out of sync command queue. Python is delayed.') ].
+				trace: (PBErrorLog message: 'Out of sync command queue. Python is delayed.') ].
 	self cleanIndex: commandIndex.
 	^ false
 ]
