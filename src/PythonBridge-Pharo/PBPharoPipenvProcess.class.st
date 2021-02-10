@@ -19,8 +19,8 @@ PBPharoPipenvProcess class >> pipenvPath [
 ]
 
 { #category : #initialization }
-PBPharoPipenvProcess class >> pipenvPath: aString [
-	PipenvPath := aString
+PBPharoPipenvProcess class >> pipenvPath: aFileReference [
+	PipenvPath := aFileReference
 ]
 
 { #category : #accessing }
@@ -40,7 +40,7 @@ PBPharoPipenvProcess class >> resolvePipenvPath [
 				terminateOnShutdown;
 				runAndWaitOnExitDo: [ :command :outString | path := outString trim ]).
 	path ifEmpty: [ self signalPipenvNotFound ].
-	^ path
+	^ path asFileReference
 ]
 
 { #category : #initialization }
@@ -85,8 +85,10 @@ PBPharoPipenvProcess >> isRunning [
 { #category : #private }
 PBPharoPipenvProcess >> newProcess [
 	| newProcess |
+
 	newProcess := OSSUnixSubprocess new
-				command: self class pipenvPath;
+				command: (settings pipenvPath ifNil:
+					[ self class pipenvPath ]) fullName;
 				arguments: self processArguments;
 				workingDirectory: self workingDirectory fullName;
 				addAllEnvVariablesFromParentWithoutOverride;
