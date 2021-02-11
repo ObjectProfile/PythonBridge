@@ -13,9 +13,9 @@ Class {
 
 { #category : #initialization }
 PBPharoPipenvProcess class >> pipenvPath [
-	^ PipenvPath isEmptyOrNil 
-			ifTrue: [ PipenvPath := self resolvePipenvPath ]
-			ifFalse: [ PipenvPath ]
+	^ PipenvPath 
+			ifNil: [ PipenvPath := self resolvePipenvPath ]
+			ifNotNil: [ PipenvPath ]
 ]
 
 { #category : #initialization }
@@ -26,6 +26,13 @@ PBPharoPipenvProcess class >> pipenvPath: aFileReference [
 { #category : #accessing }
 PBPharoPipenvProcess class >> platform [
 	^ PBPharoPlatform current
+]
+
+{ #category : #initialization }
+PBPharoPipenvProcess class >> reset [ 
+	<script>
+
+	PipenvPath := nil.
 ]
 
 { #category : #initialization }
@@ -92,8 +99,8 @@ PBPharoPipenvProcess >> newProcess [
 				arguments: self processArguments;
 				workingDirectory: self workingDirectory fullName;
 				addAllEnvVariablesFromParentWithoutOverride;
-				redirectStdout;
-				redirectStderr;
+				"redirectStdout;
+				redirectStderr;"
 				terminateOnShutdown;
 				yourself.
 	environmentVariables associationsDo: [ :assoc |

@@ -32,11 +32,10 @@ PBProcessTest >> processClass [
 
 { #category : #running }
 PBProcessTest >> setUp [
+
 	super setUp.
-	process := self processClass
-		settings: self defaultSettings
-		workingDirectory: self processClass workingDirectory.
-	process pythonMainFile: self defaultTmpFile
+	process := self processClass application: PBApplication new.
+	process pythonMainFile: (process workingDirectory resolve resolve: self defaultTmpFile)
 ]
 
 { #category : #running }

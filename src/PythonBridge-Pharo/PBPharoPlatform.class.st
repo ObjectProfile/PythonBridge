@@ -131,16 +131,17 @@ PBPharoPlatform >> folderForApplication: application [
 
 { #category : #utils }
 PBPharoPlatform >> forceInstallEnvironmentForApp: application [
-	| proc |
-	self assert: PBPharoPipenvProcess pipenvPath isEmptyOrNil not description: 'pipenv is apparently not accessible at a standard location. Please, have a look at the Troubleshooting section of https://objectprofile.github.io/PythonBridge/pages/pharo-installation'.
+	| proc pipenvPath |
+
+	pipenvPath := self pipenvForApplication: application.
+	self assert: pipenvPath exists description: 'pipenv is apparently not accessible at a standard location. Please, have a look at the Troubleshooting section of https://objectprofile.github.io/PythonBridge/pages/pharo-installation'.
 	proc := OSSUnixSubprocess new
 				command: '/bin/bash';
 				workingDirectory: (self runtimeFolderForApplication: application) fullName;
 				addAllEnvVariablesFromParentWithoutOverride.
 	proc
 		environmentAt: 'PATH'
-		put: (PBPharoPipenvProcess pipenvPath
-				asFileReference parent fullName),
+		put: pipenvPath parent fullName,
 				':', (proc envVariables at: 'PATH').
 	proc
 		arguments: (Array 
@@ -161,6 +162,14 @@ PBPharoPlatform >> installEnvironmentForApp: application [
 { #category : #hooks }
 PBPharoPlatform >> newRandomName [
 	^ 'pb' , UUID new asString36
+]
+
+{ #category : #'as yet unclassified' }
+PBPharoPlatform >> pipenvForApplication: application [
+	"Answer the pipenv path for the supplied application"
+
+	^ application settings pipenvPath ifNil:
+		[ self class pipenvProcessClass pipenvPath ]
 ]
 
 { #category : #'private - symlinks' }
