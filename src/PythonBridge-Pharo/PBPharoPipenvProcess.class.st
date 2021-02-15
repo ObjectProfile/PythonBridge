@@ -11,6 +11,12 @@ Class {
 	#category : #'PythonBridge-Pharo-Processes'
 }
 
+{ #category : #'class initialization' }
+PBPharoPipenvProcess class >> initialize [ 
+
+	SessionManager default registerUserClassNamed: self name.
+]
+
 { #category : #initialization }
 PBPharoPipenvProcess class >> pipenvPath [
 	^ PipenvPath 
@@ -63,6 +69,14 @@ PBPharoPipenvProcess class >> signalPipenvNotFound [
 	
 	"
 	Error signal: 'Error: Pipenv command could not be found.'
+]
+
+{ #category : #'system startup' }
+PBPharoPipenvProcess class >> startUp: resuming [
+	"On startup any instances saved during the last session will be invalid (since the processes are terminated on shutdown).  Mark them as stopped."
+
+	resuming ifTrue: 
+		[ self allInstancesDo: [ :each | each stop ] ]
 ]
 
 { #category : #accessing }
