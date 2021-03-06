@@ -50,9 +50,8 @@ PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 		stream
 			<< 'cp -a ';
 			<< srcDir fullName;
-			<< '/ ';
-			<< appFolder fullName;
-			<< '/' ].
+			<< ' ';
+			<< appFolder fullName ].
 	proc := OSSUnixSubprocess new 
 		shellCommand: cpCommand;
 		runAndWait.
