@@ -90,7 +90,6 @@ PBPharoPlatform >> ensureApplicationDirectory: application [
 
 	appFolder := self runtimeFolderForApplication: application.
 	(appFolder / 'PythonBridge') exists ifTrue: [ ^ self ].
-	appFolder ensureCreateDirectory.
 	self copyApplicationTo: appFolder application: application.
 	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder.
 ]
