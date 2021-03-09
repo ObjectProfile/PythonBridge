@@ -5,7 +5,10 @@ Class {
 		'pharoSocketAddress',
 		'pythonSocketAddress',
 		'pipenvPath',
-		'workingDirectory'
+		'workingDirectory',
+		'serverDebugMode',
+		'debugSocketAddress',
+		'debugMode'
 	],
 	#category : #'PythonBridge-Platform'
 }
@@ -16,6 +19,34 @@ PBSettings class >> pharoSocketAddress: pharoSocketAddress pythonSocketAddress: 
 		pharoSocketAddress: pharoSocketAddress;
 		pythonSocketAddress: pythonSocketAddress;
 		yourself
+]
+
+{ #category : #accessing }
+PBSettings >> debugMode [
+	^ debugMode
+]
+
+{ #category : #accessing }
+PBSettings >> debugMode: anObject [
+	debugMode := anObject
+]
+
+{ #category : #accessing }
+PBSettings >> debugSocketAddress [
+	^ debugSocketAddress
+]
+
+{ #category : #accessing }
+PBSettings >> debugSocketAddress: anObject [
+	debugSocketAddress := anObject
+]
+
+{ #category : #initialization }
+PBSettings >> initialize [ 
+
+	super initialize.
+	serverDebugMode := false.
+	debugMode := false.
 ]
 
 { #category : #accessing }
@@ -53,6 +84,20 @@ PBSettings >> pythonSocketAddress: anObject [
 ]
 
 { #category : #accessing }
+PBSettings >> serverDebugMode [
+	"Answer a boolean indicating whether the server should be started with the debugger enabled"
+	<return: #Boolean>
+
+	^ serverDebugMode
+]
+
+{ #category : #accessing }
+PBSettings >> serverDebugMode: aBoolean [
+
+	serverDebugMode := aBoolean
+]
+
+{ #category : #accessing }
 PBSettings >> workingDirectory [
 	^ workingDirectory
 ]
@@ -61,6 +106,4 @@ PBSettings >> workingDirectory [
 PBSettings >> workingDirectory: aFileReference [
 
 	workingDirectory := aFileReference.
-	workingDirectory ifNil: [ ^ self ].
-	self assert: [ workingDirectory exists ].
 ]

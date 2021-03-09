@@ -20,6 +20,17 @@ PBPromiseRegistry >> initialize [
 	semaphore := Semaphore forMutualExclusion
 ]
 
+{ #category : #instructions }
+PBPromiseRegistry >> notifyDebuggerPaused: aDebugger [
+	"Notify all promises that the server debugger has paused in case the Bloc UI process is waiting on one of the promises."
+	| signal promises |
+
+	signal := PBDebuggerPaused new debugger: aDebugger.
+	semaphore critical: [ promises := promiseTable values ].
+	promises do: [ :promise |
+		promise signalWithValue: signal copy ].
+]
+
 { #category : #'private - testing' }
 PBPromiseRegistry >> promiseTable [
 	^ promiseTable

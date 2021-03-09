@@ -61,7 +61,9 @@ PBApplication class >> platform [
 
 { #category : #'python hooks file' }
 PBApplication class >> repositoryFileReference [
-	^ self platform runtimeFolderForApplication: self
+
+	self deprecated: 'This should be run against a PBApplication instance that knows its runtime directory'.
+	"^ self platform runtimeFolderForApplication: self"
 ]
 
 { #category : #instructions }
@@ -208,6 +210,13 @@ PBApplication >> newCommandFactory [
 	^ self executionHandler newCommandFactory
 ]
 
+{ #category : #instructions }
+PBApplication >> notifyDebuggerPaused: aDebugger [
+	"Notify all promises that the server debugger has paused in case the Bloc UI process is waiting on one of the promises."
+
+	self executionHandler notifyDebuggerPaused: aDebugger.
+]
+
 { #category : #accessing }
 PBApplication >> postInitialization [
 	
@@ -218,7 +227,7 @@ PBApplication >> processHandler [
 	^ processHandler
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #utils }
 PBApplication >> registerObject: aPythonObject [
 	self executionHandler registerObject: aPythonObject
 ]
@@ -246,7 +255,7 @@ PBApplication >> settings: anObject [
 	settings := anObject
 ]
 
-{ #category : #accessing }
+{ #category : #'start-stop' }
 PBApplication >> start [
 	self handlers do: #start.
 	self waitInitialization.
@@ -254,12 +263,12 @@ PBApplication >> start [
 	self newCommandFactory send.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'start-stop' }
 PBApplication >> stop [
 	self handlers select: #notNil thenDo: #stop
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 PBApplication >> waitInitialization [
 	"Timeout of 10 seconds and try every 0.5 seconds"
 	1 to: 10 by: 0.5 do: [ :t |
@@ -272,4 +281,11 @@ PBApplication >> waitInitialization [
 	
 	self errorMessage
 	"
+]
+
+{ #category : #accessing }
+PBApplication >> workingDirectory [ 
+
+	^ settings workingDirectory ifNil: 
+		[ FileLocator imageDirectory / self runtimeDirectory ]
 ]

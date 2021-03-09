@@ -3,7 +3,8 @@ Class {
 	#superclass : #PBAbstractProcess,
 	#instVars : [
 		'process',
-		'environmentVariables'
+		'environmentVariables',
+		'serverDebugger'
 	],
 	#classVars : [
 		'PipenvPath'
@@ -79,6 +80,14 @@ PBPharoPipenvProcess class >> startUp: resuming [
 		[ self allInstancesDo: [ :each | each stop ] ]
 ]
 
+{ #category : #'start-stop' }
+PBPharoPipenvProcess >> debuggerStateChangedAction [
+	"Respond to the debugger state changed notification.
+	Signal all promises that the debugger has been paused."
+
+	^ [ self halt application notifyDebuggerPaused: serverDebugger ]
+]
+
 { #category : #accessing }
 PBPharoPipenvProcess >> environmentVariables [
 	^ environmentVariables
@@ -108,7 +117,7 @@ PBPharoPipenvProcess >> newProcess [
 	| newProcess |
 
 	newProcess := OSSUnixSubprocess new
-				command: (settings pipenvPath ifNil:
+				command: (self settings pipenvPath ifNil:
 					[ self class pipenvPath ]) fullName;
 				arguments: self processArguments;
 				workingDirectory: self workingDirectory fullName;
@@ -130,10 +139,19 @@ PBPharoPipenvProcess >> process [
 { #category : #private }
 PBPharoPipenvProcess >> processArguments [
 	| args |
+
 	args := OrderedCollection new.
 	args
 		add: 'run';
-		add: 'python';
+		add: 'python'.
+	self settings serverDebugMode ifTrue:
+		[ args addAll: { 
+			'-m'. 
+			'debugpy'. 
+			'--listen'. 
+			self settings debugSocketAddress printAddress. 
+			'--wait-for-client'. } ].
+	args
 		add: self pythonMainFile fullName;
 		add: '--port';
 		add: self settings pythonSocketAddress port asString;
@@ -157,7 +175,23 @@ PBPharoPipenvProcess >> setDefaultEnvironmentVariables [
 { #category : #'start-stop' }
 PBPharoPipenvProcess >> start [
 	process := self newProcess.
+
 	process run.
+	self settings serverDebugMode ifTrue:
+		[ self startServerDebugger ].
+]
+
+{ #category : #'start-stop' }
+PBPharoPipenvProcess >> startServerDebugger [
+	"Start the debugger, tell the server to run and set up inspection on halt"
+
+	"Give the server time to start"
+	1 second wait.
+	serverDebugger := DAPDebugger new 
+		localRoot: self settings workingDirectory;
+		connectTo: #[127 0 0 1] port: self settings debugSocketAddress port.
+	serverDebugger announcer when: DAPThreadStateChanged do: self debuggerStateChangedAction.
+
 ]
 
 { #category : #'start-stop' }
@@ -168,4 +202,12 @@ PBPharoPipenvProcess >> stop [
 		do: [ :e | "Do nothing."].
 	process closeAndCleanStreams.
 	process := nil.
+]
+
+{ #category : #'start-stop' }
+PBPharoPipenvProcess >> stopServerDebugger [
+	"Close the debugger and deregister"
+
+	serverDebugger close.
+	serverDebugger announcer unsubscribe: self debuggerStateChangedAction
 ]

@@ -91,9 +91,14 @@ PBPlatform >> defaultMessageBrokerClass [
 
 { #category : #utils }
 PBPlatform >> defaultSettings [
-	^ PBSettings 
-		pharoSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: (7000 + 99 atRandom))
-		pythonSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: (6900 + 99 atRandom))
+	| basePortNumber |
+
+	"Use 3 consecutive port numbers, makes it easier to listen using a port range in wireshark"
+	basePortNumber := 7000 + 99 atRandom.
+	^ PBSettings new
+		pharoSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: basePortNumber);
+		pythonSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: basePortNumber+1);
+		debugSocketAddress: (PBSocketAddress ipOrName: 'localhost' port: basePortNumber+2)
 ]
 
 { #category : #hooks }

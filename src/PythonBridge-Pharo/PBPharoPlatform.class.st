@@ -88,7 +88,7 @@ PBPharoPlatform >> defaultMessageBrokerClass [
 PBPharoPlatform >> ensureApplicationDirectory: application [
 	| appFolder |
 
-	appFolder := self runtimeFolderForApplication: application.
+	appFolder := application workingDirectory.
 	(appFolder / 'PythonBridge') exists ifTrue: [ ^ self ].
 	self copyApplicationTo: appFolder application: application.
 	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder.
@@ -135,7 +135,7 @@ PBPharoPlatform >> forceInstallEnvironmentForApp: application [
 	self assert: pipenvPath exists description: 'pipenv is apparently not accessible at a standard location. Please, have a look at the Troubleshooting section of https://objectprofile.github.io/PythonBridge/pages/pharo-installation'.
 	proc := OSSUnixSubprocess new
 				command: '/bin/bash';
-				workingDirectory: (self runtimeFolderForApplication: application) fullName;
+				workingDirectory: application workingDirectory fullName;
 				addAllEnvVariablesFromParentWithoutOverride.
 	proc
 		environmentAt: 'PATH'
@@ -143,7 +143,7 @@ PBPharoPlatform >> forceInstallEnvironmentForApp: application [
 				':', (proc envVariables at: 'PATH').
 	proc
 		arguments: (Array 
-			with: ((self runtimeFolderForApplication: application) / 'install_env.sh') fullName);
+			with: (application workingDirectory / 'install_env.sh') fullName);
 		terminateOnShutdown;
 		runAndWait.
 	proc isSuccess ifFalse: [ self signalPipenvCreateEnvFailed ].
@@ -152,7 +152,7 @@ PBPharoPlatform >> forceInstallEnvironmentForApp: application [
 { #category : #utils }
 PBPharoPlatform >> installEnvironmentForApp: application [
 	| folder |
-	folder := self runtimeFolderForApplication: application.
+	folder := application workingDirectory.
 	(folder / '.venv') exists ifFalse: [ 
 		self forceInstallEnvironmentForApp: application ]
 ]
@@ -162,7 +162,7 @@ PBPharoPlatform >> newRandomName [
 	^ 'pb' , UUID new asString36
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 PBPharoPlatform >> pipenvForApplication: application [
 	"Answer the pipenv path for the supplied application"
 
@@ -189,14 +189,6 @@ PBPharoPlatform >> runtimeFolder [
 	"Answer the directory where the PythonBridge runtime files are located"
 
 	^ FileLocator imageDirectory / 'PythonBridge'
-]
-
-{ #category : #accessing }
-PBPharoPlatform >> runtimeFolderForApplication: application [
-	"Answer the directory where the PythonBridge runtime files are located"
-
-	^ application settings workingDirectory ifNil:
-		[ FileLocator imageDirectory / application runtimeDirectory ]
 ]
 
 { #category : #private }

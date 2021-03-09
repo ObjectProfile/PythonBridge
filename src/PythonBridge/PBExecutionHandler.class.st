@@ -81,6 +81,13 @@ PBExecutionHandler >> notifyCallbackHandler: msg [
 		yourself
 ]
 
+{ #category : #instructions }
+PBExecutionHandler >> notifyDebuggerPaused: aDebugger [
+	"Notify all promises that the server debugger has paused in case the Bloc UI process is waiting on one of the promises."
+
+	promiseRegistry notifyDebuggerPaused: aDebugger.
+]
+
 { #category : #handlers }
 PBExecutionHandler >> notifyErrorHandler: errorMsg [
 	| error |

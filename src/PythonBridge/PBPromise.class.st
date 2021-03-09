@@ -5,7 +5,8 @@ Class {
 		'id',
 		'semaphore',
 		'transformBlock',
-		'value'
+		'value',
+		'waitAgain'
 	],
 	#category : #'PythonBridge-Execution'
 }
@@ -69,8 +70,12 @@ PBPromise >> value [
 { #category : #signalling }
 PBPromise >> waitForValue [
 
+	[ waitAgain := false.
 	self isSignaled ifFalse: [ semaphore wait ].
 	(value isKindOf: Exception) ifTrue:
-		[ value copy signal ].
-	^ self value
+		[ value promise: self.
+		value signal ].
+	"If an exception was signalled, it may request that the promise wait for the real value to come through."
+	waitAgain ] whileTrue.
+	^ value
 ]
