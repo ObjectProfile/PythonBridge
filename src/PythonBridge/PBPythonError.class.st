@@ -1,6 +1,6 @@
 Class {
 	#name : #PBPythonError,
-	#superclass : #Notification,
+	#superclass : #PBRemoteNotification,
 	#instVars : [
 		'command',
 		'errorMessage',

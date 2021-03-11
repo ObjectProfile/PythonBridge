@@ -42,12 +42,22 @@ PBPromise >> isSignaled [
 ]
 
 { #category : #signalling }
+PBPromise >> setWaitAgain [ 
+	"Flag that the promise should wait for the real value to be returned from the server"
+StringSignal emit: 'setWaitAgain: ', self identityHash asString.
+	waitAgain := true.
+	semaphore consumeAllSignals.
+]
+
+{ #category : #signalling }
 PBPromise >> signalAll [
 	1 to: semaphore size + 20 do: [ :s | semaphore signal ]
 ]
 
 { #category : #signalling }
 PBPromise >> signalWithValue: anObject [
+	"Set the receiver's value and signal the value is available"
+
 	value := transformBlock value: anObject.
 	self signalAll.
 ]

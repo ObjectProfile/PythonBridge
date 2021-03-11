@@ -81,11 +81,12 @@ PBPharoPipenvProcess class >> startUp: resuming [
 ]
 
 { #category : #'start-stop' }
-PBPharoPipenvProcess >> debuggerStateChangedAction [
+PBPharoPipenvProcess >> debuggerStateChangedAction: aDAPThreadStateChanged [
 	"Respond to the debugger state changed notification.
 	Signal all promises that the debugger has been paused."
 
-	^ [ self halt application notifyDebuggerPaused: serverDebugger ]
+	aDAPThreadStateChanged isStopped ifTrue:
+		[ self application notifyDebuggerPaused: serverDebugger ]
 ]
 
 { #category : #accessing }
@@ -190,7 +191,9 @@ PBPharoPipenvProcess >> startServerDebugger [
 	serverDebugger := DAPDebugger new 
 		localRoot: self settings workingDirectory;
 		connectTo: #[127 0 0 1] port: self settings debugSocketAddress port.
-	serverDebugger announcer when: DAPThreadStateChanged do: self debuggerStateChangedAction.
+	serverDebugger announcer 
+		when: DAPThreadStateChanged 
+		do: [ :announcement | self debuggerStateChangedAction: announcement ].
 
 ]
 
