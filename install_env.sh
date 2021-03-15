@@ -2,3 +2,4 @@
 cd "$(dirname "$0")"
 export PIPENV_VENV_IN_PROJECT=1
 pipenv install
+pipenv run pip install debugpy
