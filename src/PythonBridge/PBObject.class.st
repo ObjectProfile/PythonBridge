@@ -107,6 +107,12 @@ PBObject >> module [
 ]
 
 { #category : #'instance creation' }
+PBObject >> newCommandFactory [
+
+	^ self application newCommandFactory
+]
+
+{ #category : #'instance creation' }
 PBObject >> newPythonVar [
 	^ self class newPythonVar
 ]

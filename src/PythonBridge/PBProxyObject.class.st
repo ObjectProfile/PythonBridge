@@ -8,9 +8,14 @@ Class {
 	#category : #'PythonBridge-Core'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #'instance creation' }
 PBProxyObject class >> pythonClass: pythonClass pythonVar: pyVar application: application [
-	^ self new
+	| proxyClass |
+
+	proxyClass := self subclasses
+		detect: [ :each | each pythonClass = pythonClass ]
+		ifNone: [ self ].
+	^ proxyClass new
 		pythonVariable: pyVar;
 		pythonClass: pythonClass;
 		application: application;
