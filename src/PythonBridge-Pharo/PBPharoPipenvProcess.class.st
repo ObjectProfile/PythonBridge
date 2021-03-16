@@ -189,7 +189,7 @@ PBPharoPipenvProcess >> startServerDebugger [
 	"Give the server time to start"
 	1 second wait.
 	serverDebugger := DAPPythonDebugger new 
-		localRoot: self settings workingDirectory;
+		localRoot: self workingDirectory;
 		connectTo: #[127 0 0 1] port: self settings debugSocketAddress port.
 	serverDebugger announcer 
 		when: DAPThreadStateChanged 
