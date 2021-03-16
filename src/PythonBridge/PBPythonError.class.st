@@ -53,6 +53,17 @@ PBPythonError >> errorMessage: anObject [
 	errorMessage := anObject
 ]
 
+{ #category : #ui }
+PBPythonError >> gtTraceFor: aView [
+	<gtView>
+
+	trace ifNil: [ ^ aView empty ].
+	^ aView textEditor
+		title: 'Python Trace';
+		priority: 5;
+		text: [ trace asRopedText ]
+]
+
 { #category : #initialization }
 PBPythonError >> initialize [
 	super initialize.
