@@ -67,6 +67,13 @@ PBExecutionHandler >> newCommandFactory [
 		yourself
 ]
 
+{ #category : #'as yet unclassified' }
+PBExecutionHandler >> newCommandStringFactory [
+	^ PBCommandStringFactory new
+		application: self application;
+		yourself
+]
+
 { #category : #handlers }
 PBExecutionHandler >> notifyCallbackHandler: msg [
 	| val serialization |

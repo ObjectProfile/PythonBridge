@@ -210,6 +210,11 @@ PBApplication >> newCommandFactory [
 	^ self executionHandler newCommandFactory
 ]
 
+{ #category : #'instance creation' }
+PBApplication >> newCommandStringFactory [
+	^ self executionHandler newCommandStringFactory
+]
+
 { #category : #instructions }
 PBApplication >> notifyDebuggerPaused: aDebugger [
 	"Notify all promises that the server debugger has paused in case the Bloc UI process is waiting on one of the promises."
