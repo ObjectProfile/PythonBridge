@@ -37,7 +37,7 @@ PBPharoPlatform class >> weakRegistryClass [
 { #category : #private }
 PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 	"Copy the PythonBridge runtime environment to the specified folder"
-	| srcDir cpCommand proc pbSymLink |
+	| srcDir cpCommand proc pbSymLink srcFilename dstFilename |
 
 	srcDir := FileLocator imageDirectory / 'PythonBridge'.
 	(srcDir exists and: [ srcDir ~= appFolder ]) ifFalse: 
@@ -46,12 +46,15 @@ PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 		[ self error: 'Unable to locate PythonBridge runtime files' ].
 
 	"Copy the runtime directory"
+	srcFilename := srcDir fullName copyReplaceAll: '"' with: '\"'.
+	dstFilename := appFolder fullName copyReplaceAll: '"' with: '\"'.
 	cpCommand := String streamContents: [ :stream |
 		stream
-			<< 'cp -a ';
-			<< srcDir fullName;
-			<< ' ';
-			<< appFolder fullName ].
+			<< 'cp -a "';
+			<< srcFilename;
+			<< '" "';
+			<< dstFilename;
+			<< '"' ].
 	proc := OSSUnixSubprocess new 
 		shellCommand: cpCommand;
 		runAndWait.
