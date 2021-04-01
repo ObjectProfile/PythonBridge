@@ -119,6 +119,7 @@ PBApplication class >> test [
 
 { #category : #instructions }
 PBApplication class >> uniqueInstance [
+	uniqueInstance ifNil: [ self start ].
 	^ uniqueInstance
 ]
 
