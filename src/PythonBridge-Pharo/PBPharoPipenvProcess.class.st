@@ -106,6 +106,36 @@ PBPharoPipenvProcess >> initialize [
 	self setDefaultEnvironmentVariables
 ]
 
+{ #category : #utils }
+PBPharoPipenvProcess >> installModule: aString in: aPBApplication [
+	"Install the supplied module using `pipenv run pip install aString`"
+	| pipenvPath proc arguments stdoutStream stderrStream |
+
+	pipenvPath := aPBApplication settings pipenvPath ifNil: [ self class pipenvPath ].
+	arguments := { 'run'. 'pip'. 'install'. aString. }.
+	stdoutStream := String new writeStream.
+	stderrStream := String new writeStream.
+	proc := OSSUnixSubprocess new
+		command: pipenvPath fullName;
+		arguments: arguments;
+		workingDirectory: aPBApplication workingDirectory fullName;
+		addAllEnvVariablesFromParentWithoutOverride;
+		terminateOnShutdown;
+		redirectStdout;
+		redirectStderr;
+		yourself.
+	environmentVariables associationsDo: [ :assoc |
+		proc environmentAt: assoc key put: assoc value ].
+	proc run.
+	proc
+		waitForExitPollingEvery: (Delay forMilliseconds: 500)
+		doing: [ :aProcess :outStream :errStream | 
+			stdoutStream nextPutAll: outStream upToEnd.
+			stderrStream nextPutAll: errStream upToEnd ].
+	proc isSuccess ifFalse:
+		[ self error: 'Unable to install module:', aString asString ].
+]
+
 { #category : #testing }
 PBPharoPipenvProcess >> isRunning [
 	^ process

@@ -180,6 +180,13 @@ PBApplication >> initializeHandlers [
 	executionHandler := PBExecutionHandler application: self
 ]
 
+{ #category : #utils }
+PBApplication >> installModule: aString [
+	"Install the supplied module using `pipenv run pip install aString`"
+
+	PBPharoPipenvProcess new installModule: aString in: self
+]
+
 { #category : #testing }
 PBApplication >> isPythonReady [
 	"Ensures python webserver is ready for receiving commands"
