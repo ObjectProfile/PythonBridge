@@ -44,6 +44,11 @@ PBApplication class >> do: aBlockClosure [
 	^ retVal
 ]
 
+{ #category : #initialization }
+PBApplication class >> initialize [
+	SessionManager default registerToolClassNamed: self name
+]
+
 { #category : #testing }
 PBApplication class >> isRunning [
 	^ uniqueInstance notNil and: [ uniqueInstance isRunning ]
@@ -86,6 +91,11 @@ PBApplication class >> runtimeDirectory [
 PBApplication class >> send: obj [
 	self assert: self isRunning.
 	^ self uniqueInstance send: obj
+]
+
+{ #category : #accessing }
+PBApplication class >> shutdown: isImageQuitting [
+	isImageQuitting ifTrue: [ self stop ]
 ]
 
 { #category : #'start-stop' }
