@@ -89,10 +89,11 @@ PBPharoPlatform >> ensureEnvironmentForApp: anApplication [
 PBPharoPlatform >> folderForApplication: application [
 	^ (IceRepository registry 
 			detect: [ :each | each includesPackageNamed: application class package name ] 
+			ifFound: [ :repository | repository location ]
 			ifNone: [ 
 				self inform: 'Please add a clone of this project to Iceberg to access to the resources'.
 				"For travis!"
-				^ '.' asFileReference ]) location / 'PythonBridgeRuntime'
+				'.' asFileReference ]) / 'PythonBridgeRuntime'
 ]
 
 { #category : #utils }
