@@ -1,6 +1,9 @@
 Class {
 	#name : #PBPharoPlatform,
 	#superclass : #PBPlatform,
+	#classVars : [
+		'RuntimeSourceDirectory'
+	],
 	#category : #'PythonBridge-Pharo-Platform'
 }
 
@@ -17,6 +20,21 @@ PBPharoPlatform class >> pipenvProcessClass [
 { #category : #accessing }
 PBPharoPlatform class >> priority [
 	^ 10
+]
+
+{ #category : #accessing }
+PBPharoPlatform class >> runtimeSourceDirectory [
+	<return: #FileReference>
+
+	^ RuntimeSourceDirectory
+]
+
+{ #category : #accessing }
+PBPharoPlatform class >> runtimeSourceDirectory: aFileReference [
+	"Set the directory the contains the runtime files.
+	nil = not specified"
+
+	RuntimeSourceDirectory := aFileReference asFileReference
 ]
 
 { #category : #hooks }
@@ -39,15 +57,12 @@ PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 	"Copy the PythonBridge runtime environment to the specified folder"
 	| srcDir cpCommand proc srcFilename dstFilename |
 
-	srcDir := FileLocator imageDirectory / 'PythonBridgeRuntime'.
-	(srcDir exists and: [ srcDir ~= appFolder ]) ifFalse: 
-		[ srcDir := self folderForApplication: application ].
-	srcDir exists ifFalse: 
-		[ self error: 'Unable to locate PythonBridge runtime files' ].
+	srcDir := self runtimeSourceDirectoryFor: application.
+	srcDir resolve = appFolder resolve ifTrue: [ ^ self ].
 
 	"Copy the runtime directory"
-	srcFilename := srcDir fullName copyReplaceAll: '"' with: '\"'.
-	dstFilename := appFolder fullName copyReplaceAll: '"' with: '\"'.
+	srcFilename := srcDir resolve fullName copyReplaceAll: '"' with: '\"'.
+	dstFilename := appFolder resolve fullName copyReplaceAll: '"' with: '\"'.
 	cpCommand := String streamContents: [ :stream |
 		stream
 			<< 'cp -a "';
@@ -83,17 +98,6 @@ PBPharoPlatform >> ensureEnvironmentForApp: anApplication [
 
 	self ensureApplicationDirectory: anApplication.
 	self installEnvironmentForApp: anApplication.
-]
-
-{ #category : #utils }
-PBPharoPlatform >> folderForApplication: application [
-	^ (IceRepository registry 
-			detect: [ :each | each includesPackageNamed: application class package name ] 
-			ifFound: [ :repository | repository location ]
-			ifNone: [ 
-				self inform: 'Please add a clone of this project to Iceberg to access to the resources'.
-				"For travis!"
-				'.' asFileReference ]) / 'PythonBridgeRuntime'
 ]
 
 { #category : #utils }
@@ -139,11 +143,26 @@ PBPharoPlatform >> pipenvForApplication: application [
 		[ self class pipenvProcessClass pipenvPath ]
 ]
 
-{ #category : #accessing }
-PBPharoPlatform >> runtimeFolder [
-	"Answer the directory where the PythonBridge runtime files are located"
+{ #category : #utils }
+PBPharoPlatform >> runtimeSourceDirectoryFor: aPBApplication [
+	"Answer the source directory containing the runtime files.
+	This is the first of:
+	1. RuntimeSourceDirectory (if specified)
+	2. The git repository copy.
+	3. An existing copy in the image directory"
+	| fileReference |
 
-	^ FileLocator imageDirectory / 'PythonBridge'
+	(RuntimeSourceDirectory isNotNil and: [ RuntimeSourceDirectory exists ]) ifTrue: 
+		[ ^ RuntimeSourceDirectory ].
+	IceRepository registry 
+			detect: [ :each | each includesPackageNamed: aPBApplication class package name ] 
+			ifFound: [ :repository | 
+					fileReference := repository location / 'PythonBridgeRuntime'.
+					fileReference exists ifTrue: [ ^ fileReference ] ]
+			ifNone: [ ].
+	fileReference := FileLocator imageDirectory / 'PythonBridgeRuntime'.
+	fileReference exists ifTrue: [ ^ fileReference ].
+	self error: 'Unable to locate PythonBridge runtime source'.
 ]
 
 { #category : #private }

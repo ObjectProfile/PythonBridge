@@ -106,11 +106,6 @@ PBPlatform >> ensureEnvironmentForApp: anApplication [
 	self subclassResponsibility
 ]
 
-{ #category : #hooks }
-PBPlatform >> folderForApplication: application [
-	self subclassResponsibility
-]
-
 { #category : #'module creation' }
 PBPlatform >> messageBroker: settings [
 	^ self messageBrokerStrategy settings: settings
