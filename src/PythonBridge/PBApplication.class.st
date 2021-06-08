@@ -84,7 +84,7 @@ PBApplication class >> resetUniqueInstance [
 PBApplication class >> runtimeDirectory [
 	"This is the directory basename where the runtime files are located"
 
-	^ 'PythonBridge'
+	^ 'PythonBridgeRuntime'
 ]
 
 { #category : #instructions }

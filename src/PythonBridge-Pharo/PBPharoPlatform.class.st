@@ -37,9 +37,9 @@ PBPharoPlatform class >> weakRegistryClass [
 { #category : #private }
 PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 	"Copy the PythonBridge runtime environment to the specified folder"
-	| srcDir cpCommand proc pbSymLink srcFilename dstFilename |
+	| srcDir cpCommand proc srcFilename dstFilename |
 
-	srcDir := FileLocator imageDirectory / 'PythonBridge'.
+	srcDir := FileLocator imageDirectory / 'PythonBridgeRuntime'.
 	(srcDir exists and: [ srcDir ~= appFolder ]) ifFalse: 
 		[ srcDir := self folderForApplication: application ].
 	srcDir exists ifFalse: 
@@ -60,26 +60,7 @@ PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 		runAndWait.
 	proc isSuccess ifFalse:
 		[ self error: 'Unable to install PythonBridge runtime' ].
-	"Remove the existing symlink, which probably points to the source folder.
-	FileReference>>delete doesn't handle symbolic links, so use the lower layer"
-	pbSymLink := (appFolder / 'PythonBridge') resolve.
-	pbSymLink exists ifTrue: 
-		[ pbSymLink isSymlink 
-			ifTrue: [ self removeFile: pbSymLink ]
-			ifFalse: [ self error: 'PythonBridge should be a symbolic link' ] ].
 
-]
-
-{ #category : #'private - symlinks' }
-PBPharoPlatform >> createSymlinkFor: originalFile on: targetFile [
-	OSSUnixSubprocess new
-				command: '/bin/ln';
-				arguments: (Array 
-									with: '-s' 
-									with: originalFile asFileReference fullName 
-									with: targetFile asFileReference fullName);
-				terminateOnShutdown;
-				runAndWaitOnExitDo: [ :command | ^ self ].
 ]
 
 { #category : #'message broker strategy' }
@@ -94,7 +75,7 @@ PBPharoPlatform >> ensureApplicationDirectory: application [
 	appFolder := application workingDirectory.
 	(appFolder / 'PythonBridge') exists ifTrue: [ ^ self ].
 	self copyApplicationTo: appFolder application: application.
-	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder.
+
 ]
 
 { #category : #private }
@@ -104,22 +85,6 @@ PBPharoPlatform >> ensureEnvironmentForApp: anApplication [
 	self installEnvironmentForApp: anApplication.
 ]
 
-{ #category : #'private - symlinks' }
-PBPharoPlatform >> ensureFolderSymlinkFor: aFolder [
-	| symlinkRef |
-	symlinkRef := aFolder basename asFileReference.
-	symlinkRef exists ifFalse: [ 
-		self createSymlinkFor: aFolder on: symlinkRef ]
-]
-
-{ #category : #'private - symlinks' }
-PBPharoPlatform >> ensurePBridge: pbridgeFolder symlinkIn: aFolder [
-	| symlinkRef |
-	symlinkRef := aFolder / 'PythonBridge'.
-	symlinkRef exists ifFalse: [ 
-		self createSymlinkFor: aFolder on: symlinkRef ].
-]
-
 { #category : #utils }
 PBPharoPlatform >> folderForApplication: application [
 	^ (IceRepository registry 
@@ -127,7 +92,7 @@ PBPharoPlatform >> folderForApplication: application [
 			ifNone: [ 
 				self inform: 'Please add a clone of this project to Iceberg to access to the resources'.
 				"For travis!"
-				^ '.' asFileReference ]) location
+				^ '.' asFileReference ]) location / 'PythonBridgeRuntime'
 ]
 
 { #category : #utils }
@@ -171,20 +136,6 @@ PBPharoPlatform >> pipenvForApplication: application [
 
 	^ application settings pipenvPath ifNil:
 		[ self class pipenvProcessClass pipenvPath ]
-]
-
-{ #category : #'private - symlinks' }
-PBPharoPlatform >> removeFile: aFileReference [
-	"Use the OS rm command to remove the specified file.
-	Required since the file system primitive doesn't seem to handle symbolic links"
-	| proc |
-
-	proc := OSSUnixSubprocess new
-		command: 'rm';
-		arguments: { aFileReference fullName };
-		runAndWait.
-	proc isSuccess ifFalse: 
-		[ self error: 'Unable to remove: ', aFileReference fullName ]
 ]
 
 { #category : #accessing }
