@@ -34,7 +34,7 @@ PBPharoPlatform class >> runtimeSourceDirectory: aFileReference [
 	"Set the directory the contains the runtime files.
 	nil = not specified"
 
-	RuntimeSourceDirectory := aFileReference asFileReference
+	RuntimeSourceDirectory := aFileReference
 ]
 
 { #category : #hooks }
