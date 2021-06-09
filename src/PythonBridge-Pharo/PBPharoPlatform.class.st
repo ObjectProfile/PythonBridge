@@ -24,17 +24,17 @@ PBPharoPlatform class >> priority [
 
 { #category : #accessing }
 PBPharoPlatform class >> runtimeSourceDirectory [
-	<return: #FileReference>
+	<return: #AbstractFileReference>
 
 	^ RuntimeSourceDirectory
 ]
 
 { #category : #accessing }
-PBPharoPlatform class >> runtimeSourceDirectory: aFileReference [
+PBPharoPlatform class >> runtimeSourceDirectory: anAbstractFileReference [
 	"Set the directory the contains the runtime files.
 	nil = not specified"
 
-	RuntimeSourceDirectory := aFileReference
+	RuntimeSourceDirectory := anAbstractFileReference
 ]
 
 { #category : #hooks }
