@@ -263,11 +263,11 @@ PBApplication >> pythonServerStatus [
 	Mostly for problem solving."
 
 	^ String streamContents: [ :stream |
-		self pythonServerStatusOn: stream ]
+		self pythonServerStatusOn: stream process: processHandler ]
 ]
 
 { #category : #'start-stop' }
-PBApplication >> pythonServerStatusOn: aStream [
+PBApplication >> pythonServerStatusOn: aStream process: process [
 	"Write the environment and server status on the supplied stream.
 	Mostly for problem solving."
 
@@ -277,13 +277,13 @@ PBApplication >> pythonServerStatusOn: aStream [
 		<< 'working directory: ';
 			<< self workingDirectory fullName; cr;
 		<< 'server running:    ';
-			print: processHandler isRunning; cr;
+			print: process isRunning; cr;
 		cr; cr;
 		<< 'Stdout:'; cr;
-			<< processHandler stdout; cr;
+			<< process stdout; cr;
 		cr; cr;
 		<< 'Stderr:'; cr;
-			<< processHandler stderr.
+			<< process stderr.
 ]
 
 { #category : #utils }

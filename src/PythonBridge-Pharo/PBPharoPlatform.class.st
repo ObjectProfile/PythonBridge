@@ -104,9 +104,9 @@ PBPharoPlatform >> ensureEnvironmentForApp: anApplication [
 PBPharoPlatform >> forceInstallEnvironmentForApp: application [
 	| proc pipenvPath |
 
-	pipenvPath := self pipenvForApplication: application.
+	pipenvPath := application pipenvPath.
 	self assert: pipenvPath exists description: 'pipenv is apparently not accessible at a standard location. Please, have a look at the Troubleshooting section of https://objectprofile.github.io/PythonBridge/pages/pharo-installation'.
-	proc := OSSUnixSubprocess new
+	proc := GtUnixSubprocess new
 				command: '/bin/bash';
 				workingDirectory: application workingDirectory fullName;
 				addAllEnvVariablesFromParentWithoutOverride.
@@ -119,7 +119,7 @@ PBPharoPlatform >> forceInstallEnvironmentForApp: application [
 			with: (application workingDirectory / 'install_env.sh') fullName);
 		terminateOnShutdown;
 		runAndWait.
-	proc isSuccess ifFalse: [ self signalPipenvCreateEnvFailed ].
+	proc isSuccess ifFalse: [ self signalPipenvCreateEnvFailed: application process: proc ].
 ]
 
 { #category : #utils }
@@ -133,14 +133,6 @@ PBPharoPlatform >> installEnvironmentForApp: application [
 { #category : #hooks }
 PBPharoPlatform >> newRandomName [
 	^ 'pb' , UUID new asString36
-]
-
-{ #category : #accessing }
-PBPharoPlatform >> pipenvForApplication: application [
-	"Answer the pipenv path for the supplied application"
-
-	^ application settings pipenvPath ifNil:
-		[ self class pipenvProcessClass pipenvPath ]
 ]
 
 { #category : #utils }
@@ -166,14 +158,17 @@ PBPharoPlatform >> runtimeSourceDirectoryFor: aPBApplication [
 ]
 
 { #category : #private }
-PBPharoPlatform >> signalPipenvCreateEnvFailed [
-	"
-	Python bridge attempt of creating Pipenv environment failed. To attempt to generate the Pipenv
-	environment manually go the project git folder. It may be the PythonBridge, KerasBridge or your
-	Bridge, because each of them has a different Pipfile and Pipenv environment.
+PBPharoPlatform >> signalPipenvCreateEnvFailed: application process: proc [
+	"The attempt to install the python environment failed.
+	Signal the error.
+
+	To manually track down the issue, go to the working directory as shown in the signal and:
 	
 	To remove the current Pipenv environment run in the folder the command: `pipenv --rm`
-	To manually create the Pipenv environment run in the folder the command: `bash install_env.sh`
-	"
-	Error signal: 'Attempt for creating Pipenv environment failed.'
+	To manually create the Pipenv environment run in the folder the command: `bash install_env.sh`"
+
+	PBPythonProcessError new
+		application: application;
+		process: proc;
+		signal
 ]
