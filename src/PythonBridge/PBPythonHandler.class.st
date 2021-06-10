@@ -42,6 +42,20 @@ PBPythonHandler >> start [
 	^ process start
 ]
 
+{ #category : #accessing }
+PBPythonHandler >> stderr [
+	"Answer the process stderr contents"
+
+	^ process stderr
+]
+
+{ #category : #accessing }
+PBPythonHandler >> stdout [ 
+	"Answer the process stdout contents"
+
+	^ process stdout
+]
+
 { #category : #testing }
 PBPythonHandler >> stop [
 	^ process stop

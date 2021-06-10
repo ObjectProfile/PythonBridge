@@ -277,7 +277,13 @@ PBApplication >> pythonServerStatusOn: aStream [
 		<< 'working directory: ';
 			<< self workingDirectory fullName; cr;
 		<< 'server running:    ';
-			print: processHandler isRunning; cr.
+			print: processHandler isRunning; cr;
+		cr; cr;
+		<< 'Stdout:'; cr;
+			<< processHandler stdout; cr;
+		cr; cr;
+		<< 'Stderr:'; cr;
+			<< processHandler stderr.
 ]
 
 { #category : #utils }
