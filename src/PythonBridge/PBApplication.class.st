@@ -158,7 +158,8 @@ PBApplication >> communicationHandler [
 { #category : #accessing }
 PBApplication >> errorMessage [
 	"Fetch the error message from the stderr stream, from the processhander"
-	^ processHandler errorMessage
+
+	^ self pythonServerStatus
 ]
 
 { #category : #accessing }
@@ -330,11 +331,17 @@ PBApplication >> stop [
 { #category : #private }
 PBApplication >> waitInitialization [
 	"Timeout of 10 seconds and try every 0.5 seconds"
+	| error |
+
 	1 to: 10 by: 0.5 do: [ :t |
 		self isPythonReady 
 				ifTrue: [ ^ self ]
 				ifFalse: [ (Delay forMilliseconds: 500) wait ] ].
-	Error signal: 'Python application initialization failed! You should try to manually install the Pipenv environment. Have a look at the section "Manually creating Pipenv environment" in https://objectprofile.github.io/PythonBridge/pages/pharo-installation'.
+	"Store the error in a temporary variable since the debugger sometimes hides the parent stack frames."
+	error := PBPythonProcessError new
+		messageText: 'Python application initialization failed!';
+		application: self.
+	error signal.
 	"
 	Print the result of executing the following line:
 	

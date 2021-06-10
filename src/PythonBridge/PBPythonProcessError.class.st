@@ -35,7 +35,10 @@ PBPythonProcessError >> printOn: aStream [
 	messageText ifNotNil: 
 		[ aStream << messageText; cr ].
 	aStream cr.
-	application pythonServerStatusOn: aStream process: process
+	process
+		ifNil: [ application pythonServerStatusOn: aStream process: application processHandler ]
+		ifNotNil: [ application pythonServerStatusOn: aStream process: process ]
+
 ]
 
 { #category : #accessing }
