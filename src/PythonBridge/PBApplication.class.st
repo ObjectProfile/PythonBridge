@@ -241,6 +241,13 @@ PBApplication >> notifyDebuggerPaused: aDebugger [
 ]
 
 { #category : #accessing }
+PBApplication >> pipenvPath [ 
+	"Answer the pipenvPath to be used for this application"
+
+	^ settings pipenvPath ifNil: [ processHandler pipenvPath ]
+]
+
+{ #category : #accessing }
 PBApplication >> postInitialization [
 	
 ]
@@ -248,6 +255,29 @@ PBApplication >> postInitialization [
 { #category : #accessing }
 PBApplication >> processHandler [
 	^ processHandler
+]
+
+{ #category : #'start-stop' }
+PBApplication >> pythonServerStatus [
+	"Answer a string describing the environment and server status.
+	Mostly for problem solving."
+
+	^ String streamContents: [ :stream |
+		self pythonServerStatusOn: stream ]
+]
+
+{ #category : #'start-stop' }
+PBApplication >> pythonServerStatusOn: aStream [
+	"Write the environment and server status on the supplied stream.
+	Mostly for problem solving."
+
+	aStream
+		<< 'pipenv:            ';
+			<< self pipenvPath fullName; cr;
+		<< 'working directory: ';
+			<< self workingDirectory fullName; cr;
+		<< 'server running:    ';
+			print: processHandler isRunning; cr.
 ]
 
 { #category : #utils }

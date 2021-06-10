@@ -24,6 +24,14 @@ PBPythonHandler >> isRunning [
 ]
 
 { #category : #accessing }
+PBPythonHandler >> pipenvPath [ 
+	"Answer the default pipenvPath.
+	This may be overridden by the application settings."
+
+	^ process pipenvPath
+]
+
+{ #category : #accessing }
 PBPythonHandler >> platform [
 	^ PBPlatform current
 ]

@@ -163,6 +163,14 @@ PBPharoPipenvProcess >> newProcess [
 ]
 
 { #category : #accessing }
+PBPharoPipenvProcess >> pipenvPath [ 
+	"Answer the default pipenvPath.
+	This may be overridden by the application settings."
+
+	^ self class pipenvPath
+]
+
+{ #category : #accessing }
 PBPharoPipenvProcess >> process [
 	^ process
 ]
