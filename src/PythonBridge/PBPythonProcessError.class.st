@@ -31,7 +31,10 @@ PBPythonProcessError >> printOn: aStream [
 	aStream
 		<< 'Python process error'; cr;
 		<< '===================='; cr;
-		cr; cr.
+		cr.
+	messageText ifNotNil: 
+		[ aStream << messageText; cr ].
+	aStream cr.
 	application pythonServerStatusOn: aStream process: process
 ]
 
