@@ -54,6 +54,29 @@ PBApplication class >> isRunning [
 	^ uniqueInstance notNil and: [ uniqueInstance isRunning ]
 ]
 
+{ #category : #'start-stop' }
+PBApplication class >> killAll [
+	"Stop ALL PBApplication instances and kill any server processes that may still be running."
+	| allInstances firstApplication wd proc error |
+
+	allInstances := self allInstances.
+	allInstances ifEmpty: [ ^ self ].
+	firstApplication := allInstances
+		detect: #isRunning 
+		ifNone: [ allInstances first ].
+	allInstances do: #stop.
+	wd := firstApplication workingDirectory.
+	proc := GtUnixSubprocess new command: (wd / 'killpbservers.sh') fullName.
+	proc runAndWait.
+	proc isSuccess ifFalse: 
+		[ error:= PBPythonProcessError new
+		application: firstApplication;
+		process: proc.
+		error signal ].
+	self assert: proc stderr trimBoth isEmpty.
+	^ proc stdout
+]
+
 { #category : #testing }
 PBApplication class >> module [
 	^ self uniqueInstance module
@@ -251,6 +274,22 @@ PBApplication >> pipenvPath [
 { #category : #accessing }
 PBApplication >> postInitialization [
 	
+]
+
+{ #category : #printing }
+PBApplication >> printOn: aStream [
+
+	aStream
+		<< self class name;
+		<< '('.
+	self isRunning ifFalse:
+		[ aStream << 'not running)'.
+		^ self ].
+	aStream
+		print: settings pharoSocketAddress;
+		<< ', ';
+		print: settings pythonSocketAddress;
+		<< ')'
 ]
 
 { #category : #accessing }

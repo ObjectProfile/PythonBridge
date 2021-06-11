@@ -133,7 +133,7 @@ PBPharoPipenvProcess >> installModule: aString in: aPBApplication [
 			stdoutStream nextPutAll: outStream upToEnd.
 			stderrStream nextPutAll: errStream upToEnd ].
 	proc isSuccess ifFalse:
-		[ self error: 'Unable to install module:', aString asString ].
+		[ self error: 'Unable to install module: ', aString asString ].
 ]
 
 { #category : #testing }

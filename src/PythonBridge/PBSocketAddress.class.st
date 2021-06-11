@@ -40,3 +40,11 @@ PBSocketAddress >> port: anObject [
 PBSocketAddress >> printAddress [
 	^ ipOrName , ':' , port asString
 ]
+
+{ #category : #printing }
+PBSocketAddress >> printOn: aStream [
+
+	(ipOrName isNil or: [ port isNil ]) ifTrue: 
+		[ ^ super printOn: aStream ].
+	aStream << self printAddress
+]
