@@ -317,7 +317,12 @@ PBApplication >> pythonServerStatusOn: aStream process: process [
 		<< 'working directory: ';
 			<< self workingDirectory fullName; cr;
 		<< 'server running:    ';
-			print: process isRunning; cr;
+			print: process isRunning; cr.
+	process isRunning ifFalse: 
+		[ aStream
+			<< 'exit status:       ';
+				print: process exitStatusInterpreter exitStatus; cr ].
+	aStream
 		cr; cr;
 		<< 'Stdout:'; cr;
 			<< process stdout; cr;
