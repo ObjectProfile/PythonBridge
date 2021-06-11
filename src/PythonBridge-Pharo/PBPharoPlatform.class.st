@@ -55,7 +55,7 @@ PBPharoPlatform class >> weakRegistryClass [
 { #category : #private }
 PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 	"Copy the PythonBridge runtime environment to the specified folder"
-	| srcDir cpCommand proc srcFilename dstFilename |
+	| srcDir cpCommand proc srcFilename dstFilename error |
 
 	srcDir := self runtimeSourceDirectoryFor: application.
 	srcDir resolve = appFolder resolve ifTrue: [ ^ self ].
@@ -70,11 +70,15 @@ PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 			<< '" "';
 			<< dstFilename;
 			<< '"' ].
-	proc := OSSUnixSubprocess new 
+	proc := GtUnixSubprocess new 
 		shellCommand: cpCommand;
 		runAndWait.
 	proc isSuccess ifFalse:
-		[ self error: 'Unable to install PythonBridge runtime' ].
+		[ error := PBPythonProcessError new
+			messageText: 'Unable to install PythonBridge runtime';
+			application: application;
+			process: proc.
+		error signal ].
 
 ]
 
@@ -90,14 +94,18 @@ PBPharoPlatform >> ensureApplicationDirectory: application [
 	appFolder := application workingDirectory.
 	(appFolder / 'PythonBridge') exists ifTrue: [ ^ self ].
 	self copyApplicationTo: appFolder application: application.
+	self setExecutableIn: appFolder application: application.
+
 
 ]
 
 { #category : #private }
 PBPharoPlatform >> ensureEnvironmentForApp: anApplication [
 
-	self ensureApplicationDirectory: anApplication.
-	self installEnvironmentForApp: anApplication.
+	[ self ensureApplicationDirectory: anApplication.
+	self installEnvironmentForApp: anApplication ] asJob
+		title: 'Installing PythonBridge runtime environment';
+		run
 ]
 
 { #category : #utils }
@@ -158,6 +166,29 @@ PBPharoPlatform >> runtimeSourceDirectoryFor: aPBApplication [
 ]
 
 { #category : #private }
+PBPharoPlatform >> setExecutableIn: appFolder application: application [
+	"Copy the PythonBridge runtime environment to the specified folder"
+	| chmodCommand proc error appFolderString |
+
+	appFolderString := appFolder resolve fullName copyReplaceAll: '"' with: '\"'.
+	chmodCommand := String streamContents: [ :stream |
+		stream
+			<< 'chmod +x "';
+			<< appFolderString;
+			<< '"/*.sh' ].
+	proc := OSSUnixSubprocess new 
+		shellCommand: chmodCommand;
+		runAndWait.
+	proc isSuccess ifFalse:
+		[ error := PBPythonProcessError new
+			messageText: 'Unable to set PythonBridge runtime executable bits';
+			application: application;
+			process: proc.
+		error signal ].
+
+]
+
+{ #category : #private }
 PBPharoPlatform >> signalPipenvCreateEnvFailed: application process: proc [
 	"The attempt to install the python environment failed.
 	Signal the error.
@@ -166,9 +197,11 @@ PBPharoPlatform >> signalPipenvCreateEnvFailed: application process: proc [
 	
 	To remove the current Pipenv environment run in the folder the command: `pipenv --rm`
 	To manually create the Pipenv environment run in the folder the command: `bash install_env.sh`"
+	| error |
 
-	PBPythonProcessError new
+	"Save the error in a temporary variable for access while debugging since the debugger hides the signal stack entries"
+	error := PBPythonProcessError new
 		application: application;
-		process: proc;
-		signal
+		process: proc.
+	error signal
 ]
