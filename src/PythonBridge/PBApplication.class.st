@@ -182,12 +182,33 @@ PBApplication >> communicationHandler [
 PBApplication >> errorMessage [
 	"Fetch the error message from the stderr stream, from the processhander"
 
-	^ self pythonServerStatus
+	^ self serverStatus
 ]
 
 { #category : #accessing }
 PBApplication >> executionHandler [
 	^ executionHandler
+]
+
+{ #category : #ui }
+PBApplication >> gtSettingsFor: aView [
+	<gtView>
+
+	^ aView forward 
+		title: 'Settings';
+		priority: 60;
+		object: [ settings ];
+		view: #gtSettingsFor:
+]
+
+{ #category : #ui }
+PBApplication >> gtStatusFor: aView [
+	<gtView>
+
+	^ aView textEditor 
+		title: 'Status';
+		priority: 50;
+		text: [ self serverStatus asRopedText glamorousCodeFont ]
 ]
 
 { #category : #handlers }
@@ -297,40 +318,6 @@ PBApplication >> processHandler [
 	^ processHandler
 ]
 
-{ #category : #'start-stop' }
-PBApplication >> pythonServerStatus [
-	"Answer a string describing the environment and server status.
-	Mostly for problem solving."
-
-	^ String streamContents: [ :stream |
-		self pythonServerStatusOn: stream process: processHandler ]
-]
-
-{ #category : #'start-stop' }
-PBApplication >> pythonServerStatusOn: aStream process: process [
-	"Write the environment and server status on the supplied stream.
-	Mostly for problem solving."
-
-	aStream
-		<< 'pipenv:            ';
-			<< self pipenvPath fullName; cr;
-		<< 'working directory: ';
-			<< self workingDirectory fullName; cr;
-		<< 'server running:    ';
-			print: process isRunning; cr.
-	process isRunning ifFalse: 
-		[ aStream
-			<< 'exit status:       ';
-				print: process exitStatusInterpreter exitStatus; cr ].
-	aStream
-		cr; cr;
-		<< 'Stdout:'; cr;
-			<< process stdout; cr;
-		cr; cr;
-		<< 'Stderr:'; cr;
-			<< process stderr.
-]
-
 { #category : #utils }
 PBApplication >> registerObject: aPythonObject [
 	self executionHandler registerObject: aPythonObject
@@ -347,6 +334,50 @@ PBApplication >> runtimeDirectory [
 PBApplication >> send: aCommand [
 	self isRunning ifFalse: [ Error signal: 'Bridge not running.' ].
 	^ executionHandler sendCommand: aCommand
+]
+
+{ #category : #'start-stop' }
+PBApplication >> serverStatus [
+	"Answer a string describing the environment and server status.
+	Mostly for problem solving."
+
+	^ String streamContents: [ :stream |
+		self serverStatusOn: stream process: processHandler ]
+]
+
+{ #category : #'start-stop' }
+PBApplication >> serverStatusOn: aStream process: process [
+	"Write the environment and server status on the supplied stream.
+	Mostly for problem solving."
+	| serverPathString |
+
+	serverPathString := [ self pipenvPath isExecutable
+		ifTrue: [ self pipenvPath fullName ]
+		ifFalse: [ self pipenvPath fullName, ': doesn''t exist or isn''t executable, it should be in the PATH' ] ]
+			on: Error
+			do: [ '<Unable to determine server path.  It should be in the PATH>' ].
+
+	aStream
+		<< 'Running:           ';
+			print: self isRunning; cr;
+		<< 'pipenv:            ';
+			<< serverPathString; cr;
+		<< 'Working directory: ';
+			<< self workingDirectory fullName; cr;
+		<< 'Server running:    ';
+			print: process isRunning; cr.
+	process hasProcess ifFalse: [ ^ self ].
+	process isRunning ifFalse: 
+		[ aStream
+			<< 'exit status:       ';
+				print: process exitStatusInterpreter exitStatus; cr ].
+	aStream
+		cr; cr;
+		<< 'Stdout:'; cr;
+			<< process stdout; cr;
+		cr; cr;
+		<< 'Stderr:'; cr;
+			<< process stderr.
 ]
 
 { #category : #accessing }

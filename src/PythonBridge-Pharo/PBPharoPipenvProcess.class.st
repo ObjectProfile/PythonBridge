@@ -99,6 +99,13 @@ PBPharoPipenvProcess >> errorMessage [
 	^ self stderr
 ]
 
+{ #category : #testing }
+PBPharoPipenvProcess >> hasProcess [
+	"Answer a boolean indicating whether the receiver has a process object"
+
+	^ process isNotNil
+]
+
 { #category : #initialization }
 PBPharoPipenvProcess >> initialize [
 	super initialize.

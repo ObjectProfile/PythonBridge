@@ -12,6 +12,12 @@ PBPythonHandler >> errorMessage [
 	^ process errorMessage
 ]
 
+{ #category : #testing }
+PBPythonHandler >> hasProcess [
+
+	^ process hasProcess
+]
+
 { #category : #initialization }
 PBPythonHandler >> initializeHandler [
 	super initializeHandler.
