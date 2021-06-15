@@ -41,6 +41,21 @@ PBSettings >> debugSocketAddress: anObject [
 	debugSocketAddress := anObject
 ]
 
+{ #category : #ui }
+PBSettings >> gtSettingsFor: aView [
+	<gtView>
+
+	^ aView columnedList
+		title: 'Settings';
+		priority: 1;
+		items: [ self settingNames ];
+		column: #Item 
+			text: [ :item | item ] 
+			width: 170;
+		column: #Value 
+			text: [ :item | item value: self ]
+]
+
 { #category : #initialization }
 PBSettings >> initialize [ 
 
@@ -95,6 +110,12 @@ PBSettings >> serverDebugMode [
 PBSettings >> serverDebugMode: aBoolean [
 
 	serverDebugMode := aBoolean
+]
+
+{ #category : #accessing }
+PBSettings >> settingNames [
+
+	^ self class instVarNames sorted
 ]
 
 { #category : #accessing }

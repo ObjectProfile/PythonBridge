@@ -96,7 +96,7 @@ PBPharoPipenvProcess >> environmentVariables [
 
 { #category : #accessing }
 PBPharoPipenvProcess >> errorMessage [
-	^ process stderrStream contents
+	^ self stderr
 ]
 
 { #category : #initialization }
