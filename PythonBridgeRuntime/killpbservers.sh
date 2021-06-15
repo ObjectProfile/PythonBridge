@@ -6,7 +6,7 @@
 
 # List the processes.
 # If none are found, exit successfully
-ps aux | grep -E 'python.*start_bridge\.py.*msgpack'
+ps aux | grep -E 'PythonBridgeRuntime/start_bridge\.py.*msgpack'
 status=$?
 if [ $status -eq 1 ]
 then
@@ -14,5 +14,5 @@ then
 fi
 
 # Kill them
-ps aux | grep -E 'python.*start_bridge\.py.*msgpack' | awk '{print $2}' | xargs kill
+ps aux | grep -E 'PythonBridgeRuntime/start_bridge\.py.*msgpack' | awk '{print $2}' | xargs kill
 exit $?
