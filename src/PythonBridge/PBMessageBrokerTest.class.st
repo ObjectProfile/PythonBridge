@@ -81,9 +81,10 @@ PBMessageBrokerTest >> sendMessageToBroker: dict answerBlock: aBlock [
 PBMessageBrokerTest >> sendMessageToBroker: dict answerEquals: ansDict [
 	| flag |
 	flag := false.
-	self sendMessageToBroker: dict answerBlock: [ :aDict | 
+	self sendMessageToBroker: dict answerBlock: [ :aDict |
 		flag := true.
 		self assert: aDict equals: ansDict ].
+	self sleepAWhile.
 	self assert: flag
 ]
 
