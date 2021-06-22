@@ -70,7 +70,7 @@ PBPharoPlatform >> copyApplicationTo: appFolder application: application [
 			<< '" "';
 			<< dstFilename;
 			<< '"' ].
-	proc := GtUnixSubprocess new 
+	proc := PBUnixSubprocess new 
 		shellCommand: cpCommand;
 		runAndWait.
 	proc isSuccess ifFalse:
@@ -114,7 +114,7 @@ PBPharoPlatform >> forceInstallEnvironmentForApp: application [
 
 	pipenvPath := application pipenvPath.
 	self assert: pipenvPath exists description: 'pipenv is apparently not accessible at a standard location. Please, have a look at the Troubleshooting section of https://objectprofile.github.io/PythonBridge/pages/pharo-installation'.
-	proc := GtUnixSubprocess new
+	proc := PBUnixSubprocess new
 				command: '/bin/bash';
 				workingDirectory: application workingDirectory fullName;
 				addAllEnvVariablesFromParentWithoutOverride.

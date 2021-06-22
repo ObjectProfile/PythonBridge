@@ -66,7 +66,7 @@ PBApplication class >> killAll [
 		ifNone: [ allInstances first ].
 	allInstances do: #stop.
 	wd := firstApplication workingDirectory.
-	proc := GtUnixSubprocess new command: (wd / 'killpbservers.sh') fullName.
+	proc := PBUnixSubprocess new command: (wd / 'killpbservers.sh') fullName.
 	proc runAndWait.
 	proc isSuccess ifFalse: 
 		[ error:= PBPythonProcessError new

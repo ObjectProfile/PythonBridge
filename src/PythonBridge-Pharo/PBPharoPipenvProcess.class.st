@@ -154,7 +154,7 @@ PBPharoPipenvProcess >> isRunning [
 PBPharoPipenvProcess >> newProcess [
 	| newProcess |
 
-	newProcess := GtUnixSubprocess new
+	newProcess := PBUnixSubprocess new
 				command: (self settings pipenvPath ifNil:
 					[ self class pipenvPath ]) fullName;
 				arguments: self processArguments;
