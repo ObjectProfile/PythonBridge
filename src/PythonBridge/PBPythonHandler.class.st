@@ -12,6 +12,12 @@ PBPythonHandler >> errorMessage [
 	^ process errorMessage
 ]
 
+{ #category : #testing }
+PBPythonHandler >> hasProcess [
+
+	^ process hasProcess
+]
+
 { #category : #initialization }
 PBPythonHandler >> initializeHandler [
 	super initializeHandler.
@@ -24,6 +30,14 @@ PBPythonHandler >> isRunning [
 ]
 
 { #category : #accessing }
+PBPythonHandler >> pipenvPath [ 
+	"Answer the default pipenvPath.
+	This may be overridden by the application settings."
+
+	^ process pipenvPath
+]
+
+{ #category : #accessing }
 PBPythonHandler >> platform [
 	^ PBPlatform current
 ]
@@ -32,6 +46,20 @@ PBPythonHandler >> platform [
 PBPythonHandler >> start [
 	self platform ensureEnvironmentForApp: self application.
 	^ process start
+]
+
+{ #category : #accessing }
+PBPythonHandler >> stderr [
+	"Answer the process stderr contents"
+
+	^ process stderr
+]
+
+{ #category : #accessing }
+PBPythonHandler >> stdout [ 
+	"Answer the process stdout contents"
+
+	^ process stdout
 ]
 
 { #category : #testing }

@@ -24,7 +24,7 @@ PBCommunicationHandler >> isPythonReady [
 	semaphore := Semaphore new.
 	[ ans := [self sendMessage: PBIsAliveMessage new.
 				true ] 
-					on: PBCommunicationError 
+					on: PBCommunicationError, PrimitiveFailed
 					do: [ :e | false ].
 	semaphore signal ] forkAt: Processor lowIOPriority.
 	semaphore waitTimeoutMSecs: 100.

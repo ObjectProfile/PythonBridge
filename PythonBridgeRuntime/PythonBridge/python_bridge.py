@@ -5,6 +5,12 @@ from PythonBridge import bridge_globals, bridge_hooks, flask_platform, msgpack_s
 from PythonBridge.bridge_hooks import *
 from PythonBridge.object_registry import registry
 
+def pbbreak():
+        print("Breaking now")
+        breakpoint()
+        print("Continuing")
+
+
 class EvalCommand:
 	statements = ""
 	binding = {}

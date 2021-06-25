@@ -3,7 +3,8 @@ Class {
 	#superclass : #PBAbstractProcess,
 	#instVars : [
 		'process',
-		'environmentVariables'
+		'environmentVariables',
+		'serverDebugger'
 	],
 	#classVars : [
 		'PipenvPath'
@@ -11,16 +12,22 @@ Class {
 	#category : #'PythonBridge-Pharo-Processes'
 }
 
-{ #category : #initialization }
-PBPharoPipenvProcess class >> pipenvPath [
-	^ PipenvPath isEmptyOrNil 
-			ifTrue: [ PipenvPath := self resolvePipenvPath ]
-			ifFalse: [ PipenvPath ]
+{ #category : #'class initialization' }
+PBPharoPipenvProcess class >> initialize [ 
+
+	SessionManager default registerUserClassNamed: self name.
 ]
 
 { #category : #initialization }
-PBPharoPipenvProcess class >> pipenvPath: aString [
-	PipenvPath := aString
+PBPharoPipenvProcess class >> pipenvPath [
+	^ PipenvPath 
+			ifNil: [ PipenvPath := self resolvePipenvPath ]
+			ifNotNil: [ PipenvPath ]
+]
+
+{ #category : #initialization }
+PBPharoPipenvProcess class >> pipenvPath: aFileReference [
+	PipenvPath := aFileReference
 ]
 
 { #category : #accessing }
@@ -29,15 +36,25 @@ PBPharoPipenvProcess class >> platform [
 ]
 
 { #category : #initialization }
+PBPharoPipenvProcess class >> reset [ 
+	<script>
+
+	PipenvPath := nil.
+]
+
+{ #category : #initialization }
 PBPharoPipenvProcess class >> resolvePipenvPath [
-	^ (OSSUnixSubprocess new
+	| path |
+
+	(OSSUnixSubprocess new
 				command: '/usr/bin/which';
 				arguments: (Array with: 'pipenv');
 				addAllEnvVariablesFromParentWithoutOverride;
 				redirectStdout;
 				terminateOnShutdown;
-				runAndWaitOnExitDo: [ :command :outString | ^ outString trim ]) 
-					ifEmpty: [ self signalPipenvNotFound ]
+				runAndWaitOnExitDo: [ :command :outString | path := outString trim ]).
+	path ifEmpty: [ self signalPipenvNotFound ].
+	^ path asFileReference
 ]
 
 { #category : #initialization }
@@ -55,6 +72,23 @@ PBPharoPipenvProcess class >> signalPipenvNotFound [
 	Error signal: 'Error: Pipenv command could not be found.'
 ]
 
+{ #category : #'system startup' }
+PBPharoPipenvProcess class >> startUp: resuming [
+	"On startup any instances saved during the last session will be invalid (since the processes are terminated on shutdown).  Mark them as stopped."
+
+	resuming ifTrue: 
+		[ self allInstancesDo: [ :each | each stop ] ]
+]
+
+{ #category : #'start-stop' }
+PBPharoPipenvProcess >> debuggerStateChangedAction: aDAPThreadStateChanged [
+	"Respond to the debugger state changed notification.
+	Signal all promises that the debugger has been paused."
+
+	aDAPThreadStateChanged isStopped ifTrue:
+		[ self application notifyDebuggerPaused: serverDebugger ]
+]
+
 { #category : #accessing }
 PBPharoPipenvProcess >> environmentVariables [
 	^ environmentVariables
@@ -62,7 +96,14 @@ PBPharoPipenvProcess >> environmentVariables [
 
 { #category : #accessing }
 PBPharoPipenvProcess >> errorMessage [
-	^ process stderrStream contents
+	^ self stderr
+]
+
+{ #category : #testing }
+PBPharoPipenvProcess >> hasProcess [
+	"Answer a boolean indicating whether the receiver has a process object"
+
+	^ process isNotNil
 ]
 
 { #category : #initialization }
@@ -70,6 +111,36 @@ PBPharoPipenvProcess >> initialize [
 	super initialize.
 	environmentVariables := Dictionary new.
 	self setDefaultEnvironmentVariables
+]
+
+{ #category : #utils }
+PBPharoPipenvProcess >> installModule: aString in: aPBApplication [
+	"Install the supplied module using `pipenv run pip install aString`"
+	| pipenvPath proc arguments stdoutStream stderrStream |
+
+	pipenvPath := aPBApplication settings pipenvPath ifNil: [ self class pipenvPath ].
+	arguments := { 'run'. 'pip'. 'install'. aString. }.
+	stdoutStream := String new writeStream.
+	stderrStream := String new writeStream.
+	proc := OSSUnixSubprocess new
+		command: pipenvPath fullName;
+		arguments: arguments;
+		workingDirectory: aPBApplication workingDirectory fullName;
+		addAllEnvVariablesFromParentWithoutOverride;
+		terminateOnShutdown;
+		redirectStdout;
+		redirectStderr;
+		yourself.
+	environmentVariables associationsDo: [ :assoc |
+		proc environmentAt: assoc key put: assoc value ].
+	proc run.
+	proc
+		waitForExitPollingEvery: (Delay forMilliseconds: 500)
+		doing: [ :aProcess :outStream :errStream | 
+			stdoutStream nextPutAll: outStream upToEnd.
+			stderrStream nextPutAll: errStream upToEnd ].
+	proc isSuccess ifFalse:
+		[ self error: 'Unable to install module: ', aString asString ].
 ]
 
 { #category : #testing }
@@ -82,18 +153,26 @@ PBPharoPipenvProcess >> isRunning [
 { #category : #private }
 PBPharoPipenvProcess >> newProcess [
 	| newProcess |
-	newProcess := OSSUnixSubprocess new
-				command: self class pipenvPath;
+
+	newProcess := PBUnixSubprocess new
+				command: (self settings pipenvPath ifNil:
+					[ self class pipenvPath ]) fullName;
 				arguments: self processArguments;
 				workingDirectory: self workingDirectory fullName;
 				addAllEnvVariablesFromParentWithoutOverride;
-				redirectStdout;
-				redirectStderr;
 				terminateOnShutdown;
 				yourself.
 	environmentVariables associationsDo: [ :assoc |
 		newProcess environmentAt: assoc key put: assoc value ].
 	^ newProcess
+]
+
+{ #category : #accessing }
+PBPharoPipenvProcess >> pipenvPath [ 
+	"Answer the default pipenvPath.
+	This may be overridden by the application settings."
+
+	^ self class pipenvPath
 ]
 
 { #category : #accessing }
@@ -104,10 +183,19 @@ PBPharoPipenvProcess >> process [
 { #category : #private }
 PBPharoPipenvProcess >> processArguments [
 	| args |
+
 	args := OrderedCollection new.
 	args
 		add: 'run';
-		add: 'python';
+		add: 'python'.
+	self settings serverDebugMode ifTrue:
+		[ args addAll: { 
+			'-m'. 
+			'debugpy'. 
+			'--listen'. 
+			self settings debugSocketAddress printAddress. 
+			'--wait-for-client'. } ].
+	args
 		add: self pythonMainFile fullName;
 		add: '--port';
 		add: self settings pythonSocketAddress port asString;
@@ -131,14 +219,55 @@ PBPharoPipenvProcess >> setDefaultEnvironmentVariables [
 { #category : #'start-stop' }
 PBPharoPipenvProcess >> start [
 	process := self newProcess.
+
 	process run.
+	self settings serverDebugMode ifTrue:
+		[ self startServerDebugger ].
+]
+
+{ #category : #'start-stop' }
+PBPharoPipenvProcess >> startServerDebugger [
+	"Start the debugger, tell the server to run and set up inspection on halt"
+
+	"Give the server time to start"
+	1 second wait.
+	serverDebugger := DAPPythonDebugger new 
+		localRoot: self workingDirectory;
+		connectTo: #[127 0 0 1] port: self settings debugSocketAddress port.
+	serverDebugger announcer 
+		when: DAPThreadStateChanged 
+		do: [ :announcement | self debuggerStateChangedAction: announcement ].
+
+]
+
+{ #category : #accessing }
+PBPharoPipenvProcess >> stderr [
+	"Answer the process stderr contents"
+
+	^ process stderr
+]
+
+{ #category : #accessing }
+PBPharoPipenvProcess >> stdout [ 
+	"Answer the process stdout contents"
+
+	^ process stdout
 ]
 
 { #category : #'start-stop' }
 PBPharoPipenvProcess >> stop [
 	process ifNil: [ ^ self ].
-	[process queryExitStatus ifNil: [ process terminate ]] 
+	[ process queryExitStatus ifNil: [ process terminate ]] 
 		on: Error 
 		do: [ :e | "Do nothing."].
-	process closeAndCleanStreams
+	process closeAndCleanStreams.
+	process := nil.
+]
+
+{ #category : #'start-stop' }
+PBPharoPipenvProcess >> stopServerDebugger [
+	"Close the debugger and deregister"
+
+	serverDebugger close.
+	serverDebugger announcer unsubscribe: self debuggerStateChangedAction
 ]

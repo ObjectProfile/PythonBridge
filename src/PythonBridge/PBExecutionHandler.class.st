@@ -67,6 +67,13 @@ PBExecutionHandler >> newCommandFactory [
 		yourself
 ]
 
+{ #category : #'as yet unclassified' }
+PBExecutionHandler >> newCommandStringFactory [
+	^ PBCommandStringFactory new
+		application: self application;
+		yourself
+]
+
 { #category : #handlers }
 PBExecutionHandler >> notifyCallbackHandler: msg [
 	| val serialization |
@@ -79,6 +86,13 @@ PBExecutionHandler >> notifyCallbackHandler: msg [
 	^ msg createAnswer 
 		value: serialization;
 		yourself
+]
+
+{ #category : #instructions }
+PBExecutionHandler >> notifyDebuggerPaused: aDebugger [
+	"Notify all promises that the server debugger has paused in case the Bloc UI process is waiting on one of the promises."
+
+	promiseRegistry notifyDebuggerPaused: aDebugger.
 ]
 
 { #category : #handlers }
@@ -137,12 +151,9 @@ PBExecutionHandler >> registerPromiseForCommand: aCommand [
 
 { #category : #'as yet unclassified' }
 PBExecutionHandler >> safeTriggerDebugger: error [
-	| sem |
-	sem := Semaphore new.
-	[ [ self triggerDebugger: error ] ensure: [ sem signal ] ]
-		on: PBPythonError fork: [ :e | PBPlatform current uiManager spawnDebuggerOnException: e ].
-	sem wait.
-	^ error proceedAction: error defaultProceedAction
+
+	[ promiseRegistry signalPromiseId: error command id with: error ] fork.
+
 ]
 
 { #category : #'private protocol' }

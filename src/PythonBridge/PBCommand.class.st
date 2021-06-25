@@ -89,7 +89,7 @@ PBCommand >> promise: anObject [
 	promise := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 PBCommand >> pythonCode [
 	| py3CodeStream |
 	py3CodeStream := String new writeStream.

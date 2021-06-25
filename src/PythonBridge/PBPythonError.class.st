@@ -1,6 +1,6 @@
 Class {
 	#name : #PBPythonError,
-	#superclass : #Notification,
+	#superclass : #PBRemoteNotification,
 	#instVars : [
 		'command',
 		'errorMessage',
@@ -38,7 +38,7 @@ PBPythonError >> defaultAction [
 	^ PBPlatform current uiManager spawnDebuggerOnException: self
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 PBPythonError >> defaultProceedAction [
 	^ PBDropQueue new
 ]
@@ -77,6 +77,19 @@ PBPythonError >> proceedAction [
 { #category : #accessing }
 PBPythonError >> proceedAction: anObject [
 	proceedAction := anObject
+]
+
+{ #category : #printing }
+PBPythonError >> summaryText [
+	"Answer a formatted BlText describing the receiver's error"
+	| text |
+
+	text := errorMessage
+		ifNil: [ '' ]
+		ifNotNil: [ errorMessage ].
+	text := text asRopedText, (String cr, String cr) asRopedText, 
+		trace asRopedText glamorousCodeFont.
+	^ text
 ]
 
 { #category : #tracing }

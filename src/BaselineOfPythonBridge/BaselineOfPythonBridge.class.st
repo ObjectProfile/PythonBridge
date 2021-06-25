@@ -12,13 +12,13 @@ BaselineOfPythonBridge >> baseline: spec [
 		do: [			
 			spec
 				baseline: 'OSSubprocess' 
-				with: [ spec repository: 'github://pharo-contributions/OSSubprocess:v1.0.0/repository' ].
+				with: [ spec repository: 'github://feenkcom/OSSubprocess:main/repository' ].
 			spec
 				baseline: 'Python3Generator' 
 				with: [ spec repository: 'github://juliendelplanque/Python3Generator:v2.0.0/repository' ].
 			spec baseline: 'NeoJSON' with: [
                 spec
-                    repository: 'github://svenvc/NeoJSON/repository' ].
+                    repository: 'github://svenvc/NeoJSON:v17/repository' ].
 			spec baseline: 'MessagePack' with: [
                 spec
                     repository: 'github://msgpack/msgpack-smalltalk:v1.3.1/repository' ].

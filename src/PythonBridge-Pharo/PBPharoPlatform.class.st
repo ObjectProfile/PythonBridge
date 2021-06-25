@@ -1,6 +1,9 @@
 Class {
 	#name : #PBPharoPlatform,
 	#superclass : #PBPlatform,
+	#classVars : [
+		'RuntimeSourceDirectory'
+	],
 	#category : #'PythonBridge-Pharo-Platform'
 }
 
@@ -19,6 +22,21 @@ PBPharoPlatform class >> priority [
 	^ 10
 ]
 
+{ #category : #accessing }
+PBPharoPlatform class >> runtimeSourceDirectory [
+	<return: #AbstractFileReference>
+
+	^ RuntimeSourceDirectory
+]
+
+{ #category : #accessing }
+PBPharoPlatform class >> runtimeSourceDirectory: anAbstractFileReference [
+	"Set the directory the contains the runtime files.
+	nil = not specified"
+
+	RuntimeSourceDirectory := anAbstractFileReference
+]
+
 { #category : #hooks }
 PBPharoPlatform class >> socketMessageBrokerClass [
 	^ PBMsgPackPharoBroker
@@ -34,16 +52,34 @@ PBPharoPlatform class >> weakRegistryClass [
 	^ PBPharoWeakRegistry
 ]
 
-{ #category : #'private - symlinks' }
-PBPharoPlatform >> createSymlinkFor: originalFile on: targetFile [
-	OSSUnixSubprocess new
-				command: '/bin/ln';
-				arguments: (Array 
-									with: '-s' 
-									with: originalFile asFileReference fullName 
-									with: targetFile asFileReference fullName);
-				terminateOnShutdown;
-				runAndWaitOnExitDo: [ :command | ^ self ].
+{ #category : #private }
+PBPharoPlatform >> copyApplicationTo: appFolder application: application [
+	"Copy the PythonBridge runtime environment to the specified folder"
+	| srcDir cpCommand proc srcFilename dstFilename error |
+
+	srcDir := self runtimeSourceDirectoryFor: application.
+	srcDir resolve = appFolder resolve ifTrue: [ ^ self ].
+
+	"Copy the runtime directory"
+	srcFilename := srcDir resolve fullName copyReplaceAll: '"' with: '\"'.
+	dstFilename := appFolder resolve fullName copyReplaceAll: '"' with: '\"'.
+	cpCommand := String streamContents: [ :stream |
+		stream
+			<< 'cp -a "';
+			<< srcFilename;
+			<< '" "';
+			<< dstFilename;
+			<< '"' ].
+	proc := PBUnixSubprocess new 
+		shellCommand: cpCommand;
+		runAndWait.
+	proc isSuccess ifFalse:
+		[ error := PBPythonProcessError new
+			messageText: 'Unable to install PythonBridge runtime';
+			application: application;
+			process: proc.
+		error signal ].
+
 ]
 
 { #category : #'message broker strategy' }
@@ -52,64 +88,52 @@ PBPharoPlatform >> defaultMessageBrokerClass [
 ]
 
 { #category : #hooks }
-PBPharoPlatform >> ensureApplicationSymlinks: application [
+PBPharoPlatform >> ensureApplicationDirectory: application [
 	| appFolder |
-	appFolder := self folderForApplication: application.
-	self ensureFolderSymlinkFor: appFolder.
-	self ensurePBridge: (self folderForApplication: application class baseApplication) symlinkIn: appFolder
+
+	appFolder := application workingDirectory.
+	(appFolder / 'PythonBridge') exists ifTrue: [ ^ self ].
+	self copyApplicationTo: appFolder application: application.
+	self setExecutableIn: appFolder application: application.
+
+
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #private }
 PBPharoPlatform >> ensureEnvironmentForApp: anApplication [
-	self ensureApplicationSymlinks: anApplication.
-	self installEnvironmentForApp: anApplication.
-]
 
-{ #category : #'private - symlinks' }
-PBPharoPlatform >> ensureFolderSymlinkFor: aFolder [
-	| symlinkRef |
-	symlinkRef := aFolder basename asFileReference.
-	symlinkRef exists ifFalse: [ 
-		self createSymlinkFor: aFolder on: symlinkRef ]
-]
-
-{ #category : #'private - symlinks' }
-PBPharoPlatform >> ensurePBridge: pbridgeFolder symlinkIn: aFolder [
-	| symlinkRef |
-	symlinkRef := aFolder / 'PythonBridge'.
-	symlinkRef exists ifFalse: [ 
-		self createSymlinkFor: pbridgeFolder on: symlinkRef ].
-]
-
-{ #category : #utils }
-PBPharoPlatform >> folderForApplication: application [
-	^ (IceRepository registry 
-			detect: [ :each | each includesPackageNamed: application class package name ] 
-			ifNone: [ 
-				self inform: 'Please add a clone of this project to Iceberg to access to the resources'.
-				"For travis!"
-				^ '.' asFileReference ]) location
+	[ self ensureApplicationDirectory: anApplication.
+	self installEnvironmentForApp: anApplication ] asJob
+		title: 'Installing PythonBridge runtime environment';
+		run
 ]
 
 { #category : #utils }
 PBPharoPlatform >> forceInstallEnvironmentForApp: application [
-	| proc |
-	self assert: PBPharoPipenvProcess pipenvPath isEmptyOrNil not description: 'pipenv is apparently not accessible at a standard location. Please, have a look at the Troubleshooting section of https://objectprofile.github.io/PythonBridge/pages/pharo-installation'.
-	proc := OSSUnixSubprocess new
+	| proc pipenvPath |
+
+	pipenvPath := application pipenvPath.
+	self assert: pipenvPath exists description: 'pipenv is apparently not accessible at a standard location. Please, have a look at the Troubleshooting section of https://objectprofile.github.io/PythonBridge/pages/pharo-installation'.
+	proc := PBUnixSubprocess new
 				command: '/bin/bash';
-				addAllEnvVariablesFromParentWithoutOverride;
-				arguments: (Array 
-					with: ((self folderForApplication: application) / 'install_env.sh') fullName);
-				terminateOnShutdown;
-				runAndWait.
-	(proc exitStatus = 0 or: [ proc exitStatus < -1000 or: [ proc exitStatus > SmallInteger maxVal ] ]) ifFalse: [ 
-		self signalPipenvCreateEnvFailed ]
+				workingDirectory: application workingDirectory fullName;
+				addAllEnvVariablesFromParentWithoutOverride.
+	proc
+		environmentAt: 'PATH'
+		put: pipenvPath parent fullName,
+				':', (proc envVariables at: 'PATH').
+	proc
+		arguments: (Array 
+			with: (application workingDirectory / 'install_env.sh') fullName);
+		terminateOnShutdown;
+		runAndWait.
+	proc isSuccess ifFalse: [ self signalPipenvCreateEnvFailed: application process: proc ].
 ]
 
 { #category : #utils }
 PBPharoPlatform >> installEnvironmentForApp: application [
 	| folder |
-	folder := self folderForApplication: application.
+	folder := application workingDirectory.
 	(folder / '.venv') exists ifFalse: [ 
 		self forceInstallEnvironmentForApp: application ]
 ]
@@ -119,15 +143,65 @@ PBPharoPlatform >> newRandomName [
 	^ 'pb' , UUID new asString36
 ]
 
+{ #category : #utils }
+PBPharoPlatform >> runtimeSourceDirectoryFor: aPBApplication [
+	"Answer the source directory containing the runtime files.
+	This is the first of:
+	1. RuntimeSourceDirectory (if specified)
+	2. The git repository copy.
+	3. An existing copy in the image directory"
+	| fileReference |
+
+	(RuntimeSourceDirectory isNotNil and: [ RuntimeSourceDirectory exists ]) ifTrue: 
+		[ ^ RuntimeSourceDirectory ].
+	IceRepository registry 
+			detect: [ :each | each includesPackageNamed: aPBApplication class package name ] 
+			ifFound: [ :repository | 
+					fileReference := repository location / 'PythonBridgeRuntime'.
+					fileReference exists ifTrue: [ ^ fileReference ] ]
+			ifNone: [ ].
+	fileReference := FileLocator imageDirectory / 'PythonBridgeRuntime'.
+	fileReference exists ifTrue: [ ^ fileReference ].
+	self error: 'Unable to locate PythonBridge runtime source'.
+]
+
 { #category : #private }
-PBPharoPlatform >> signalPipenvCreateEnvFailed [
-	"
-	Python bridge attempt of creating Pipenv environment failed. To attempt to generate the Pipenv
-	environment manually go the project git folder. It may be the PythonBridge, KerasBridge or your
-	Bridge, because each of them has a different Pipfile and Pipenv environment.
+PBPharoPlatform >> setExecutableIn: appFolder application: application [
+	"Copy the PythonBridge runtime environment to the specified folder"
+	| chmodCommand proc error appFolderString |
+
+	appFolderString := appFolder resolve fullName copyReplaceAll: '"' with: '\"'.
+	chmodCommand := String streamContents: [ :stream |
+		stream
+			<< 'chmod +x "';
+			<< appFolderString;
+			<< '"/*.sh' ].
+	proc := OSSUnixSubprocess new 
+		shellCommand: chmodCommand;
+		runAndWait.
+	proc isSuccess ifFalse:
+		[ error := PBPythonProcessError new
+			messageText: 'Unable to set PythonBridge runtime executable bits';
+			application: application;
+			process: proc.
+		error signal ].
+
+]
+
+{ #category : #private }
+PBPharoPlatform >> signalPipenvCreateEnvFailed: application process: proc [
+	"The attempt to install the python environment failed.
+	Signal the error.
+
+	To manually track down the issue, go to the working directory as shown in the signal and:
 	
 	To remove the current Pipenv environment run in the folder the command: `pipenv --rm`
-	To manually create the Pipenv environment run in the folder the command: `bash install_env.sh`
-	"
-	Error signal: 'Attempt for creating Pipenv environment failed.'
+	To manually create the Pipenv environment run in the folder the command: `bash install_env.sh`"
+	| error |
+
+	"Save the error in a temporary variable for access while debugging since the debugger hides the signal stack entries"
+	error := PBPythonProcessError new
+		application: application;
+		process: proc.
+	error signal
 ]

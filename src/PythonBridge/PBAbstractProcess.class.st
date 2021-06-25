@@ -3,18 +3,15 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'pythonMainFile',
-		'debugMode',
-		'settings',
-		'workingDirectory'
+		'workingDirectory',
+		'application'
 	],
 	#category : #'PythonBridge-Platform'
 }
 
 { #category : #accessing }
 PBAbstractProcess class >> application: application [
-	^ self 
-		settings: application settings 
-		application: application
+	^ self new application: application
 ]
 
 { #category : #accessing }
@@ -22,55 +19,31 @@ PBAbstractProcess class >> platform [
 	self subclassResponsibility
 ]
 
-{ #category : #accessing }
-PBAbstractProcess class >> settings: settings application: application [
-	^ self 
-		settings: settings 
-		workingDirectory: (PBPlatform current folderForApplication: application)
-		debugMode: application class debugMode
-]
-
-{ #category : #accessing }
-PBAbstractProcess class >> settings: settings workingDirectory: fileRef [
-	^ self new
-		settings: settings;
-		workingDirectory: fileRef;
-		yourself
-]
-
-{ #category : #accessing }
-PBAbstractProcess class >> settings: settings workingDirectory: fileRef debugMode: flag [
-	^ self new
-		settings: settings;
-		workingDirectory: fileRef;
-		debugMode: flag;
-		yourself
-]
-
 { #category : #hooks }
 PBAbstractProcess class >> workingDirectory [
-	^ self platform folderForApplication: PBApplication
+
+	self deprecated: 'This should be run against a PBApplication instance that knows its runtime directory'.
+	"^ self platform runtimeFolderForApplication: PBApplication"
+]
+
+{ #category : #accessing }
+PBAbstractProcess >> application [
+	^ application
+]
+
+{ #category : #accessing }
+PBAbstractProcess >> application: anObject [
+	application := anObject
 ]
 
 { #category : #accessing }
 PBAbstractProcess >> debugMode [
-	^ debugMode
-]
-
-{ #category : #accessing }
-PBAbstractProcess >> debugMode: anObject [
-	debugMode := anObject
+	^ self settings debugMode
 ]
 
 { #category : #accessing }
 PBAbstractProcess >> errorMessage [
 	self subclassResponsibility
-]
-
-{ #category : #initialization }
-PBAbstractProcess >> initialize [
-	super initialize.
-	debugMode := false
 ]
 
 { #category : #testing }
@@ -90,12 +63,7 @@ PBAbstractProcess >> pythonMainFile: anObject [
 
 { #category : #accessing }
 PBAbstractProcess >> settings [
-	^ settings
-]
-
-{ #category : #accessing }
-PBAbstractProcess >> settings: anObject [
-	settings := anObject
+	^ application settings
 ]
 
 { #category : #'start-stop' }
@@ -110,10 +78,5 @@ PBAbstractProcess >> stop [
 
 { #category : #accessing }
 PBAbstractProcess >> workingDirectory [
-	^ workingDirectory
-]
-
-{ #category : #accessing }
-PBAbstractProcess >> workingDirectory: anObject [
-	workingDirectory := anObject
+	^ application workingDirectory
 ]

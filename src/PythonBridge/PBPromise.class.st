@@ -5,7 +5,8 @@ Class {
 		'id',
 		'semaphore',
 		'transformBlock',
-		'value'
+		'value',
+		'waitAgain'
 	],
 	#category : #'PythonBridge-Execution'
 }
@@ -41,12 +42,22 @@ PBPromise >> isSignaled [
 ]
 
 { #category : #signalling }
+PBPromise >> setWaitAgain [ 
+	"Flag that the promise should wait for the real value to be returned from the server"
+StringSignal emit: 'setWaitAgain: ', self identityHash asString.
+	waitAgain := true.
+	semaphore consumeAllSignals.
+]
+
+{ #category : #signalling }
 PBPromise >> signalAll [
 	1 to: semaphore size + 20 do: [ :s | semaphore signal ]
 ]
 
 { #category : #signalling }
 PBPromise >> signalWithValue: anObject [
+	"Set the receiver's value and signal the value is available"
+
 	value := transformBlock value: anObject.
 	self signalAll.
 ]
@@ -68,7 +79,16 @@ PBPromise >> value [
 
 { #category : #signalling }
 PBPromise >> waitForValue [
-	self isSignaled ifTrue: [ ^ self value ].
-	semaphore wait.
-	^ self value
+	"Wait for the server to supply the result and answer it.
+	If the value is an exception, the issue may be resolved and the promise flagged to wait for the new value to come through (waitAgain)."
+	<dapDebuggerSignal>
+
+	[ waitAgain := false.
+	self isSignaled ifFalse: [ semaphore wait ].
+	(value isKindOf: Exception) ifTrue:
+		[ value promise: self.
+		value signal ].
+	"If an exception was signalled, it may request that the promise wait for the real value to come through."
+	waitAgain ] whileTrue.
+	^ value
 ]

@@ -61,6 +61,17 @@ PBMsgPackPharoBrokerTest >> sendMessageToBroker: dict answerBlock: aBlock [
 ]
 
 { #category : #utils }
+PBMsgPackPharoBrokerTest >> sendMessageToBroker: dict answerEquals: ansDict [
+	| flag |
+	flag := false.
+	self sendMessageToBroker: dict answerBlock: [ :anAssoc |
+		flag := true.
+		self assert: anAssoc value equals: ansDict ].
+	self sleepAWhile.
+	self assert: flag
+]
+
+{ #category : #utils }
 PBMsgPackPharoBrokerTest >> sleepAWhile [
 	(Delay forMilliseconds: 50) wait
 ]
